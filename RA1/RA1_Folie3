@@ -1,0 +1,391 @@
+18:35 -- 20:00
+
+!!!
+Zusammenfassung:
+	--> Kodierung ist zwingend notwendig, um Information durch Signale darzustellen, abzubilden
+	--> Die Kodierung bestimmt die Darstellungsvorschrift von Informationseinheiten mit Hilfe der Zeichen eines Alphabetes
+	--> Binäre Blockkode werden in der Computertechnik bevorzugt
+	--> Eine Kodetabelle stellt als tabellarische Zuordnung die Abbildungsvorschrift dar
+	--> Es gibt verschiedene Standardkodes für Zahlendarstellungen, Textdarstellungen, Adressen, Auswahlentscheidungen usw.
+!!!
+
+Kodierung:
+
+Informationen können in kodierter Form als Zeichen bzw. Zeichenfolgen einer Zeichenmenge Z oder als Signale bzw. Signalfolgen einer Signalmenge S vorliegen.
+Kodierung == eindeutige Abbildung einer endlichen Menge von Zeichen eines Alphabetes A in eine geeignete Folge über der unterliegenden
+	Signalmenge S^n (S^n = S × ... × S),
+	Zeichenmenge Z^n (Z^n = Z × ... × Z),
+	Zeichenmenge eines anderen Alphabetes B.
+Kodierung ist Alphabetwandlung: κ ∶ A → Z^n bzw. κ ∶ A → S^n oder κ ∶ A → B.
+	S^n bzw Z^n == das n-fache kartesische Produkt über der Menge S bzw. Z. 
+	Die Elemente von S^n bzw Z^n sind n-Tupel, Vektoren (Zeichenketten, Kodewörter) mit (s_1*s_2 ...*s_v ...*s_n ) ∈ S^n , s_v ∈ S bzw. (z_1*z_2 ...*z_v ...z_n) ∈ Z^n , z_v ∈ Z.
+Kodes können in Kodetafeln, Kodetabellen dargestellt werden.
+
+Beispiel Morse-Alphabet:
+	Eigenschaften der Morsekodierung:
+	--> Kodewörter (ungleichmäßig) unterschiedlicher länge (n = 1...5),
+	--> nicht alle möglichen Kodewörter werden verwendet,
+	--> Ziffern haben Kodewörter fester Länge (n = 5) mit gewisser Systematik,
+	--> kürzeste Kodewörter für E und T,
+	--> die Pause (○) dient ausschließlich der Trennung der Kodewörter.
+
+	Schlussfolgerungen:
+	--> Kode mit Redundanz
+	--> Dekodierbarkeit durch Pausenzeichen (Trennzeichen) gesichert,
+	--> erleichterte Dekodierbarkeit von Ziffern, Zahlen durch feste Kodewortlänge und Systematik,
+	--> häufig vorkommende Zeichen haben eine kurze Kodewortlänge
+
+Dekodierbarkeit eines Kodes:
+	Eine Kodierung ist dekodierbar, wenn mindestens eine der folgenden Voraussetzungen gegeben ist:
+		--> alle Kodewörter sind gleich lang (Blockkode-Eigenschaft),
+		--> Verwendung eines gesonderten Trennzeichens,
+		--> kein (kurzes) Kodewort ist Anfang bzw. Ende eines anderen (langen) Kodewortes (Präfixeigenschaft).
+
+	--> Suffix-Kode: Ungleichmäßiger Kode, kein (kurzes) Kodewort ist Ende (Suffix) eines anderen (langen) Kodewortes
+	--> Präfix-Kode: Ungleichmäßiger Kode, kein (kurzes) Kodewort ist Anfang (Präfix) eines anderen (langen) Kodewortes (Präfixeigenschaft: z.B. Huffmann-Kode)
+Suffix- und Präfix-Kode in der Computertechnik haben geringere Bedeutung.
+
+Zielstellung der Kodierung:
+Beeinflussung der Informationsdarstellung durch gezielte Kodierung:
+--> Lesbarkeit
+--> Verarbeitbarkeit
+--> Übertragbarkeit
+--> Fehlersicherheit
+--> Speicherbarkeit
+--> Vertraulichkeit
+
+Anwendungsgebiete für die Kodierung:
+--> Informationsdarstellung allgemein (Signalfolgen)
+--> Informationsverschlüsselung (Kryptographie)
+--> Informationsübertragung (Kommunikationstechnik)
+--> Informationsverarbeitung (Computertechnik)
+
+Binäre Kodierung:  (Binär == zweiwertig, dual, bivalent)
+	Kodierungen für moderne elektronische Computer basieren praktisch ausschließlich auf der Menge B = {0,1} der binären Zeichen 0 und 1. 
+	Die binären Zeichen 0,1 ∈ B werden physikalischen Signalen (zweiwertigen Zuständen) zugeordnet, z.B.:
+Zeichen 	0 + (1 - ) 		1 + (0 - )
+Schalter 	offen 			geschlossen
+Spannung 	niedrig 		hoch
+Pegel 		L (low) 		H (high)
+Kondensator 	entladen 		geladen
+Magnetfeld 	neg. Orientierung 	pos. Orientierung
+					+ positive Logik, (- negative Logik)
+--> Im Weiteren soll nur noch positive Logik verwendet werden.
+
+Binäre Kodierung mit Zeichenfolgen:
+	Mit B = {0,1} können nur 2 Zeichen, 0 oder 1 dargestellt bzw. kodiert werden.
+	--> Übergang zu Zeichenfolgen, Zeichenketten der binären Zeichen 0,1 ∈ B.
+	Eine binäre Kodierung ist eine eindeutige Abbildung einer endlichen Menge von Zeichen eines Alphabetes A in geeignete Folgen von nur zwei verschiedenen (binären)
+		Zeichen der unterliegenden binären Zeichenmenge B.
+
+kappa : A → B^n; B^n = B x ... x B
+
+B^n == n-fache kartesische Produkt über der Menge B.
+Die Elemente von B^n sind n-Tupel, Vektoren mit:
+		(b_1 * b_2 ... b_v ... b_n) ∈ B^n und b_v ∈ B
+Sie werden als binäre Kodewörter der Länge n bezeichnet (n-Bit Kodewort).
+
+Binäre Blockkodes:
+
+In der Computertechnik dominieren aufgrund der leichteren Dekodierbarkeit binäre Kodes fester Länge n (n-Bit-Blockkode).
+
+Kodierung: β: A → {0,1}^n
+Kodewort: (b_1*b_2 ... b_v ... b_n ) ∈ B^n und b_v ∈ B, B = {0,1}
+Kodewortlänge: n-Bit Kodewörter
+Zeichenvorrat: 2^n verschiedene Kodewörter
+
+Die Kodewörter werden als Zeichenketten, Vektoren der Binärziffern 0 und 1 dargestellt. Eine Binärziffer wird Bit (binary digit) genannt.
+Beispiel: 
+	n = 4 --> 16 verschiedene mögliche 4-Bit Kodewörter:
+	--> {0,1}^4 = {0000, 0001, 0010, 0011, 0100, 0101, 0110, 0111, 1000, 1001, 1010, 1011, 1100, 1101, 1110, 1111}
+
+Ein binärer Blockkode mit n Stellen (n-Bit-Kodierung) mit (b_1*b_2*b_v ... *b_n ) ∈ B^n und b_v ∈ B, B = {0,1} realisiert maximal 2^n verschiedene n-Bit lange Kodewörter (n- Bit Kodewörter).
+
+Dichter Kode: 
+	Ein dichter Blockkode liegt vor, wenn q verschiedene Kodewörter für die Abbildung benötigt werden und n die folgende Bedingung erfüllt:		
+		2^(n-1) < q ≤ 2^n
+	Eine Reduktion von n ist hier nicht mehr möglich!
+
+Voller Kode: 
+	Ein Blockkode wird dann voll genannt, wenn q verschiedene Kodewörter für die Abbildung benötigt werden und n genau die folgende Bedingung erfüllt:
+		q = 2^n 
+	Damit ist kein weiteres Kodewort mehr darstellbar!
+
+Übliche Formate binärer Blockkodes:
+	Folgende Kodewortlängen und Bezeichnungen sind für die binären Blockkode in der Computertechnik üblich:
+		n= 1 			  x 	Bit
+		n= 4 		       xxxx 	Halbbyte (Nibble)
+		n= 8 		  xxxx xxxx 	Byte
+		n= 16 	xxxx xxxx xxxx xxxx 	16-Bit Wort
+		n= 32 				32-Bit Wort
+		n= 64 				64-Bit Wort
+
+Orientierung der Wortbreite an der Verarbeitungsbreite des Computers:
+• 16-Bit Mikroprozessoren → 16-Bit Wort,
+• 32-Bit Mikroprozessoren → 32-Bit Wort,
+• 64-Bit Mikroprozessoren → 64-Bit Wort.
+Übliche Wortunterteilungen: Halbwort, Wort, Doppelwort, Quadwort.
+
+Kodewortdarstellung binärer Blockkode:
+Beispiel: Darstellung von Kodewörtern (Bits im 32-Bit Wort)
+	MSB == Most Signification Bit
+	LSB == Least Signification Bit
+	
+Übliche Dimensionsangaben:
+1 Byte = 2 Halbbyte = 8 Bit
+KiB (Kibibyte) : 2^10 Byte = 	      = 1024 Byte		
+MiB (Mebibyte) : 2^20 Byte = 1024 KiB = 1 048 576 Byte
+Gi (Gibibyte) : 2^30 Byte = 1024 MiB = 1 073 741 824 Byte
+Ti (Tebibyte) : 2^40 Byte = 1024 GiB = 1 099 511 627 776 Byte
+PiB (Pebibyte) :2^50 Byte = 1024 TiB = 1 125 899 906 842 624 Byte
+
+Wichtige binäre Kodes:
+--> Binär-Kode
+--> BCD-Kode
+--> Hexadezimal-Kode
+--> Oktal-Kode
+--> M-aus-N-Kode (1-aus-N-Kode)
+--> Gray-Kode
+--> ASCII-Kode
+--> Zahlendarstellung
+
+Binär-Kode (BIN):
+
+DEZ 	BIN
+0	0000
+1	0001
+2	0010
+3	0011
+4	0100
+5	0101
+6	0110
+7	0111
+8	1000
+9	1001
+10	1010
+11	1011
+12	1100
+13	1101
+14	1110
+15	1111
+
+Bildungsvorschrift:
+	Die Zuordnung erfolgt entsprechend dem Binäräquivalent (Dualzahl).
+Anwendung:
+	Adressen in Computern, Dualzahlendarstellung
+
+Binäre Zahlendarstellung als Dualzahl:
+
+Jeder Dezimalzahl wird die zu ihr wertmäßig äquivalente binär kodierte Dualzahl zugeordnet (→ Stellenwertsystem zur Basis 2).
+Das dezimale Zahlensystem wird direkt auf das Dualzahlensystem abgebildet:
+Dezimalzahlen: g ∈ G
+Dezimalziffern: z_i ∈ Z = {0,1,2,3,4,5,6,7,8,9}
+Dualzahlen: d ∈ D
+Dualziffern: b_j ∈ B = {0,1}
+Kodierung: δ : G → D
+Wertgleiche Zuordnung: g = sum_(i=0)^(m-1) [z_i * 10^i] = d = sum_(j=0)^(n-1) [b_j * 2j]
+		Beispiel: 314_10 == 0000 0001 0011 1010_2
+
+BCD-Kode (Binary Coded Decimals):
+DEZ	BCD	Aiken	 3XS
+0	0000	0000	 0011
+1	0001	0001	 0100
+2	0010	0010	 0101
+3	0011	0011	 0110
+4	0100	0100	 0111
+5	0101	1011	 1000
+6	0110	1100	 1001
+7	0111	1101	 1010
+8	1000	1110	 1011
+9	1001	1111	 1100
+
+Bildungsvorschrift:
+	Die Zuordnung erfolgt entsprechend dem Binäräquivalent 0-9.
+Anwendung:
+	Darstellung von Dezimalziffern.
+Die nicht in der Abbildung berücksichtigten Tetraden (10-15) werden als Pseudotetraden bezeichnet (6 Pseudotetraden).
+
+Binäre Zahlendarstellung im BCD-Kode:
+
+Jeder Dezimalziffer wird genau ein 4-Bit langes binäres Kodewort (Tetrade) entsprechend ihrem Binäräquivalent zugeordnet (auch 8241-Kode).
+Die Codierung einer n-stelligen Dezimalzahl erfolgt ziffernweise durch Aneinanderreihung der BCD-kodierten Dezimalziffern.
+Dezimalziffern: z_i ∈ Z = {0,1,2,3,4,5,6,7,8,9}
+Kodierung: δ : Z --> {0,1}^4
+
+Dem BCD-Kode ähnliche Kodes sind der Aiken-Kode und der 3XS-Kode.
+Bei der Rechnung mit BCD-Zahlen sind die Pseudotetraden unbedingt zu beachten.
+Beispiel: 314_10 = 0011 0001 0100_BCD (ABER 0000 0001 0011 1010_2 !!!)
+
+Hexadezimale-Kode:
+
+DEZ 	BIN	HEX
+0	0000	0
+1	0001	1
+2	0010	2
+3	0011	3
+4	0100	4
+5	0101	5
+6	0110	6
+7	0111	7	
+8	1000	8
+9	1001	9
+10	1010	A
+11	1011	B
+12	1100	C
+13	1101	D
+14	1110	E
+15 	1111	F
+
+Bildungsvorschrift:
+	Die Zuordnung erfolgt zu je 4 Bit entsprechend Binär-äquivalent (Hexadezimalzeichen 0...9, A...F).
+	Für 10-15 wird A-F kodiert 
+
+Anwendung:
+	Adressen in Computern, Hexadezimalzahlendarstellung
+
+Hexadezimale Darstellung:
+
+Für die einfachere Darstellung binärer Kodierungen mit großer Binärstellenzahl werden oft hexadezimale Kodierungen verwendet.
+Zahlendarstellung als Hexadezimalzahl: Stellenwertsystem zur Basis 16.
+
+g = sum_(i=0)^(l-1) [h_i ⋅16^i] mit h_i ∈ H = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15}
+
+Konvertierung binär → hexadezimal:
+	Unterteilung der binären Kodierung mit dem LSB beginnend in Vierergruppen.
+	Ersetzen der Vierergruppen durch die entsprechenden Hexadezimalzeichen.
+Konvertierung hexadezimal → binär:
+	Ersetzen der Hexadezimalzeichen durch ihre Binärkodierung (Bitstellen).
+Beispiel: 314_10 = 013A_16
+
+Oktal-Kode:
+
+DEZ 	BIN 	OKT
+0 	000 	0
+1 	001 	1
+2 	010 	2
+3 	011 	3
+4 	100 	4
+5 	101 	5
+6 	110 	6
+7 	111 	7
+
+Bildungsvorschrift:
+	Die Zuordnung erfolgt zu je 3 Bit entsprechend dem Binäräquivalent (Oktalzeichen 0 – 7).
+Anwendung:
+	Adressen in Computern, Oktalzahlendarstellung
+
+Oktale Darstellung:
+
+Für eine einfachere Darstellung binärer Kodierungen mit großer Binärstellenzahl wird teilweise auch die oktale Kodierungen verwendet.
+Zahlendarstellung als Oktalzahl: Stellenwertsystem zur Basis 8.
+
+g = sum_(i=0)^(k-1) [o_i ⋅8^i] mit o_i ∈ O = {0,1,2,3,4,5,6,7}
+
+Konvertierung binär → oktal:
+	Unterteilung der binären Kodierung mit dem LSB beginnend in Dreiergruppen. 
+	Ersetzen der Dreiergruppen durch das entsprechende Oktalzeichen.
+
+Konvertierung oktal → binär:
+	Ersetzen der Oktalzeichen durch ihre Binärkodierung (Bitstellen).
+	Beispiel: 314_10 = 00472_8
+
+M-aus-N-Kode:
+
+Der M-aus-N-Kode hat genau (N über M) Kodewörter der Länge N, die jeweils genau M 1-Bits enthalten, sonst alles 0-Bits (Sonderfall: 1-aus-N-Kode).
+
+Kodewortlänge: N; Anzahl der 1-Bit-Stelle: M
+Anzahl der Kodewörter: (N über M) = N! / (M! * (N - M)!)
+
+Beispiel: 2 aus 4 Kode
+(4 über 2) = 4! / (2! * (4-2)! ) = 2 * 3 = 6 Kodewörter: 1100, 1010, 1001, 0101, 0011, 0110.
+
+Anwendung: 
+	Spezielle Kodierungen, Adressdekodierung, Zahlendarstellung.
+Beispiel: 
+	314_10 = 0000001000 0000000010 0000010000_(1-aus-10)
+
+1-aus-N-Kode (One-Hot-Code)
+
+DEZ 	1-aus-10
+0 	00000 00001
+1 	00000 00010
+2 	00000 00100
+3 	00000 01000
+4 	00000 10000
+5 	00001 00000
+6 	00010 00000
+7 	00100 00000
+8 	01000 00000
+9 	10000 00000
+
+Bildungsvorschrift 1-aus-10-Kode:
+Die Dezimalzahl von rechts (LSB) entsprechende Bitstelle ist 1 alle anderen sind 0.
+
+Anwendung:
+	Adressdekoder, einfache Zahlendarstellung
+
+Der 1-aus-N-Kode (One-Hot-Code) hat genau N Kodewörter der Länge N, die jeweils nur ein 1-Bit enthalten, sonst alles 0-Bit. 
+Die einzelnen Kodewörter unterscheiden sich immer nur in jeweils 2 Bitstellen.
+
+Gray-Kode:
+Nr.	Gray
+0	0000
+1	0001
+2	0011
+3	0010
+4	0110
+5	0111
+6	0101
+7	0100
+8	1100
+9	1101
+10	1111
+11	1110
+12	1010
+13	1011
+14	1001
+15	1000
+
+Benachbarte Kodewörter unterscheiden sich jeweils nur in einer einzigen Bitstelle.
+
+Bildungsvorschrift:
+Generierung aus Binärkode
+X_(Gray) :=(X_(BIN) XOR (1/2 * X_(BIN) ))
+
+Anwendung:
+	Messtechnik, Zähler,
+	Erhöhung der Störsicherheit,
+	Reduzierung der Verlustleistung
+
+ASCII-Kode:
+	American Standard Code for Information Interchange (ASCII, auch ANSI X3.4-1986 ) ist ein 7-Bit binärer Blockkode.
+	Die Zeichenkodierung des ASCII-Kode definiert 128 Zeichen, davon 33 nicht- druckbare und 95 druckbare.
+ASCII-Zeichen: a ∈ A
+ASCII-Kodierung: α : A --> {0,1}^7
+
+Werden ASCII-Zeichen mit 7-Bit kodiert und im Byte-Format dargestellt, wird die Bitposition des MSB durchgängig mit 0 oder einem Paritätsbit aufgefüllt.
+ASCII-Kode ist als gemeinsamer Subcode in fast allen 8-Bit-Zeichenkodierungen und auch im Unicode enthalten 
+	(Ausnahme EBCDIC-Kode, Extended Binary Coded Decimal Interchange Code, IBM).
+UTF-8 ist eine 8-Bit-Kodierung von Unicode, die zum ASCII-Kode abwärtskompatibel ist. Ein Zeichen kann dabei ein bis vier 8-Bit-Wörter
+einnehmen. 
+--> Kodierung variabler Länge, kein reiner Blockkode
+
+Umschaltzeichen:
+
+Mit n-Bit Kodewortlänge können maximal 2^n Zeichen binär kodiert werden.
+Erweiterungen bzw. Erhöhung der Anzahl der kodierbaren Zeichensätze durch:
+--> Erhöhung der Bitstellenanzahl n (Kodewortlänge),
+--> Einführung von Umschaltzeichen (Zeichensatzanzahl).
+
+Mit u Umschaltzeichen können u verschiedene Zeichensätze mit jeweils 2^n--u Zeichen kodiert werden.
+Zeichenvorrat: Maximaler	u(2^(n -u))
+Zeichenvorrat:			2^(2n-2) bei u = 2^(n-1)
+
+Umschaltzeichen werden kaum noch verwendet.
+
+Kodierung zur Zahlendarstellung:
+Binär-/Dualzahl: 1100 0101 1000 0111 1000 0101 1001 1001_(2) 
+(Hexadezimalzahl) == C5 87 85 99_(16) 
+(Oktalzahl) == 305 4170 2631_(8)
+(Dezimalzahl) == 3 313 993 113_(10)
+
