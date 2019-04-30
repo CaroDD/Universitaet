@@ -1,9 +1,0 @@
-martin.morgenstern1@tu-dresden.de
-SWT Übungstutor Dienstag 1.DS 7:30 -- 9:00 Uhr in HSZ 0405
-
-Objekt:
-Klasse: Book, Library, HelloLibrary
-Attribut: (Library): (int) number, (array) Book[]
-Methode/Operation: * haben Klammern außenrum vgl/z.B. register(Book book) {Anweisungsblock} *
-		hat immer einen Rückgabetyp (void, string, float, ...)
-		Book() in class book  
