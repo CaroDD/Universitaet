@@ -1,0 +1,157 @@
+Rechnerarchitektur 1 Zusammenfassung:
+10 LP --> 300h Arbeit in 15 Wochen --> 20h / Woche --> 4h / Tag (an 5 Tagen) oder 3h / Tag (an 6-7 Tagen)
+
+Informationsdarstellung & -verarbeitung: 17:30--18:20
+
+!!!
+ZUSAMMENFASSUNG:
+	--> Information ist messbar, als Entropie einer Informationsquelle.
+	--> Informationen werden durch physikalische Signale repräsentiert.
+	--> Kodierung von Information als Zeichen oder Zeichenketten.
+	--> Die Entropie einer Informationsquelle ist für die Beurteilung einer Kodierung von Bedeutung.
+	--> Redundanz von Kodierung dient der Erhöhung der Datensicherheit.
+	--> Die Digitalisierung von Signalen erfolgt durch Zeitdiskretisierung und Wertquantisierung.
+	--> Computer sind hochautomatisierte technische Systeme der Informationsverarbeitung.
+	--> Die Verkopplung von Hardware und Software wird im Schichtenmodell des Rechners deutlich, Befehlssatzebene.
+!!!
+
+Information: Beseitigung von Ungewissheit
+	im engeren Sinne: Oberbegriff für Mitteilungen, Befehle, Ergebnisse, Daten usw. 
+	im weiteren Sinne: neues Wissen über ein Ereignis
+
+Entropie: Unbestimmtheit der Information
+	Informationsinhalt um so größer, je unbestimmter das Ereignis vor Eintreffen der Information war. 
+	Informationsmaß == Zunahme der Wahrscheinlichkeit 
+	kleinste Einheit ist Antwort JA/NEIN (1 Sh == 1 bit) (nach Claude Elwood Shannon, Informationstheoretiker) 
+
+Nachricht: Vom Menschen erzeugte und später verarbeitete Information, die durch beliebige Mittel übertragen werden kann
+	Abstrakte Information (subjektiv für jeden Einzelnen) wird durch die konkrete Nachricht mitgeteilt.
+
+Zeichen: entstammen einer Informationsquelle als Bestandteile eines Alphabetes 
+	Das Auftreten einzelner Zeichen hat unterschiedliche Wskt.
+	können zu Zeichenketten zusammengefasst (verkettet) werden
+
+Signal: Darstellung von Informationen durch physikalische Größen (Signalträger). 
+	Träger der Information
+	gezielt veränderbar 
+	vom Empfänger wahrnehmbar
+
+Hardware des Computers verarbeitet physikalische Signale
+Alphabet == total geordnete endliche Menge von unterscheidbaren Zeichen (--> Zeichenvorrat)
+
+Zeichen z_V eines Alphabetes Z = {z_1 , z_2 , ... z_N } können zu Zeichenketten K beliebiger Länge zusammengefasst werden
+	z_V muss nicht verschieden sein!
+
+Informationsübertragung (Sender --> Empfänger) erfolgt durch kodierte Signale über einen Übertragungskanal (kann gestört sein --> Verfälscht die kodierte Information (Störquelle))
+
+Informationsquelle:
+	Erscheinen eines Zeichen ist unabhängig
+	Seltenes Erscheinen == hoher Informationsgehalt
+	jedes Zeichen hat eine feste Wskt.
+	Formeln siehe IKT 1. Vorlesung
+	Entropie + Formeln siehe IKT 1. Vorlesung
+
+Redundanz R_C (Weitschweifigkeit, Überfluss) einer Kodierung == Abweichung des mittleren Kodierungsaufwands H_C vom mittleren Informationsgehalt der Zeichenquelle (Entropie H_Q) 
+
+Redundanz absolut: R_C = H_C - H_Q
+Redundanz relativ: r_C = R_C / H_C = (H_C - H_Q) / H_C = 1 -- H_Q / H_C
+Informationsgehalt relativ: n_C = H_Q / H_C = 1 - r_C  // n soll ein my sein!!!
+Summe: r_C + n_C = 1
+
+Redundanz notwendig für Fehlererkennung und -korrektur (z.B. ECC) --> Erhöhung der Übertragungssicherheit von Informationen
+
+Alle Zeichen gleiche Wskt --> höhere Entropie
+
+Signale: 
+	In der Natur: Zeit kontinuierlich, Werte analog
+	Digitale Signale: zeit- und wertdiskret, i.A. binär kodiert
+	Diskretisierung der Zeit: Abtasten der Zeitfunktion zu diskreten Zeitpunkten
+	Diskretisierung der Werte: Quantisierung der Werte durch diskrete Stufen
+
+Zeitquantisierung (Abtasttheorem von Shannon):
+	Kontinuierliche Zeitfunktionen müssen vor der Verarbeitung in Digitalrechnern quantisiert (diskretisiert) werden. 
+	Jede kontinuierliche Zeitfunktion f(t) mit der oberen Grenzfrequenz f_G = 1 / T_G wird eindeutig durch diskrete Werte x(k ∙ T_A) mit
+	k = 0, ± 1, ± 2, ... beschrieben, wenn T_A < 1/2 T_G (f_A = 1/ T_A). Anderenfalls: Überlagerung von Signal- und Abtastfrequenz möglich --> Stroboskopeffekt
+
+Wertquantisierung – Analog-Digital -- Wandlung:
+	Analoge Signale müssen vor der Verarbeitung in Digitalrechnern quantisiert (diskretisiert) werden. Die Zuordnung der Analogwerte zu den diskreten
+	Quantisierungsstufen erfolgt durch einen Analog-Digital-Wandler (ADC) entsprechend einer Quantisierungskennlinie. Die Anzahl der dem Analogwert
+	entsprechenden Quantisierungsstufen s kann binär kodiert dargestellt werden
+
+Quantisierungstufen – Quantisierungsintervall:
+	Die Wertquantisierung beschreibt das analoge Signal durch s diskrete (unterschiedliche) Quantisierungsstufen. 
+	Anzahl der erforderlichen Quantisierungsstufen abhängig vom Wertebereich des Signals und der Größe der einzelnen Quantisierungsintervalle
+	Die Quantisierungskennlinie kann linear/nichtlinear sein. Die Größe der Quantisierungsintervalle ergibt sich aus der geforderten
+	Abtastgenauigkeit für das Signal.
+	Sowohl durch die Zeit- wie auch die Wertquantisierung wird das Signal nur näherungsweise beschrieben. Die dabei auftretenden Ungenauigkeiten finden
+	sich im Quantisierungsrauschen wieder (Quantisierungsrauschen indirektes Maß für die Güte der Quantisierung)
+
+Informations-/Datenverarbeitung: 
+	Computer sind hochautomatische technische Systeme der Informationsverarbeitung (Datenverarbeitung) mit folgenden Merkmalen:
+	--> Eingabe, Verarbeitung, Speicherung und Ausgabe von Informationen
+	--> frei programmierbar, Anpassung an unterschiedlichste Aufgabenstellungen
+	--> arbeiten auf der Basis streng mathematischer Prinzipien.
+	Die Informationsverarbeitung in Computern erfolgt durch die gesteuerte (Steuerung) Ausführung von Befehlen auf Operanden. 
+	Die Darstellung von Steuerung, Befehlen und Operanden werden oft gleichermaßen als Daten bezeichnet und behandelt.
+
+Computer – Informationsverarbeitung:
+
+Hardware eines Computers auf wenige Daten, genau spezifizierte Informationsdarstellungen, fest zugeschnitten. Nur mit diesen Daten sind
+ausgewählte, spezifische Manipulationen im Computer möglich.
+
+Verarbeitungsdaten (Operanden): 
+	umfassen die zu verarbeitenden Informationen und die Resultate der Verarbeitung (Ein-/Ausgabedaten, ...)
+Programmdaten (Befehle, Instruktionen):
+	bestimmen Art und Reihenfolge der Verarbeitungsschritte (Operationen, Befehle, ...)
+Steuerdaten:
+	steuern und registrieren Arbeitsmodi und unterstützen den geordneten Programmablauf (Programmstatus,
+Interrupt, ...)
+
+Darstellungsarten von Verarbeitungsdaten können sein:
+	numerische und alphanumerische Daten, Bild- und Tondaten, Sensordaten, Aktordaten, ...
+
+Informationsdarstellung – Formate:
+
+Die Darstellung der verschiedenen Informationen (Daten) im Computer erfolgt binär kodiert in festen Formaten.
+Verarbeitungsdaten:
+	Datenformat
+	Darstellungsformat der Operanden
+Programmdaten:
+	Befehlsformat
+	Darstellungsformat der Befehle (Instruktionen)
+Steuerdaten:
+	Steuerformat
+	Darstellung der Steuerungsinformationen
+
+Format == Einzelne Informationsbestandteile stehen immer an der selben Stelle innerhalb der Daten einer Klasse bzw. die Daten einer Klasse sind identisch aufgebaut und kodiert.
+Die Daten eines Computers unterliegen einem strengen Ordnungsprinzip.
+
+Hardware - Software:
+
+Hardware: 
+	umfasst alle mechanischen, elektrischen und elektronischen Bauelemente und Baugruppen (integrierte Schaltkreise, Leiterplatten, Netzteil, Gehäuse, ...)
+Software: 
+	umfasst alle Programme, Betriebssysteme und Daten (Compiler, Editor, ...).
+Firmware: 
+	umfasst hardwarenahe Mikroprogramme, Funktionen und Geräteeinstellungen, Übergangsbereich zwischen Hard- und Software (meist Software, die fest in Hardware realisiert ist)
+Configware: 
+	umfasst Daten für die hardwaremäßige Konfiguration von einzelnen Komponenten eines Computers
+	(meist Software für Hardware-programmierbare Bauelemente).
+Der Informationsaustausch zwischen Hardware und Software erfolgt durch Daten. Diese unterliegen ebenfalls festen Darstellungsformaten (Vorschriften).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

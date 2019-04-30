@@ -1,0 +1,366 @@
+Informationsverarbeitung Teil 2:
+
+!!!
+Zusammenfassung
+--> Floating point representation common for large numbers
+--> Hardware requirements for floating point processing –
+especially Division – can be high
+--> one needs to evaluate the trade-offs involved in having one
+!!!
+
+Halbaddierer: Ohne Restübertrag
+Volladdierer: Mit Restübertrag
+
+Addition: 
+Sukzessive stellenweise Addition der Summanden mit dem LSB beginnend bis
+hin zum MSB (a_0 + b_0 ,..., a_(n−1) + b_(n−1) ) zur Summe (s_0 ,...,s_(n−1) ) mit Über-
+tragstechnik. Die bei der stellenweisen Addition auftretenden Überträge (carry)
+(c_0 ,...,c _(n−1) ) werden bei der Addition der jeweis nächstfolgenden Stelle mit
+dazu addiert. Der letzte Übertrag c_(n−1) heißt auslaufender Übertrag (carry out).	
+	Schreibweise: Summe^(Übertrag der vorherigen Stelle)
+
+Subtraktion: 
+Sukzessive stellenweise Subtraktion mit dem LSB beginnend bis hin zum MSB
+mit Borgetechnik. Die bei der stellenweisen Subtraktion auftretenden
+(geborgten) Überträge (borrow) werden bei der Subtraktion der jeweis
+nächstfolgenden Stelle mit zum Subtrahenden addiert. Der letzte (geborgte)
+Übertrag c_(n−1) heißt auslaufender (geborgter) Übertrag (borrow out).
+	Schreibweise: Differenz^(Übertrag (geborgt) der vorherigen Stelle)
+
+Rückführung der Subtraktion auf eine Addition mit dem B-Komplement des
+Subtrahenden bei fester Stellenzahl n : d = a − b → d = a + ^(2) b
+Der dabei auftretende auslaufende Übertrag (carry out) c_(n−1) wird ignoriert.
+
+Multiplikation: 
+Sukzessive stellenweise Multiplikation des Multiplikators ( 0 oder 1 ) mit dem LSB
+beginnend bis hin zum MSB mit dem gesamten Multiplikanten und stellenrichtige
+Aufsummierung der Teilergebnisse (Linksverschiebung um n − 1 Stellen):
+(a · b = a · b_0 · 2^0 + a · b_1 · 2^1 + ...+ a · b_(n−1) · 2^(n−1) )
+
+Die Multiplikation kann so auf eine fortlaufende Addition und eine entsprechende
+Stellenverschiebung zurückgeführt werden.
+Eine Multiplikation mit 2 bedeutet eine Verschiebung des Multiplikanten um eine
+Stelle nach links, wobei das LSB mit 0 aufgefüllt wird (analog für eine
+Multiplikation mit 2^k eine Verschiebung um k Stellen).
+a · 2^k → (a_l = a_(l−k) , für l = n − 1,...,k) und (a_l = 0 , für l = k − 1 , . . . , 0)
+
+Division:	
+Bei der Division wird stellenweise mit dem MSB von q beginnend das Produkt
+b ·[q_ν]· 2^ν von a (durch Verschiebung) subtrahiert. Ist die Differenz positiv, so ist
+q_ν = 1 , sonst 0 . Mit der verbleibenden Differenz von a wird analog weiter
+verfahren bis alle Stellen abgearbeitet sind. Als letzte Differenz bleibt der
+Divisionsrest übrig.
+Die Division kann so auf eine fortlaufende Stellenverschiebung und eine
+entsprechende Subtraktion (Adddition mit 2-Komplement) zurückgeführt werden.
+Eine Division durch 2 bedeutet eine Verschiebung des Dividenden um eine
+Stelle nach rechts, wobei das MSB mit 0 aufgefüllt wird (analog für eine Division
+durch 2^k eine Verschiebung um k Stellen).
+a/(2^k) → (a_(l−k) = a_l , für l = k,...,n − 1) und (a_l = 0 , für l = n − 1 , . . . , n − k − 1)
+Die Division ist in Hardware aufwendiger zu realisieren als die Multiplikation und
+benötigt daher allgemein auch mehr Rechenzeit bei der Abarbeitung.
+Eine Alternative zu diesem Divisionsverfahren stellen verschiedene iterative
+Verfahren dar, die die Division ebenfalls auf Stellenverschiebung, Multiplikation
+und Addition zurückfüren.
+
+Iterative Division mit dem Newton-Verfahren:
+q = a / b
+f (x) = 1/x - b 			Ansatzfunktion mit Nullstelle bei x = 1 / b
+x_(i+1) = x_i - (f(x_i))/(f'(x_i))	Iterationsvorschrift nach Newton
+f'(x_i) = -1/x^2			Ableitung von f(x)
+x_(i+1) = x_i * (2 - x_i * b)		Iterationsvorschrift, x_(i+1) - verbesserte Näherung
+a/b = a * x_n 				für n → ∞
+
+x 0 - Startwert, x i - Näherungswert nach i Iterationen
+(Alternatives Verfahren: Iterative Division mit dem Goldschmidt-Algorithmus)
+
+Fest/Gleit-kommazahlen:
+
+Zahlendarstellung im Computer, Datenformate:
+Die Zahlendarstellung im Computer (Datenformat) erfolgt in der Regel binär
+codiert in Formaten fester Länge n . Es wird das Dualzahlen-Stellenwertsystem
+verwendet. Es gelten die Rechenregeln für Dualzahlen.
+Folgende Darstellungsvarianten werden allgemein unterschieden:
+--> vorzeichenlose natürliche Zahlen
+--> vorzeichenbehaftete ganze Zahlen
+--> Festkommazahlen (Festpunktzahlen)
+--> Gleitkommazahlen (Gleitpunktzahlen)
+Durch die Darstellungsvariante selbst und die begrenzte Stellenzahl
+(Datenformate fester Länge n ) sind die Gültigkeitsbereiche des Assoziativgesetzes und des Distributivgesetzes zu beachten.
+
+Gebrochene Zahlen im Stellenwertsystem:
+Die Zifferndarstellung einer allgemeinen gebrochenen Zahl G_B lautet im
+Stellenwertsystem der Basis B (Festkommadarstellung):
+G_B = ±(z_(n−1) ...z_1 z_0 ,z_(−1) z_(−2) ...z_(−m))_B = ±((z_(n−1) ...z_1 z_0)_B + (0,z_(−1) z_(−2) ...z_(−m))_B)
+Der Wert von G_B bestimmt sich durch :
+G_B = ± sum_(i=-m)^(n-1)[ z_i · B^i ] = sum_(i=-m)^(-1)[ z_i · B^i ] + sum_(i=0)^(n-1)[ z_i · B^i ]
+
+G_B = ±((((z_(n−1) · B + z_(n−2) ) · B ...) · B + z_1 ) · B + z_0 ← ganzzahlig
++ ((z_(−m) · B^(−1) + z −m+1 ) · B^(−1) ...) · B^(−1) + z_(−1) ) · B^(−1) ) ← echt gebrochen
+
+Die Zifferndarstellung einer allgemeinen gebrochenen Zahl G_B lautet im
+Stellenwertsystem der Basis B (Gleitkommadarstellung):
+G_B = ±(0,z_(−1) z_(−2) ...z_(−m) )_B · B^(±e_(k− 1) ...e_1 e_0 )_B
+mit M_B = sum_(i=1)^(m) [z_(-1) * B^(-1)]; E_B = sum_(j=0)^(k-1) [e_j B^j]
+
+Der Wert von G_B bestimmt sich durch :
+G_B = ± ( sum_(i=1)^(m)[z_(−i) · B^(−i) ) · B^(± sum_(j=0)^(k-1) [e_j * B^j]) = ± M_B * B^(± E_B)
+
+M_B - ist eine echt gebrochene Zahl und wird als Mantisse bezeichnet. (Hidden bit?)
+E_B - ist eine ganze Zahl und wird als Exponent bezeichnet.
+Der Exponent gibt an, um wieviele Stelle das Komma nach rechts (positiv) bzw. nach links (negativ) verschoben werden muss.
+
+N-Bit Datenformat (Dualzahlen-Stellenwertsystem)
+
+MSB 									LSB	Ausrichtung
+n-1 		n-2 		n-3	...	3	2	1	0 	Bitstelle
+a_(n−1)						a_3 	a_2 	a_1 	a_0	n-Bit Datenwort
+2^(n−1) 	2^(n−2) 	2^(n−3)	...	2^3	2^2	2^1	2^0	duale Wertigkeit
+
+Wert Z bei Interpretation als reine Dualzahl:
+Z = a_(n−1) · 2^(n−1) + a_(n−2) · 2^(n−2) + ...+ a_2 · 2^2 + a_1 · 2^1 + a_0 · 2^0
+Übliche Datenformate: 8 Bit, 16 Bit, 32 Bit, 64 Bit, . . .
+Je nach Datenformat haben einzelne Bitstellen spezielle Funktionen, z.B. Vorzeichen, Exponent, . . .
+Jede Zahlendarstellung hat daher ein gesondertes Datenformat
+
+Festkommazahlen (fixed-point numbers):
+Festkommazahlen werden zur Darstellung von gebrochenen Zahlen verwendet:
+--> Die Darstellung analog der Vorzeichen-Wert- oder 2-Komlement-Darstellung.
+--> Die Anzahl der Nachkommastellen wird vorher fest definiert ( f -fracional part).
+--> Das Komma steht implizit immer an der selben Stelle (nicht abgespeichert).
+--> Die Zahl der Vorkommastellen ergibt sich aus der Differenz von Gesamtstellenzahl und Nachkommastellenzahl (Vorzeichen im MSB)
+
+n-stellige Festkommazahl mit m Nachkommastellen:
+z = d, f	→ d_(n−1) d_(n−2) ...d_(n−m) f_(m−1) f_(m−2) ... f_0
+kleinste Zahl für |z| > 0 : 2^(−m)
+größte Zahl für |z| : (2^(n−1) − 1) · 2^(−m)
+
+	Anwendung: Real-Arithmetik
+
+Konvertierung von Festkommazahlen:
+Beispiel 1: Konvertierung einer Hexadezimalzahl X 16 = A45,8F (2 hexadezimale Nachkommastellen) in die wertgleiche Dezimalzahl X 10
+X_16 = A		4		5,		8		 F_16
+X_10 = A_16 · 16^2 + 	4_16 · 16^1 + 	5_16 · 16^0 + 	8_16 · 16^(−1) + F_16 · 16^(−2)
+X_10 = 10_10 · 16^2 + 	4_10 · 16^1 + 	5_10 · 16^0 + 	8_10 · 16^(−1) + 15_10 · 16^(−2)
+X_10 = 2629,5586 ..._10
+
+Beispiel 2: Konvertierung einer Dezimalzahl X_10 = 2629,5586 (4 dezimale Nachkommastellen) in die wertgleiche Hexadezimalzahl X_16
+X_10 = 2629,5586_10
+2629/16 = 164 R5	--> 5
+164/16 = 10 R4		--> 4
+10/16 = 0 R10 		--> A
+
+0,5586 · 16 = 8,9376	--> 8
+0,9376 · 16 = 15,0016	--> F
+0,0016 · 16 = 0,0256 	--> 0 
+...			--> ...
+
+--> X_16 = A45,8F_16
+
+Gleitkommazahlen (floating-point numbers):
+Halblogarithmische Darstellung gebrochener Zahlen durch Mantisse und Exponent:
+z = M · 2^E
+V - Vorzeichen der Mantisse
+M - Mantisse (Signifikant S )
+E - Exponent (Charakteristik)
+
+Vorteil: wesentlich größerer Wertebereich und flexibler Nachkommabereich
+Nachteil: geringere relative Genauigkeit
+
+Standard: ANSI/IEEE 754 von 1985 (Institutes for Electrical and Electronic Engineers)
+Anwendung: Real-Arithmetik
+
+Datenformate für Gleitkommazahlen:
+v -Vorzeichen
+e -biased exponent
+f -fractional part
+
+32-Bit Format (single)
+31 | 		23 | 22		    0
+v   	8 Bit e 	23 Bit f
+
+64-Bit Format (double)
+63 | 		52 | 51		    0
+v	11 Bit e	52 Bit f
+
+80-Bit Format (double-extended)
+79 | 		64 | 63 	    0
+v	15 Bit e	64 Bit 1.f
+
+Mantissendarstellung:
+Darstellung der Mantisse M als Festkommazahl (vorzeichenbehaftete
+gebrochene Zahl in Vorzeichen-Wert-Darstellung) mit Vorzeichen im MSB.
+
+• normalisierte Form: Die führende 1 und das Komma werden nicht explizit
+gespeichert, sondern nur der gebrochene Anteil f (fractional part),
+(Ausnahme: double-extended). 
+	→ Vor der Verarbeitung ist die 1 zu ergänzen (entpacken). Das Komma steht immer rechts neben der 1.
+M = (−1)^v · 1, f
+• denormalisierte Form: Die führende 1 wird durch 0 ersetzt. Dient zur
+Darstellung sehr kleiner Zahlen (Kennzeichnung im Exponenten) oder zur
+Exponentenanpassung bei Berechnungen. 
+	→ geringere Genauigkeit als normalisierte Darstellung.
+M = (−1)^v · 0, f
+
+Wertebereich: 1,0 ≤ |M| < 2,0 mit 0,0 ≤ f < 1,0
+Genauigkeit der Mantisse (binär - dezimal):
+Datenformat	Binärstellen 	max. rel. Genauigkeit 		Dezimalstellen
+single 		23 		2^(−24) = 5,96 . . . 10^(−8) 	7
+double 		52 		2^(−53) = 1,11 . . . 10^(−16)	15
+double-extended 64		2^(−64) = 5,42 . . . 10^(−20)	19
+
+Exponentendarstellung:
+Darstellung des Exponenten E als vorzeichenbehaftete ganze Zahl in Basiswert-Darstellung) mit dem Basiswert B_e .
+E = e − B_e
+bzw. e = E + B_e
+Wertebereich (ohne Ausnahmesituationen):
+Datenformat	b_e 		B_e 		Wertebereich 
+single 		8 		127 		-126 ≤ E ≤ 127
+double 		11 		1023 		-1022 ≤ E ≤ 1023
+double-extended 15 		16383 		-16382 ≤ E ≤ 16383
+( b_e - Binärstellen (Exponent), B_e - Basiswert (biased))
+
+Ausnahmesituationen der Gleitkommadarstellung:
+Größter ( e = 2^(b_e) − 1 ) und kleinster ( e = 0 ) Exponentenwert sind für Ausnahmesituationen reserviert ( → 4 Darstellungsvarianten):
+Interpretation 		V	e			f 	Zahlendarstellung
+   Null			v	0			0	(-1)^v * 0
+1. denormalisiert	v	0			!=0	(-1)^v * 0, f * 2^(1-B_e)
+2. normalisiert		v	0<e<2^(b_e) - 1		!=0	(−1)^v · 1, f · 2 (e−B_e )
+3. Unendlich		v	2^(b_e) - 1		0	(-1)^v * ∞ (Infty)
+4. Not a Number		v	2^(b_e) - 1		!=0	NaN	
+
+• zwei verschiedene Darstellungen der Null ( +0 und −0 )
+• die Darstellung der Null erfolgt als denormalisierte Zahl
+• denormalisierte Zahlen werden mit e = 1 interpretiert
+• Bereichsüberschreitungen sind nicht möglich
+• Sonderdarstellungen für Unendlich, ( −∞ und +∞ )
+
+
+Beispiele (single):
+v 	e 		f		Zahlenwert			Interpretation
+0	00000000	00 . . . 00	+0				pos. Null
+1	00000000	00 . . . 00	-0				neg. Null
+0	00000000	00 . . . 01	+0,00 . . . 01 · 2^(−126)	denormalisiert
+1	00000000	00 . . . 01	-0,00 . . . 01 · 2^(−126)	denormalisiert
+0	00000001	00 . . . 00	+1,00 . . . 01 · 2^(−126)	normalisiert
+1	00000001	00 . . . 00	-1,00 . . . 01 · 2^(−126)	normalisiert
+0	11111110	11 . . . 11	+1,11 . . . 11 · 2^(+127)	normalisiert
+1	11111110	11 . . . 11	-1,11 . . . 11 · 2^(+127)	normalisiert
+0	11111111	00 . . . 00	+∞				pos. unendlich
+1	11111111	00 . . . 00	−∞				neg. unendlich
+0 	11111111	00 . . . 01	NaN				Not-a-Number
+
+Addition und Substraktion von Gleitkommadarstellung:
+z_1 = M_1 · 2^(E_1) = (−1)^(v_1) · 1,f_1 · 2^(e_1 − B_e)
+z_2 = M_2 · 2^(E_2) = (−1)^(v_2) · 1,f_2 · 2^(e_2 − B_e)
+
+z_1 + z_2 = (M_1 + M_2 · 2^(−(E_1 − E_2)) )· 2^(E_1) 
+	  = ((−1)^(v_1) · 1,f_1 + (−1)^(v_2) · 1,f_2 · 2^(−(e_1 − e_2) ) · 2^(e_1 − B_e)
+
+	Bei ungleichen Exponenten e_1, e_2 muß die Zahl mit dem kleineren Exponenten denormalisiert werden 
+	(Erhöhung des Exponenten bei gleichzeitiger Rechtsverschiebung des Signifikanten).
+
+Algorithmus für vorzeichenbehaftete Addition z_s = z_1 + z_2 :
+
+z_s = (M_1 + M_2 · 2^(−(e_1 − e_2))) · 2^(E_1)
+	1. Wenn e_1 < e_2 , dann vertausche z_1 und z_2 .
+	2. Verschiebe M_2 um e_1 − e_2 Stellen nach rechts.
+	3. Addiere bzw. Subtrahiere M_1 und M_2 analog zu vorzeichenbehafteten ganzen Zahlen (Zweierkomplement). 
+		Bei negativem Ergebnis Konvertierung in die Vorzeichen-Wert-Darstellung.
+	4. Normalisierung und Rundung des Ergebnisses
+
+Beispiel (single): (^0 - Zusatzstelle wegen 2-Komplement Rechnung)
+z		v	e		s			Bemerkung		Dez.
+
+z_1 		0 	1000 0001 	^0 1, 0000 . . . 	normalisiert 		4,0
+z_2 		0 	0111 1111 	^0 1, 1000 . . . 	normalisiert 		1,5
+z_2 		0 	1000 0001 	^0 0, 0110 . . . 	denormalisiert 		1,5
+z_1 + z_2 	0 	1000 0001 	^0 1, 0110 . . . 	normalisiert 		5,5
+− z_2		1 	1000 0001	^1 1, 1010 . . . 	denormalisiert 		−1,5
+					...			2-Komplement
+z_1 − z_2 	0 	1000 0001 	^0 0, 1010 . . . 	denormalisiert 		2,5
+z_1 − z_2 	0 	1000 0000 	^0 1, 0100 . . . 	normalisiert 		2,5
+
+
+Multiplikation und Division von Gleitkommazahlen:
+
+z_1 = M_1 · 2^(E_1) = (−1)^(v_1) · 1,f_1 · 2^(e_1 − B_e)
+z_2 = M_2 · 2^(E_2) = (−1)^(v_2) · 1,f_2 · 2^(e_2 − B_e)
+z_1 · z_2 = M_1 · M_2 · 2^(E_1 + E_2)
+	  = (−1)^(v_1) ·(−1)^(v_2) · 1,f_1 · 1,f_2 · 2^((e_1 + e_2 − B_e) − B_e)
+(z_1 / z_2) = (M_1 / M_2) · 2^(E_1 − E_2)
+	  = (−1)^(v_1) / (−1)^(v_2) · (1,f_1 / 1,f_2)  · 2^((e_1 − e_2 + B_e) − B_e)
+
+Algorithmus für z_p = z_1 · z_2 bzw. z_1/z_2 :
+z_p = M_1 · M_2 · 2^((e_1 +e_2 − B_e )−B_e ) bzw. z_p = M_1 /M_2 · 2^((e_1 −e_2 +B_e) − B_e)
+	1. Bestimmung des Vorzeichens( v_1 != v_2 → negativ, v_1 = v_2 → positiv).
+	2. Multiplikation bzw. Division von M_1 und M_2 analog zu ganzen Zahlen.
+	3. Addition von e_1 und e_2 und Subtraktion von B_e bzw. Subtraktion von e_1 und e_2
+		und Addition von B_e analog zu vorzeichenbehafteten ganzen Zahlen.
+	4. Normalisierung und Rundung des Ergebnisses
+
+Beispiel (single):
+z 		v	e		s			Bemerkung		Dez.
+
+z_1 		0 	1000 0001 	1, 0000 . . . 		normalisiert 		4,0
+z_2 		0 	0111 1111 	1, 1000 . . . 		normalisiert 		1,5
+z_1 · z_2 	0 	1000 0001 	1, 1000 . . . 		normalisiert 		6,0
+z_2/z_1		0 	0111 1101 	1, 1000 . . . 		normalisiert 		0,375
+
+
+Rundung von Gleitkommazahlen:
+
+Der IEEE 754 - Standard fordert:
+Das Ergebnis einer arithmetischen Operation soll das selbe sein, als würde
+exakt gerechnet und anschließend gerundet (Runden zum nächsten Wert, die
+Hälfte auf den geraden Wert (round-to-even)).
+Verschiedene Rundungsmodi:
+• nach 0 ,
+• nach +∞ oder −∞ ,
+• zum nächsten Wert, bei 0,5 auf den geraden Wert (round-to-even)
+
+Relevante Bitstellen für die Rundung (auf q Stellen, vom MSB gezählt):
+• guard Bit g - Bitstelle auf die gerundet wird (q Stelle vom MSB),
+• round Bit r - Rundungsbit (q+1 Stelle vom MSB),
+• sticky Bit s - Zusatzstellen (q+2, q+3, . . . Stellen vom MSB bis zum LSB)
+
+
+Beispiel (Rundung von n = 8 -Bit Zahlen auf q = 4 Stellen):
+Nr.	n-Bit Zahl			gerundet
+1	1,000 	|   1 0 0 0   →	1,000	
+2	1,000	|   1 0 0 1   →	1,001
+3	1,001	|   1 0 0 0   →	1,010
+4	1,001	|   1 1 1 1   →	1,010
+5	1,111	|   1 0 0 0   →	10,00
+	    g	|   r − s −
+
+Ausschlaggebend für die Rundung ist, ob in den s-Bits (restlichen Stellen)
+überhaupt eine 1 steht, nicht die Anzahl. Für eine genaue Rundung sind
+mehrere s-Bits erforderlich (z.B. s = 3 ).
+
+Probleme beim Rechnen mit Gleitkommazahlen:
+
+• Berechnungen mit denormalisierten Zahlen ( e = 0 ) (Ungenauigkeit),
+• Überlauf (Wertebereichsüberschreitung),
+• Unterlauf (begrenzte Darstellung betragsmässig kleiner Werte),
+• Rundung
+
+Assoziativ- und Distributivgesetze gelten nur eingeschränkt:
+Ursachen für die Differenzen sind die endliche Stellenzahl zur Zahlendarstellung und die Rundung der Ergebnisse.
+a + (b + c) != (a + b) + c
+a ·(b · c) != (a · b) · c
+(a + b) · c != (a · c) + (b · c)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

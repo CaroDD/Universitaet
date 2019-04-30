@@ -1,0 +1,37 @@
+RA2 Vorlesung 2 
+
+Rechnerarchitektur von engl. "computer architecture"
+"architecture" = Baukunst / Einzelprodukt
+
+Ausdruck insbesondere der Möglichkeiten der Programmierschnittstelle
+
+Giloi
+Rechnerarchitektur ist mehr als nur Hardware!
+
+Bottom-up Entwurf (unten nach oben)/ Top-down Entwurf (oben nach unten):
+Bottum-up Entwurf		Top-down Entwurf
+ /\	Rechnerarchitektur	|
+ |	Implementierung		|
+ |	Realisierung		V 
+
+Compilieren für den Befehlssatz oder für die Architektur?
+	--> BEIDES!!!
+
+Search algorithm:
+S_p = Speed up
+S_p = T_1 / T_p
+1 <= S_p <= 4 (4 CPUs)
+
+ _______________
+|_|_|_|		| 1TB
+|		|
+|		|
+|		|
+|	       _|
+|_____________|_|
+
+{n(n-1)}/2 
+DGB's reinladen
+(1TB in Formel einsetzen)
+500.000 * 20 = 10.000.000 = 3.000 = 100 Tage
+--> 100 Tage für 500 TB

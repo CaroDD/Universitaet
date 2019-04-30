@@ -1,0 +1,32 @@
+TGI Hardwarepraktikum:
+Grundlagen:
+1) DC == Gleichstrom; AC == Wechselstrom
+	DC == alle Signale; AC == unterdrückt DC Signale (Seite 14 Handbuch Oszilloskop)
+2) Auto, Normal & Single:
+	Normal: Benötigt jedes Mal einen Trigger
+	Single: Wählt Trigger automatisch
+XY & YT: XY verwendet 2 Eingänge; YT nur die Zeit & 1 Eingang
+
+3) Masse am Tastkopf: verhindert Verfälschung des Ergebnis, stellt Potentialbezugspunkt 0 dar
+
+4) Periodendauer == Abstand zwischen 2 Hochpunkten/Tiefpunkten
+   Frequenz == Reziprok der Wellenlänge, Schwingungszahl pro Zeiteinheit
+   U_SS == doppelte Amplitude, Differenz zwischen höchster & niedrigster Spannuung
+   Effektivwert == U_SS * 1/Wurzel(2) (Sinus); 
+		U_eff = Integral von 0 bis T von P(t) dt; P(t) = U(t)²/R = U(t) * I(t) = R * I(t)²
+   Mittelwert == 2*Spitzenspannung/ pi (Über einer Periode 0)
+
+5) Überschwingung == Nach einer sprunghaften Änderung der Eingangsgröße schießt die Ausgangsgröße über den Sollwert hinaus und pendelt sich dann ein.
+
+6) Signalformen: SINE/SQUARE/TRIANGLE WAVE (Sinus, Rechtecksspannung, Dreiecksspannung)
+
+7) Offset == Spannung wird zu tatsächlicher Spannung addiert, um bessere Darstellung zu ermöglichen
+   Amplitude == U_SS / 2
+
+Grundeinstellungen des Oszilloskops:
+1) TTL Signal = Rechtecksspannung
+
+III 4) Mittelwert über einer Periode ist immer 0 (oder Offset, falls Offset nicht 0)
+	Effektivwert unterschiedlich, da unterschiedliche Kurvenverläufe
+
+

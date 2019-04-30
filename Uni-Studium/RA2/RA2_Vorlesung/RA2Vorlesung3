@@ -1,0 +1,115 @@
+RA2 Vorlesung 3
+
+Klassifikation
+— Aufspannen von Entwurfsräumen
+— Aufzeigen von Entwurfsalternativen
+— Klassifikationsschemata versuchen der Vielfalt von Rechnerarchitekturen eine Ordnungsstruktur zu geben
+— Frühe Klassifikationen konzentrieren sich auf die Hardware-Struktur
+	- Anordnung und Organisation der Verarbeitungselemente
+	- Operationsprinzip
+
+Klassifizierung nach Flynn:
+Die Methode beruht auf den Wahrheitswerten der beiden Aussagen:
+I: Eine Maschine bearbeitet gleichzeitig mehr als einen Befehlsstrom
+	I = 0 single instruction stream (SI)
+	I = 1 multiple instruction streams (MI)
+
+D: Eine Maschine bearbeitet gleichzeitig mehr als einen Datum/Datenstrom
+	D = 0 single data stream (SD)
+	D = 1 multiple data streams (MD)
+
+— Aus der Flynn-Notation ergeben sich 4 voneinander unterschiedliche Architekturklassen:
+				Anzahl Datenströme
+				Single		Multiple
+Anzahl		Single		SISD		SIMD
+Befehls-	Multiple	MISD		MIMD
+ströme
+
+SISD (single instruction stream, single data stream):
+— Ein Datenstrom wird durch einen Befehlsstrom bearbeitet. Die Abarbeitung erfolgt streng sequentiell.
+— Diese Klasse enthält alle v.-Neumann-Rechner.
+
+SIMD (single instruction stream, multiple data streams):
+— Mehrere Datenströme werden durch einen Befehlsstrom bearbeitet.
+— Diese Klasse enthält
+	- Feldrechner (Arrays von Verarbeitungseinheiten)
+	- Vektorrechner (Rechner mit Pipelineverarbeitung in mehreren arithmetischen Spezialeinheiten)
+— Prinzipdarstellung eines Feldrechners:
+
+ ____________               _________________Steuerinformation
+|	     |------------>| Steuerprozessor |----------|
+|	     |	Befehle	   |_________________|		|
+|	     |		    _________________		|
+|	     |<----------->|Prozessor-Element|<---------|
+|	     |	Daten	   |_________________|	        |
+|     M	     |		    _________________		|
+|	     |<----------->|Prozessor-Element|<---------|
+|	     |	Daten	   |_________________|	        |
+|	     |		    _________________		|
+|	     |<----------->|Prozessor-Element|<---------|
+|____________|	Daten	   |_________________|	        
+
+
+MISD (multiple instruction streams, single data stream):
+— Ein Datenstrom wird durch mehrere Befehlsströme bearbeitet.
+— Giloi [Gil93]: Diese Klasse enthält keine realisierten Beispiele, sie ist nur der Vollständigkeit
+halber aufgenommen worden (leere Klasse).
+— Märtin [Mae03]: Diese Klasse kann als Betriebsart Makropipelining vom MIMD-Systemen
+interpretiert werden: Ein kontinuierlicher Datenstrom wird nacheinander von Prozessen
+bearbeitet und verändert, die auf fließbandartig gekoppelten Prozessor-Speicher-Systemen
+ablaufen.
+
+MIMD (multiple instruction streams, multiple data streams):
+— Mehrere CPUs erhalten unterschiedliche Befehle und bearbeiten Datenwerte.
+Datentransformationen werden unabhängig voneinander durchgeführt und die Ergebnisse in
+globalen oder lokalen Speichern abgelegt.
+— Diese Klasse enthält
+	- alle Arten von Multiprozessorsystemen
+
+Überblick
+— SISD
+	- single instruction stream, single data stream
+	- ein Befehlsstrom, der einen Datenstrom bearbeitet
+— SIMD
+	- single instruction stream, multiple data streams
+	- ein Befehlsstrom bearbeitet mehrere Datenströme
+— MISD
+	- multiple instruction streams, single data stream
+	- mehrere Befehlsströme bearbeiten einen Datenstrom
+— MIMD
+	- multiple instruction streams, multiple data streams
+	- mehrere nebenläufige Befehlsströme
+
+Bewertung der Klassifizierung nach Flynn
+— SIMD und MIMD sind zu Standard-Begriffen in der Rechnerarchitektur geworden
+— Art der Herangehensweise findet Nachahmung (Single Program Multiple Data, SPMD)
+— Begriff MIMD ist viel zu grob für das ganze Gebiet der Multiprozessorsysteme
+— Keine Unterscheidung zwischen Pipelining und Nebenläufigkeit
+— Ungeeignet für die Beschreibung von modernen Mikroprozessorsystemen (SISD?)
+— Keine quantitative Bewertung der Rechnerarchitekturen
+
+Zentrale/Nicht-Zentrale Systemaufsicht
+— Die Unterscheidung zwischen eng und lose gekoppelten Multiprozessorsystemen läuft aus der Sicht der
+Betriebssysteme auf folgende Unterscheidung hinaus:
+	- Zentrale und nicht-zentralisierte Systemaufsicht
+	- Können innerhalb eines Mehrrechnersystems zu jedem Zeitpunkt der globale Systemzustand erkannt
+		und auf der Basis dieser Kenntnis den einzelnen Verarbeitungseinheiten Anweisungen erteilt werden,
+		dann spricht man von einem Multiprozessorsystem mit zentraler Systemaufsicht
+	- Ist dies nicht gewährleistet, handelt es sich um ein Multiprozessorsystem mit nicht-zentralisiert Systemaufsicht
+	- Damit stellt sich die Frage nach der Abgrenzung zu Rechnernetzen!
+
+— Je nach räumlicher Entfernung unterscheidet man:
+	- Verteilte Polyprozessorsysteme (Multiprozessorsystem mit verteilter Systemaufsicht)
+	- lokale Netze (heterogene, verteilte Systeme, die auf Gebiet begrenzt sind)
+	- Rechner-Verbundsysteme (weiträumig verteilte Netze)
+	- Begriffe: Metacomputing, Hypercomputing, Grid
+
+
+
+
+
+
+
+
+
+

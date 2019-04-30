@@ -1,0 +1,13 @@
+Programmieren mit Löchern:
+
+abstrakte Klasse (Enthält Löcher, nicht vollständig implementiert)
+	Vorsehen von Haken
+	Methoden werden kursiv geschrieben
+
+Schnittstellen = <<interface>> 
+	legen Verhalten eines Objektes in einem bestimmten Kontext fest
+
+Framework hat immer einen Erweiterungsring (Löcher)
+Haken = Hooks ("abstract" --> "implements")
+
+Java hat keine Aggregation, nur Pointer
