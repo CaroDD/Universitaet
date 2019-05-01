@@ -22,8 +22,7 @@ D: Eine Maschine bearbeitet gleichzeitig mehr als einen Datum/Datenstrom
 				Anzahl Datenströme
 				Single		Multiple
 Anzahl		Single		SISD		SIMD
-Befehls-	Multiple	MISD		MIMD
-ströme
+Befehlsströme	Multiple	MISD		MIMD
 
 SISD (single instruction stream, single data stream):
 — Ein Datenstrom wird durch einen Befehlsstrom bearbeitet. Die Abarbeitung erfolgt streng sequentiell.
