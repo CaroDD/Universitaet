@@ -1,0 +1,185 @@
+Vorlesung 6.1
+HDN und Speicher
+
+Beschreibung der Funktionalität von Maschinenbefehlen
+Zielsetzung:
+— Möglichst umfassender Überblick zum Maschinenbefehlssatz einer Rechnerarchitektur in komprimierter Form
+— Funktionalität von Maschinenbefehlen soll möglichst kurz und prägnant beschrieben werden
+
+Hilfsmittel HDN (Hardware Description Notation)
+— HDN ist eine Register-Transfer-Sprachnotation, die unsere Zielsetzung sehr gut erfüllt
+(Hennessy, John L.; Patterson, David A.: Rechnerarchitektur : Analyse, Entwurf, Implementierung, Bewertung, Vieweg 1994)
+(Hennessy, John L.; Patterson, David A.: Computer architecture : a quantitative approach, 5. Auflage 2012)
+
+Beispielarchitektur DLX
+(Hennessy, John L.; Patterson, David A.: Rechnerarchitektur : Analyse, Entwurf, Implementierung, Bewertung, Vieweg 1994)
+(Hennessy, John L.; Patterson, David A.: Computer architecture : a quantitative approach, 5. Auflage 2012)
+— Saubere RISC-Architektur
+— Befehlssatz der DLX-Architektur wird mittels HDN (Hardware Description Notation) beschrieben
+
+Funktionsumfang HDN (Hardware Description Notation)
+HDN 			Beispiel HDN 		Bedeutung
+<-- 			R1<--R2 		Datentransfer
+						Transfer kopiert den Inhalt von R2 nach R1. Register haben eine feste Länge.
+						Bei Transfers, die kürzer als die Registerlänge sind, müssen die genutzten Bits
+						spezifiziert werden (Details dazu später).
+GPR[bitfolge]		GPR[00011] <-- 		Auswahl des Registers, das durch Bitfolge gekennzeichnet ist
+						Abspeicherung in das General Purpose Register R3
+M 			R1<--M[x] 		Speicherzugriff
+						Der Inhalt des Speicherplatzes x wird nach R1 kopiert. Wenn R1 32 Bit breit ist,
+						dann müssen bei Byteadressierung die vier Bytes M[x], M[x+1] , M[x+2] ,
+						M[x+3] übertragen werden.
+<-- _n 			M[y]<-- 16 M[x] 	Transfer mit expliziter Längenangabe
+						Übertragung von 16 Bit von Speicherplatz x nach Speicherplatz y
+X_n 			R1_0 <--0 		Zugriff auf Einzelbit
+						Löschen des Sign-Bits, d.h. MSB (Most Significant Bit) (Linksnummerierung)
+X_(m..n) 		R3_(24..31) <--M[x] 	Zugriff auf eine Bitkette
+						Übertrage ein Byte vom Speicherplatz x in das niederwertigste Byte von R3
+X_m 			R3_(0..23) <--0^24 	Wiederholungsspezifikation
+						Die oberen 3 Byte von R3 werden auf “Null” gesetzt.
+## 			R3<--0^24 ##M[x] 	Verkettungsoperator rechte Seite
+						Kopieren des Speicherbytes x in das niedere Byte von R3
+						Obere drei Byte von R3 werden auf “Null” gesetzt
+			F2##F3<-- _64 M[x] 	Verkettungsoperator linke Seite
+						Es werden 64 Bit vom Speicher zu dem Gleitkomma-Doppelregister F2/F3 übertragen.
+op 			R3 op R4 		Operationscode eines Befehls
+						Inhalt von R3 und Inhalt von R4 werden mit dem Befehl verknüpft, der in op kodiert ist
+<< 			R1<<5 			Verschiebeoperator
+						Verschiebe R1 logisch nach links um 5 Bit
+						(logische Verschiebung: hinausgeschobenen Bits werden verworfen und Nullen
+						eingeschoben, unabhängig von Verschieberichtung, Einsatz bei vorzeichenlosen Binärzahlen)
+>> 			R1>>8 			Verschiebeoperator
+						Verschiebe R1 logisch nach rechts um 8 Bit
+>>_a 			R1>>_a 16 		Arithmetischer Verschiebeoperator
+						Verschiebe R1 arithmetisch nach rechts um 16 Bit
+						(bei arith. Verschiebung nach links werden rechts Nullen nachgeschoben, bei
+						arith. Verschiebung nach rechts werden für positive Zahlen Nullen und negative
+						Zahlen Einsen auf der linken Seite eingeschoben)
+if 			if GPR[00010] 		Abfrage einer Bedingung
+						BEQZ (Branch Equal Zero) à Sprung, wenn Wert in R2 =0
+==			(R1==R2)&(R3!=R4) 	Relationale Operatoren
+!=						Ausdruck relationaler Operatoren ist true, wenn die Relation “R1 gleich R2” true ist
+<						und die Relation “R3 ungleich R4” true ist
+>
+<=
+>= 
+
+&			(R1 & (R2 | R3)) 	Logische Operatoren
+|						Bitweise ODER-Verknüpfung von R2 mit R3; das Ergebnis wird UND-verknüpft mit R1
+^
+! 
+
++			(R1+R2)/R3 		Arithmetische Operatoren
+-						Vorrangregeln wie in C/C++
+*
+/ 
+
+Beispielarchitektur DLX
+— DLX-Architektur ist eine hypothetische Architektur, die große Ähnlichkeit mit der von HENNESSY entworfenen MIPS-Architektur hat
+— Saubere RISC-Architektur
+	- Nur drei Befehlsformate, die alle eine Länge von 32 Bit haben
+	- Verarbeitungsbefehle greifen nur zu Universalregistern (General Purpose Register = GPR) zu
+	- Zugriff zum Speicher nur über Load/Store-Befehle
+— Architektur enthält:
+	- 32-Bit-Universalregister (General Purpose Register-GPR) R0...R31
+	- Wert von R0 ist immer 0, damit spart man Befehlskodierungen
+	- Einen Satz von Gleitkommaregistern, die als 32 Register einfacher Genauigkeit F0...F31 oder 16 Register
+		doppelter Genauigkeit genutzt werden können
+	- Befehlszähler (PC- Program Counter )
+
+DLX-Befehlsformate
+DLX-Befehlssatz wird anhand der drei DLX-Befehlsformate beschrieben
+1. I-Typ-Befehlsformat (Immediate) 
+	- Opcode(op): Operationscode, 6 Bit, 64 Befehle codierbar
+	- rs_1 : Codierung des Source-Registers 1 steht auf den Bitstellen 6...10
+		z.B. 00100 --> rs1 ist das Register R4
+	- rs_2 /rd: je nach Befehl steht auf den Bitstellen 11...15 die Codierung des Source-Registers 2 oder
+		die Codierung des Zielregister rd
+	- 5 Bit für Registercodierung --> 32 Register adressierbar
+	- Immediate (I): auf den Bitstellen 16...31 des Befehlswortes steht der 16 Bit Direktwert
+
+Befehlsformat findet bei vier Befehlsgruppen Anwendung
+— Immediate-ALU-Befehle:
+	GPR[rd] ß GPR[rs_1 ] op ((IR_16 )^16 ##IR_(16..31) )
+	- Es wird der Inhalt des Registers rs_1 über den Operationskode (op) mit dem vorzeichenerweiterten
+		Direktoperanden ((IR_16 ) ^16 ##IR_(16..31) ) verknüpft und das Ergebnis in das Register rd gespeichert
+	- Registerkodierung von rs1steht auf den Bitstellen 6...10 des Befehlswortes (z.B.: 00011 --> Register R3 ist rs1)
+	- Operationscode (op) steht auf den Bitstellen 0...5 des Befehlswortes
+	- Vorzeichenerweiterung erweitert den 16 Bit Direktoperanden IR_(16..31) (Bitstellen 16...31 des Befehlswortes) vorzeichenrichtig auf 32 Bit
+		--> Bit IR_16 (0 für positive und 1 für negative Werte) wird 16 mal vor den Direktoperanden gestellt
+		HDN: ((IR_16 )^16 ##IR_(16..31) )
+	- Registerkodierung von rd steht auf den Bitstellen 11...15 des Befehlswortes (z.B.: 00100 --> Register R4 ist rd)
+	- Assemblerbeispiel: ADDI Rd, Rs_1 , #I
+	z.B.: Befehlswort 001000 00100 00110 0000 0100 1111 1000 --> ADDI R6, R4, 0x04f8
+
+— Lade-Speicher-Befehle:
+    - Lade-Befehl
+		GPR[rd] <-- M [GPR[rs_1 ]+((IR_16 )^16 ##IR_(16..31) )]
+	- Adresse des Speicherplatzes M[...] setzt sich aus der Basisadresse in rs1 und dem vorzeichenerweiterten
+		Displacement (Bitstellen 16...31 des Befehlswortes) zusammen
+	- Inhalt des Speicherplatzes M[...] wird in das Ziel-Register rd geladen
+		GPR[rd] <-- M [GPR[rs_1 ]+((IR_16 )^16 ##IR_(16..31) )]
+	- Assemblerbeispiel: LW Rd,D(Rs_1 )
+		z.B.: Befehlswort 100010 00100 00110 0000 0000 0000 1000 --> LW R6, 8(R4)
+		(vier Byte werden aus dem Speicher in das Register R6 geladen, die Adresse des ersten Speicherbytes
+		ergibt sich aus der Basis-Adresse in R4 und dem Displacement von 8)
+    - Speicher-Befehle
+		M [GPR[rs_1 ]+((IR_16 )^16 ##IR_(16..31) )] <-- GPR[rs_2 ]
+	- Adresse des Speicherplatzes M[...] setzt sich aus der Basisadresse in rs1 und dem vorzeichenerweiterten
+		Displacement (Bitstellen 16...31 des Befehlswortes) zusammen
+	- Speicherbefehl (Inhalt des Source-Registers rs2 wird auf den Speicherplatzes M[...] geladen)
+		M [GPR[rs_1 ]+((IR_16 )^16 ##IR_(16..31) )] <-- GPR[rs_2 ]
+	- Assemblerbeispiel: SW D(Rs_1 ),Rs2
+		z.B.: Befehlswort 101010 00100 00110 0000 0000 0000 1000 --> SW 8(R4),R6
+		(vier Byte werden aus dem Register R6 in den Speicher geladen, die Adresse des ersten Speicherbytes
+		ergibt sich aus der Basis-Adresse in R4 und dem Displacement von 8)
+
+— Bedingte Verzweigebefehle:
+	if (GPR[rs_1 ])
+	PC <-- PC + ((IR_16 )^16 ##IR_(16..31) )
+	- Wenn die Sprungbedingung in rs1 erfüllt ist, wird der PC (Programmcounter) um den vorzeichenerweiterten
+		Direktoperanden ((IR_16 )^16 ##IR_(16..31) ) erhöht und somit gesprungen.
+	- Beispiel BEQZ (Branch Equal Zero) --> Sprung, wenn Wert in rs1 =0
+	- Beispiel BNEZ (Branch Not Equal Zero) --> Sprung, wenn Wert in rs1 !=0
+
+— Sprungbefehl mit Zieladresse im Register
+	rd = 0, IR_(16...31) = 0
+	PC <-- GPR[rs_1 ]
+	- rd=0, IR_(16...31) = 0
+	- Zieladresse des Sprungbefehls steht in GPR[rs_1 ]
+	- Befehlsfolge wird verlassen und bei rs1 fortgesetzt (unbedingter Sprung)
+
+
+2. R-Typ-Befehlsformat (Register)
+Register-Register-ALU-Befehle:
+	GPR[rd] <-- GPR[rs_1 ] func GPR[rs2]
+	- Besonderheit:
+	Opcode (op) ist mit 000000 belegt, gültiger Operationscode steht in func (Bitstellen 21...31 des Befehlswortes)
+	- Inhalt von rs_1 wird mit dem Inhalt von rs_2 über func verknüpft, Ergebnis wird in rd gespeichert
+	- Befehle z.B.: ADD Rd, Rs1, Rs2; SUB Rd, Rs1, Rs2;
+
+3. J-Typ-Befehlsformates (Register)
+Sprungbefehle relativ zum PC mit vorzeichenerweiterten Offset (Offsetsxt):
+Offsetsxt <-- (Offset_6 )^6 ## Offset_(6...31)
+PC <-- PC + Offsetsxt
+	- sxt - steht für sign extented
+	- Offset ist 26 Bit --> Vorzeichenerweiterung nur um 6 Bit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
