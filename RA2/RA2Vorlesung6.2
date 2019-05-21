@@ -148,16 +148,54 @@ Schreibsignale
 — Anschließend muss die Information genügend lange am Dateneingang anliegen, damit der Speichervorgang fehlerfrei abläuft
 — t_wc Write Cycle Time
 
+Verschränkung von Speicherbänken (Interleaving)
+— Bei Direktzugriff des Prozessors auf den DRAM-Hauptspeicher sind unmittelbar aufeinanderfolgende Zugriffe zunächst nur im Abstand der Zykluszeit möglich.
+	- Datenübertragung des ersten Zugriffs nach Ablauf der Zugriffszeit abgeschlossen
+	- Bis zur Durchführung des nächsten Zugriffs muss jedoch Erholzeit der Bausteine (das Rückschreiben) abgewartet werden
+— Lösung
+	- Speicher wird in eigenständige Bänke unterteilt
+	- Aufeinanderfolgende Zugriffe verursachen Bankwechsel
+
+Verschränkung von Speicherbänken (Interleaving)
+— Direkt aufeinanderfolgende Lesezugriffe bei einer Speicherbank
+— Zugriff bei zwei verschränkt adressierten Speicherbänken
+
+DRAM Entwicklung
+
+Fast-Page-Mode-DRAM (FPM DRAM), 1987
+— Reduzierte Zugriffszeiten
+— Mit \RAS = 0 wird die gesamte zugehörige Speicherzeile (Page) parallel in eine Zeile von
+	Leseverstärkern übertragen und dort zwischengespeichert
+— Anschließende Übergabe der Spaltenadresse mit \CAS = 0 führt nun zum Auslesen des adressierten Leseverstärkers
+— Technik lässt Fast Page Mode zu
+	- Nach einmalig übergebener Zeilenadresse können sequentiell nacheinander die durch unterschiedliche
+		Spaltenadressen ausgewählten Daten aus dem Leseverstärker abgerufen werden
+	- Bedingung ist, dass die Daten in derselben Zeile liegen
+— Gegenüber der RAS-Zugriffszeit t_RAS kann die für den Fast Page Mode entscheidende CAS-Zykluszeit t_CAS nahezu halbiert werden
+
+Fast Page Mode-Lesezyklus für vier Datenbytes bei einem FPM-DRAM
+— Anmerkung: Bei Page-Hit-Zugriffen wird t_CAS auch Fast Page Mode-Zykluszeit genannt
+
+Enhanced DRAM (EDRAM)
+— Weiterentwicklung des Fast-Page-Mode-DRAMs
+— Unterschied
+	- FPM DRAM: Zeilenadresse wird parallel in ein Leseverstärkersystem übertragen
+	- EDRAM: nutzt dafür einen SRAM-Cachespeicher
+	--> \CAS-Zugriffszeit bei Cache-Hit von 15 ns
 
 
-
-
-
-
-
-
-
-
+Extended-Data-Output-DRAM (EDO-DRAM), 1995
+— Weiterentwicklung des Fast-Page-Mode-DRAMs
+— Signal hat bei FPM DRAM zwei Aufgaben:
+- Fallende Flanke übernimmt gültige Speicheradresse bei Leseoperation
+- Steigende Flanke signalisiert, dass Datum gelesen wurde und Datentreiber hochohmig gestellt werden
+können
+Ø Erst nach weiterer !"#-Precharge-Zeit kann nächste Spaltenadresse angelegt werden (begrenzt Datenrate)
+— EDO-RAM steuert die Datentreiber nicht durch die Rückflanke von !"# sondern durch interne
+Signale
+- Nächste Spaltenadresse kann mittels !"# übergeben werden, während am Ausgang das vorherige Datum
+noch gültig ist
+Ø Bezogen auf FPM DRAM ist der Datenausgang länger aktiv à „Extended-Data-Output"
 
 
 
