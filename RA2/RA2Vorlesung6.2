@@ -61,6 +61,7 @@ SRAM Überblick
 Halten (Wert=0)
 — Lege 0 an WL an --> M5, M6 geschlossen
 — M1 bis M4 in konstantem, selbsterhaltendem Zustand
+— Anlegen von low an WL
 
 Lesen
 — Lege high an BL, \BL, WL an
@@ -77,6 +78,69 @@ Beispiel: Schreibe 1 nach Q
 — Anlegen von high an WL
 — Wert von BL fließt ab (M3 > M5) (read stab.)
 — M2 muss kleiner als M6 sein --> writability
+	- senkt \Q --> M3 geht aus, M1 geht an --> Q wird high
+
+Lese- und Schreibsignale (Speicherzellenebene)
+Lesen:				Schreiben
+1. Setze BL, \BL high 		1. Setze entweder BL oder \BL low (hier: \BL)
+2. Setze WL high 		2. Setze WL
+-> BL oder \BL wird low 	-> Q ändert Zustand
+
+Lesesignale (Bausteinebene)
+— Beginnt mit dem Anlegen der Adresse (Bestimmt WL)
+— \CS = 0 (Invertiertes Chip Select -> Wähle Chip aus)
+— \WE =1 (Invertiertes Write Enable -> Lesen)
+— OE = 0 (Output Enable)
+-> Leseverstärker werden niederohmig geschalten
+-> Nach der Adressen-Zugriffszeit t_AA liegen die gültigen Daten stabil an den Datenausgängen an
+
+Schreibsignale (Bausteinebene)
+— Beginnt mit dem Anlegen der Adresse (Bestimmt WL)
+— \CS = 0 (Invertiertes Chip Select -> Wähle Chip aus)
+— \WE = 0 (Invert. Write Enable = 0 -> Schreiben)
+--> Anschließend müssen die Daten genügend lange an den Dateneingängen anliegen, damit der Speichervorgang fehlerfrei abläuft
+
+Praktische Relevanz und Zusammenfassung
+— SRAMs werden z.B. in Caches verwendet
+	- Architektur, Organisation von Cache-Speicher war Gegenstand der Vorlesung RAI
+— Schneller Zugriff, aber erheblicher Platzbedarf
+— Information bleibt nur solange Betriebsspannung anliegt (flüchtiger Speicher)
+— Teuer
+
+DRAM:
+Aufbau
+— 1-Bit-Speicherzelle eines DRAM:
+— Eigentliche Speicherzelle besteht aus Kondensator C_Cell
+— Geladener Zustand: x=1
+— Ungeladener Zustand: x=0
+— Transistor verbindet Kondensator C_Cell mit Bitline bei Anwahl durch die Wordline
+— Entladung des Kondensators
+	- Beim Lesen durch Leitungskapazitäten
+	- Durch Leckströme innerhalb der Zelle
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
