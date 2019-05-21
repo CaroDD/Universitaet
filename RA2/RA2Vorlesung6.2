@@ -9,4 +9,83 @@ RAM
 	- Speicher mit seriellen Zugriff (z.B. Schieberegister, FIFO-Speicher)
 	- Assoziativ-Speicher (ein Teil der gespeicherten Information dient selbst zur Kennzeichnung der Speicherplatzes)
 
+Prinzipieller Aufbau
+— Zeilendekodierer
+	- Wählt nach Adresse eine Zeile aus und setzt die jeweilige Wordline (WL)
+— Bei Lesen: Zellen der ausgesuchten Zeile bestimmen Bitlines (BL)
+— Spaltenschaltung kann Verstärker enthalten
+— Problem: viel Speicher -> viele Rows -> sehr länglich, sehr lange Leitungen
+	- Z.B. 1024 32 Bit Wörter -> 1024 Zeilen, 32 Spalten
+
+Erweiterter Aufbau mit Spaltendekodierer
+— Zeilendekodierer
+	- Wählt nach Adresse eine Zeile aus und setzt die jeweilige Wordline (WL)
+— Bei Lesen: Zellen der ausgesuchten Zeile bestimmen Bitlines (BL)
+— Spaltenschaltung kann Verstärker enthalten
+— Problem: viel Speicher -> viele Rows -> sehr länglich sehr lange Leitungen
+— Alternative:
+	- Spaltendekodierer / Column Decoder
+	- Mehrere Wörter in eine Row
+
+Überblick (2)
+— Anordnung als quadratische Matrix aus n Zeilen und n Spalten
+	- Speicherzellen an den Kreuzungspunkten der Matrix
+	- Speicherzelle der Kapazität 1 Bit wird durch die zugehörigen Zeilen- und Spaltenleitungen adressiert (Adresseingänge A0 – Ai-1)
+— Neben den Adresseingängen besitzt ein RAM weitere Leitungen:
+	- Din (Dateneingang), Dout (Datenausgang)
+	- WE (Write Enable, Schreibaktivierung)
+	- CS (Chip Select, Bausteinauswahl)	
+
+
+SRAM Überblick
+— Speicherzelle mit internem Feedback
+— Behält Wert so lang Spannung anliegt
+— Eigenschaften
+	- Dichter als Flip-Flops
+	- Kompatibel mit Standard CMOS Prozessen
+	- Schneller als DRAM
+	- Einfacher zu nutzen als DRAM
+
+1-Bit-Speicherzelle eines SRAM, 6 Transistoren pro Speicherzelle
+— Q & \Q : Speicherzustand
+	- Wenn Q aktiv ist, ist \Q inaktiv und vice-versa
+	- Bestimmt aktuell gespeicherten Wert 1 oder 0 (gleich Beispiel)
+— V_DD Drain Supply Voltage und GND
+	- Spannung zwischen V_DD und GND
+	- M1 bis M4 verbinden Q mit GND oder VDD
+— BL und \BL : Bitline, „negierte“ Bitline
+	- Wird genutzt um zu setzen und zu lesen
+— WL : Wordline
+	- Öffnet M5, M6 während lesen und schreiben
+
+Halten (Wert=0)
+— Lege 0 an WL an --> M5, M6 geschlossen
+— M1 bis M4 in konstantem, selbsterhaltendem Zustand
+
+Lesen
+— Lege high an BL, \BL, WL an
+— Im Beispiel Q = 0 (funktioniert aber genauso mit 1)
+— BL geht durch M5 (\BL geht durch \M6 )
+	- M3 muss stärker als M5 sein (und M4 > M6), damit Spannung abfließen kann! --> read stability
+	- BL erhöht Q etwas, aber nicht genug um M2 zu schließen oder M4 zu öffnen
+	- BL sinkt
+— Nach etwas Zeit: BL ist low, \BL bleibt high --> 0 gelesen
+
+Schreiben
+Beispiel: Schreibe 1 nach Q
+— Anlegen von high an BL, low an BL
+— Anlegen von high an WL
+— Wert von BL fließt ab (M3 > M5) (read stab.)
+— M2 muss kleiner als M6 sein --> writability
+
+
+
+
+
+
+
+
+
+
+
 
