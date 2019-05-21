@@ -118,11 +118,35 @@ Aufbau
 	- Beim Lesen durch Leitungskapazitäten
 	- Durch Leckströme innerhalb der Zelle
 
+Übersicht
+— Geringerer Platzbedarf als SRAM
+— Entladung des Kondensators erfordert „Auffrischen“ der Speicherzellen
+	- Geschieht einerseits implizit mit jedem Schreib- und Lese-Zyklus
+	- Sämtliche Bits der ausgewählten Matrixzeile
+	- Lese- bzw. Schreibzykluszeit signifikant größer als eigentliche DRAM-Zugriffszeit
+	- Zeitdifferenz = Speichererholzeit (recovery time)
+	- Explizite Refresh-Zyklen für alle Matrix-Zeilen
+	- „Auffrischen“ gehört zu den Aufgaben des DRAM-Controllers
 
+Multiplexverfahren
+— Adressen werden beim DRAM im Multiplexverfahren eingegeben
+— Zuerst wird die Zeilenadresse bei \RAS = 0 (Row Address Strobe, Zeilenadressen-Puls) eingegeben
+— Danach wird mit \CAS = 0 (Column Address Strobe, Spaltenadressen-Puls) die Spaltenadresse übernommen
+— Verantwortlich dafür ist der DRAM-Controller
+— DRAM hat nur halb so viele Adressanschlüsse wie SRAM bei gleicher Kapazität
+	- Weitere Platzeinsparung
 
+Lesesignale
+— Beginnt mit dem Anlegen der Zeilenadresse,
+danach der Spaltenadresse (Bestimmt WL)
+— \WE =1 (Invertiertes Write Enable -> Lesen)
+--> Nach der Adressen-Zugriffszeit t_AA liegen die gültigen Daten stabil an den Datenausgängen D_out an
 
-
-
+Schreibsignale
+— Beginnt mit dem Anlegen der Zeilenadresse, danach der Spaltenadresse (Bestimmt WL)
+— \WE =0 (Invert. Write Enable -> Schreiben)
+— Anschließend muss die Information genügend lange am Dateneingang anliegen, damit der Speichervorgang fehlerfrei abläuft
+— t_wc Write Cycle Time
 
 
 
