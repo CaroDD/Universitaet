@@ -516,15 +516,30 @@ Der Aressdecoder kodiert binäre Adressen in eine 1-aus-N Kodierung. Bei
 diesem Encoding ist nur ein Ausgang entsprechend dem
 Eingangsbinäräquivalent mit 1 belegt, alle anderen mit 0. Bei m -Bit Adressen gibt es 2^m Ausgänge.
 
+Multiplexer:
+Ein Multiplexer schaltet entsprechend einer binär kodierten Steueradresse den
+Eingang auf den binäräquivalenten Ausgang (Demultiplexer) durch oder umgekehrt,
+den binäräquivalenten Eingang auf den Ausgang. Multiplexer sind auswählende
+Schaltnetze.
+1:2 Multiplexer bzw. 2:1 Multiplexer (Demultiplexer) dienen zur Umschaltung von
+Datenleitungen.
+Zusammengefaßt als Multiplexerbäume können mit ihnen komplexe Schaltnetze
+realisiert werden.
 
+Addierer:
+Addierer bilden die Grundlage für alle Rechenschaltungen (Subtrahierer,
+Multiplizierer, . . . ). Die Addition erfolgt Modulo 2 mit Übertrag ( c_o - auslaufender,
+c_i - einlaufender Übertrag, s - Summe). Addierer sind berechnende Schaltnetze.
 
+4 Bit Paralleladdierer (Ripple-Carry Adder):
+Paralleladdierer werden vorwiegend in der Computertechnik eingesetzt. Der
+Ripple-Carry Adder ist der einfachste, aber auch langsamste Paralleladdierer.
+Der Übertrag wird von Stelle zu Stelle weitergereicht, im ungünstigsten Fall durch alle Stellen.
 
-
-
-
-
-
-
+Festwertspeicher (ROM):
+ROM (Read Only Memory) sind addressierbare Festwertspeicher, die
+vorwiegend in der Computertechnik eingesetzt werden. Einer binären kodierten
+Adresse werden fest eingespeicherte (in Hardware) Daten zugewiesen. ROM sind wert-zuweisende Schaltnetze.
 
 
 
