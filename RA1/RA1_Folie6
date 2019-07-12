@@ -1,0 +1,50 @@
+Schaltwerke:
+
+Zielstellung:
+- Kennenlernen einfacher rückgekoppelter Schaltnetze, Basis-Flipflop
+- Einführung der funktionellen Bedeutung der Zeit
+- Einführung des SR-Flipflop als elementares Speicherglied
+- Darstellungsvarianten des SR-Flipflop im Gegensatz zu Schaltnetzen
+- Übergang zu synchronen, taktgesteuerten und komplexen Speichergliedern
+- Einführung des taktflankengesteuerten D-Flipflop als universelles Speicherglied und seiner Darstellungsvarianten
+- Vermittlung des Überganges von kombinatorischen zu sequentiellen Schaltungen, von Schaltnetzen zu Schaltwerken
+- Kennenlernen einer kurzen Übersicht zur Automatentheorie
+- Darstellungsvarianten von Schaltwerken
+- Einführung in die Analyse und Synthese von Schaltwerken
+
+Übersicht, Begriffserklärung:
+- Schaltwerke – Hauptbestandteile von Computern (v. Neumann Rechner)
+- Schaltwerke enthalten Schaltnetze, Speicherglieder (Flipflops) und Signalrückführungen
+	der in den Speichergliedern gespeicherte Zustand heißt „innerer Zustand“ des Schaltwerkes
+- bei einem Schaltwerk hängen die Werte der Ausgangsvariablen von denen 
+	der Eingangsvariablen und vom inneren Zustand (der Vorgeschichte) ab
+- einer Wertefolge der Eingangsvariablen ist damit eindeutig eine
+	Wertefolge der Ausgangsvariablen zugeordnet ( → Anfangszustand)
+- charakteristisch für ein Schaltwerk ist die funktionelle Bedeutung der
+	Zeit (diskrete Zeitpunkte werden durch ein Taktsignal realisiert)
+- Flipflops sind einfache Schaltwerke
+
+Schaltwerk, Sequentielle Schaltung:
+Schaltwerk (nach DIN44300):
+Ein Funktionseinheit zum Verarbeiten von Schaltvariablen, bei der die
+Werte aller Schaltvariablen am Ausgang (Ausgangsvariablen) zu einem
+bestimmten Zeitpunkt t_0 nach Verstreichen der Lauf- und Verzögerungs-
+zeit ∆t nur von den Werten aller Schaltvariablen am Eingang
+(Eingangsvariablen) zum Zeitpunkt t-∆t abhängen und zu endlich vielen
+vorangegangenen Zeitpunkten sowie ggf. vom Anfangszustand.
+(Ein Schaltwerk hat eine endlich Anzahl von inneren Zuständen und ist
+abstrakt gesehen ein endlicher Automat. Falls keine besonderen
+Vorkehrungen getroffen werden, können Schaltwerke beim Einschalten
+einen unbestimmten Anfangszustand annehmen.)
+Speicherglied (nach DIN44300) :
+Ein Bestandteil eines Schaltwerkes, der Werte von Schaltvariablen
+aufnimmt, aufbewahrt und abgibt.
+
+
+
+
+
+
+
+
+
