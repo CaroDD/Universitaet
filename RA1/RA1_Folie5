@@ -403,27 +403,118 @@ ab + a\b= a (b + \b)= a oder (a+b)(a + \b)= a + (b\b)= a
 Als Ausgangspunkt für die Vereinfachung sollte die KDNF verwendet werden.
 Eine bereits vorliegende DNF kann durch Erweitern in eine KDNF überführt werden.
 
+Verfahren von Quine-McCluskey
+Unterscheiden sich zwei Terme einer Schaltfunktion in DNF nur in einer einzigen
+Schaltvariablen (in dem einen Term negiert, in dem anderen jedoch unnegiert), so
+können beide Terme zusammengefasst werden, wobei die sich unterscheidende
+Variable gekürzt wird (entfällt).
 
+Beispiel: abcdef + abc\def = abce f
 
+Das Verfahren von Quine-McCluskey stellt einen Algorithmus zur
+Automatisierung dieser Vorgehensweise dar und liefert nach einer festen Anzahl
+von Vereinfachungsschritten eine minimale Schaltfunktion. Dieses Verfahren
+versagt jedoch bei Schaltfunktionen mit einer großen Anzahl von Schaltvariablen (NP-Problem).
+Für große Variablenanzahlen wurden modifizierte Verfahren entwickelt.
 
+Karnaugh-Veitch-Diagramm (KV-Diagramm)
+Das KV-Diagramm stellt eine Schaltfunktion in KDNF zweidimensional als Matrix
+dar und erlaubt so eine einfache grafische Vereinfachung dieser Schaltfunktion.
+Es ist nur für die Vereinfachung von Schaltfunktionen bis maximal 4 (6)
+Schaltvariablen sinnvoll geeignet.
 
+Konstruktion des KV-Diagramms
+Bei n Schaltvariablen enthält die Matrix 2^n Felder. Jedes Feld entspricht genau
+einem Minterm oder Maxterm, gekennzeichnet durch Zeile und Spalte.
+Aufteilung der Schaltvariablen an den Köpfen der Zeilen und Spalten der Matrix.
+Benachbarte Zeilen oder Spalten dürfen sich nur in der Belegung einer einzigen
+Schaltvariablen unterscheiden (unnegiert, negiert).
+Erste und letzte Zeile bzw. Spalte der Matrix sind ebenfalls benachbart.
+Eintragen aller Minterme der Schaltfunktion in KDNF entsprechend
+Variablanbelegung der Zeilen und Spalten der Matrix (mit 1 belegt). Alle anderen
+Felder werden analog zur Wertetabelle mit 0 belegt.
 
+Vereinfachung von Schaltfunktionen im KV-Diagramm
 
+Benachbarte " 1" (Minterme) im KV-Diagramm können zu einem Block (2er-Block)
+zusammengefasst werden (nur in Zeilen oder Spalten direkt benachbart).
+Benachbarte 2er-Blöcke können zu einem 4er-Block zusammengefasst werden und 4er-Blöcke entsprechend zu einem 8er-Block usw.
+Es ist nur die Bildung von 1er-, 2er-, 4er-, 8er-,. . . Blöcken zulässig. Die Blöcke dürfen sich beliebig überlagern.
+Zur Minimierung einer Schaltfunktion sind möglichst wenig und möglichst große
+Blöcke zu bilden. Es müssen alle Minterme der Schaltfunktion umfaßt werden.
+Jeder Block wird durch einen Term beschrieben, der nur noch die Variablen
+enthält, die in allen Mintermen, die der Block umfaßt, identisch sind.
 
+Don‘t Care Terme, alternative Beschriftung des KV-Diagramm:
+Don’t Care Terme X werden wie entweder 0 oder 1 behandelt. Die Wahl ob als 0
+oder als 1 erfolgt entsprechend der Vereinfachungsmöglichkeit. Ist eine 1 für die
+Blockbildung günstiger, so wird X wie eine 1 verwendet, ansonsten wie eine 0 .
 
+Realisierung als Schaltnetz
+Schaltfunktionen können durch ein Netzwerk von Verknüpfungsgliedern
+realisiert werden. Diese Realisierungsform wird als Schaltnetz bezeichnet.
+Die Schaltfunktion wird nach Vereinfachung so umgeformt, dass nur noch
+Verknüpfungen Verwendung finden, die den vorgegebenen Verknüpfungsgliedern entsprechen.
+Entsprechend der so umgeformten Schaltfunktion kann ein Schaltplan
+konstruiert werden oder auch eine entsprechende Netzliste (Verdrahtungsplan) erstellt werden.
+Schaltnetze können auch auf höherem Abstraktionsniveau durch Speicher (ROM - Read Only Memory) oder Hardware-programmierbare logische
+Schaltungen (PLD - Programmable Logic Devices) realisiert werden.
 
+Synthese eines Schaltplanes aus einer Schaltfunktion
+1. Schaltfunktion KDNF <-- Wertetabelle KDNF
+|
+|	Vereinfachung der Schaltfunktion
+v
+2. Schaltfunktion DNF <-- Verknüpfungsglieder
+|
+|	Umwandlung der Verknüpfungen
+v
+3. Schaltfunktion --> Netzliste, Bauelemente
+|					|
+|	Schaltplankonstruktion		|
+v					v
+4. Schaltplan, Logikplan
 
+Analyse von Schaltnetzen:
+Die Analyse von Schaltplänen erfolgt nach Festlegung aller Eingänge
+(Schaltvariablen) und Ausgänge (Schaltfunktionen) durch die schrittweise
+Analyse der Vernetzung und der verwendeten Verknüpfungsglieder.
+Nach der Analyse aller verwendeten Verknüpfungsglieder wird für jeden
+Ausgang eines Verknüpfungsgliedes eine Hilfsvariable eingeführt und die
+Verknüpfungsfunktion mit den Eingängen als Schaltfunktion aufgestellt.
+Das System aller so aufgestellten Verknüpfungsfunktionen wird nach der
+gesuchten Schaltfunktion aufgelöst (beginnend von den Eingängen bis hin zu
+den Ausgängen werden alle Hilfsvariablen schrittweise eleminiert).
+Eine Analyse über alle möglichen Belegungen aller Ein- und Ausgänge (über die
+Wertetabellen) ist ebenfalls möglich.
 
+Analyse einer Schaltfunktion aus einem Schaltplan
 
+1. Schaltplan --> Verknüpfungsglieder
+|
+|	Hilfsvariablen für Verknüpfungsglieder
+v
+2. Schaltfunktionssystem <-- Verknüpfungsfunktion
+|
+|	Auflösung nach Schaltfunktion
+v
+3. Schaltfunktion 	--> Wertetabelle KDNF
+|						|
+|	Vereinfachung der Schaltfunktion	|
+v						v
+4. Schaltfunktion in DNF oder KDNF
 
+Beispielschaltnetze
+Encoder / Decoder / Codec:
+Encoder sind Schaltnetze, die Schaltvariablen eines Codes (Menge von
+Eingangsvariablen X ) in Variablen eines anderen Codes (Menge von
+Ausgangsvariablen Y ) eindeutig umsetzen (Kodierer, Kodeumsetzer,
+Vektor-Schaltfunktion). Encoder sind zuordnende Schaltnetze.
 
-
-
-
-
-
-
-
+3Bit-Adressdecoder:
+Der Aressdecoder kodiert binäre Adressen in eine 1-aus-N Kodierung. Bei
+diesem Encoding ist nur ein Ausgang entsprechend dem
+Eingangsbinäräquivalent mit 1 belegt, alle anderen mit 0. Bei m -Bit Adressen gibt es 2^m Ausgänge.
 
 
 
