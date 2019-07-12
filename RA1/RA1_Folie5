@@ -171,12 +171,237 @@ Schaltsymbole:
 CMOS-Transmission Gate (Transferschalter):
 Parallelschaltung von NMOS und PMOS mit komplementärer Ansteuerung.
 
+Ausgangsseitige Verknüpfung
+- Kommunikation über eine Leitung
+- Anschluß vieler Komponenten
+- alle dürfen lesen
+- nur einer darf schreiben
+- direkte Ausgangsverknüpfung von CMOS nicht zulässig (Kurzschluss!)
+
+Open Collector, Open Drain, Tristate-Logik:
+Open Collector / Open Drain
+E	A
+L	Z	z - Tristate (hochohmig)
+H	L
+
+Tristate-Logik
+EN	E	A
+L	L	Z
+L	H	Z
+H	L	H
+H	H	L
+
+Ausgangsbelastbarkeit:
+Eingangsäquivalent (Bezugsgröße)
+	Lastverhalten eines Standardeinganges einer Schaltkreisfamilie, normiert auf das NOT-Gate der Familie.
+
+Eingangslastfaktor, normiert (Einfächerung, fan-in)
+	Lastverhalten eines Einganges bezogen auf das Eingangsäquivalent (ganz).
+
+Ausgangslastfaktor, normiert (Ausfächerung, fan-out)
+	Mit wievielen Eingangsäquivalenten (Summe aller Einfächerungen) darf ein
+	Ausgang maximal belastet werden, ohne die Pegel zu gefährden.
+
+Zeitverhalten von Verknüpfungsgliedern
+
+Lineare Näherung des Übertragungsverhaltens (Trapezsignal)
+Delta U = Spannungshub
+T_PLH = Einschaltverzögerung
+T_PHL = Ausschaltverzögerung
+T_TLH = Anstiegszeit
+T_THL = Abfallzeit
+H = High - Pegel
+L = Low - Pegel
+T_P = Propagation Delay Time
+T_T = Transition Time
 
 
+U_E ^
+H   |
+    |
+    |
+    |
+    |
+L   |_____________________________________________________
 
 
+Schaltalgebra
+
+Definitionen der Schaltalgebra
+Die Schaltalgebra ist ein Modell und eine technische Anwendung der Booleschen Algebra.
+1. Es existiert eine Menge B = 0,1 mit folgender Zuordnung:
+			positive Logik			negative Logik
+Zustand			0   	   |	1		0	  |	1
+				   |				  |
+Schalter		offen	   |	geschlossen	offen	  |	geschlossen
+Pegel			low (L)	   |	high (H)	low (L)	  |	high (H)
+
+Meistens wird positive Logik verwendet.
+Schaltvariablen sind Symbole für Elemente der Schaltalgebra aus der Menge B:x ∈ B mit B = {0,1} --> x kann nur die Werte 0 oder 1 annehmen
+
+2. Es existieren Operatoren mit folgender Zuordnung:
+Operator			∧	∨	/
+Boolesche Verknüpfung		AND	OR	NOT
+Schreibweise in Funktionen	*	+	/
+
+3. Einführung von Schaltsymbolen für die Darstellung der Operatoren:
+Konjunktion: AND
+    _____			
+---|     |
+   |  &  |-----
+---|_____|
+
+Disjunktion: OR
+    _____			
+---|     |
+   |  1  |-----
+---|_____|
 
 
+Negation: NOT
+    _____			
+---|     |
+   |  1  |o-----
+---|_____|
+
+4. Es gelten die Gesetze der Booleschen Algebra.
+
+
+Gesetze der Booleschen Algebra:
+Die Boolesche Algebra ist eine algebraische Struktur
+(George Boole, englischer Mathematiker, 1815 - 1864).
+Boolesch: Eigenschaft von Variablen o. Funktionen, binär (zweiwertig) zu sein.
+Es existiert eine Menge B = a, b, c, ... , e, n
+und die eindeut. Operatoren: ∧,∨,/.
+Bindung im Ausdruck nimmt von / nach ∧ und nach ∨ ab.
+e - neutrales Element bzgl. der Operation ∧ (Eins-Element)
+n - neutrales Element bzgl. der Operation ∨ (Null-Element)
+
+Kommutativgesetze: a*b = b*a
+Assoziativgesetze: (a*b)*c =a*(b*c)
+Distributivgesetze:
+	a∧ (b∨c) = (a∧b) ∨ (a∧c)
+	a∨ (b∧c) = (a∨b) ∧ (a∨c)
+Absorbtionsgesetze
+	a∧ (a∨b) =a
+	a∨ (a∧b) =a
+Neutrale Elemente: a∧e =a
+	e = 1, n = 0, e = \n, a∨n =a
+Tautologie: a*a = a
+Komplementäres Element:
+a ∧ \a = n
+\\a  = \(\a) = a
+a ∨ \a = e
+
+Dualitätsprinzip
+Ist A eine Aussage der Booleschen Algebra (Boolesche Funktion), so auch die
+Aussage \A, die man durch Vertauschen von ∧ gegen ∨ sowie n gegen e erhält.
+
+De Morgansche Regeln:
+\(a ∧ b) = \a ∨ \b 
+\(a ∨ b) = \a ∧ \b
+
+Schaltfunktion:
+Eine Schaltfunktion ordnet den Wertekombinationen der Schaltvariablen
+(x_1 , ... , x_n) ∈ D, x_1 , ... , x_n ∈ B mit D ⊂ B^n , B = {0,1} eindeutig einen
+Funktionswert y entsprechend der Zuordnungsvorschrift f zu:
+f: D → B oder y = f(x_1 , ... , x_n) mit D ⊂ B^n und y, x_1 , ... , x_n ∈ B, B = {0,1}.
+
+y ist eine Funktion von x_1 , ... , x_n mit dem Funktionswert f(x_1 , ... , x_n) ∈ B
+und dem Definitionsbereich D ⊂ B^n mit B = {0,1} (eine Abbildung von D in B).
+
+Bei n Schaltvariablen enthält die Produktmenge (kartesisches Kreuzprodukt) B^n
+genau 2^n verschiedene Elemente, Wertekombinationen dieser Schaltvariablen.
+Jeder dieser Wertekombinationen können zwei verschiedene Funktionswerte
+zugeordnet werden ( 0 oder 1 ). Damit gibt es genau 2^n mögliche
+Schaltfunktionen dieser n Schaltvariablen.
+
+Beispiel: Schaltfunktionen von zwei Schaltvariablen (n=2)
+Wertekombinationen der Schaltvariablen x_1 , x_2 ∈ B, (n = 2) :
+B^2 = {(00), (01), (10), (11)} ⟹ 2^2 = 4 verschiedene Werte
+
+Schaltfunktionen der Schaltvariablen x_1, x_2 ∈ B, (n = 2):
+K(x_1, x_2)	Schaltfunktionen y_v= f_v(x_1, x_2), (v= 1, ..., 16)
+
+
+x_1	x_2	f_1	f_2	f_3	f_4	f_5	f_6	f_7	f_8	f_9	f_10	f_11	f_12	f_13	f_14	f_15	f_16
+0	0	0	0	0	0	0	0	0	0	1	1	1	1	1	1	1	1
+0	1	0	0	0	0	1	1	1	1	0	0	0	0	1	1	1	1
+1	0	0	0	1	1	0	0	1	1	0	0	1	1	0	0	1	1	
+1	1	0	1	0	1	0	1	0	1	0	1	0	1	0	1	0	1
+		y_1	y_2	y_3	y_4	y_5	y_6	y_7	y_8	y_9	y_10	y_11	y_12	y_13	y_14	y_15	y_16
+-->  2^(2^2) = 16 verschiedene Schaltfunktionen
+
+
+Darstellung von Schaltfunktionen:
+Jede Schaltfunktion kann durch eine Wertetabelle, eine Boolesche Funktion oder
+durch einen Schaltplan eindeutig beschrieben werden (Struktur und Verhalten).
+
+Schaltfunktionen
+Schaltnetze, Netzwerke von Verknüpfungsgliedern.
+Signalrückführungen sind nicht zugelassen (Eindeutigkeit, Zeitverhalten).
+Wertetabelle/Wahrheitstabelle --> Boolesche Gleichung/Funktionsgleichung --> Schaltplan/Logikplan
+
+Grundoperationssysteme (Basissysteme):
+Jede beliebige Schaltfunktion kann durch die Verknüpfungsglieder AND, OR und
+NOT realisiert werden. Verknüpfungsglieder mit mehr als zwei Schaltvariablen
+können auf Verknüpfungen mit zwei (oder einer) Schaltvariablen zurückgeführt werden.
+
+Minterme und Maxterme
+Minterme:
+Minterme sind Vollkonjunktionen mit dem Wert 1 , UND-Verknüpfungen, die alle Schaltvariablen genau einmal in unnegierter oder negierter Form enthalten.
+Jeder Minterm hat nur für eine Kombination der Schaltvariablen (in der Wertetabelle) den Wert 1, sonst 0.
+
+Maxterme
+Maxterme sind Volldisjunktionen mit dem Wert 0 , ODER-Verknüpfungen, die alle Schaltvariablen genau einmal in unnegierter oder negierter Form enthalten.
+Jeder Maxterm hat nur für eine Kombination der Schaltvariablen (in der Wertetabelle) den Wert 0, sonst 1.
+Bei n Schaltvariablen gibt es genau 2^n verschiedene Minterme bzw. Maxterme.
+
+Normalformen der Schaltfunktion
+Kanonisch Disjunktive Normalform (KDNF):
+Disjunktion (ODER-Verknüpfung) aller Minterme der Schaltfunktion (Schaltfunktion = 1 in der Wertetabelle).
+
+Kanonisch Konjunktive Normalform (KKNF):
+Konjunktion (UND-Verknüpfung) aller Maxterme der Schaltfunktion (Schaltfunktion = 0 in der Wertetabelle).
+
+Jede Schaltfunktion ist als KDNF oder KKNF darstellbar. Beide Darstellungen sind äquivalent und ineinander überführbar.
+Schaltfunktionen in KDNF bzw. KKNF sind direkt vergleichbar. Sie können sofort aus einer Wertetabelle herausgelesen 
+bzw. in eine eingetragen werden.
+Disjunktive Normalformen werden allgemein bevorzugt.
+
+Don´t Care Terme
+Nicht für jede Kombination der Schaltvariablen einer Schaltfunktion ist der
+Funktionswert eindeutig definiert. Er kann entwerder 0 oder 1 sein. 
+Die Wahl ist beliebig, don’t care.
+Don’t care Terme werden mit X gekennzeichent. X steht für 0 oder 1 .
+Don’t care Terme sind bei der Vereinfachung von Schaltfunktionen von besonderer Bedeutung.
+In technischen Schaltnetzen kommen don’t care Terme relativ häufig vor.
+
+Vereinfachung von Schaltfunktionen
+Durch Vereinfachung einer Schaltfunktion in KDNF erhält man eine verkürzte
+Schaltfunktion in DNF (Disjunktive Normalform, nicht kanonisch).
+Analog für die KKNF⟶KNF.
+
+Der Realisierungsaufwand technischer Schaltnetze kann auf diese Art und
+Weise oft wesentlich reduziert werden.
+
+Methoden zur Vereinfachung von Schaltfunktionen:
+	Rechenregeln der Schaltalgebra
+	Verfahren von Quine-McCluskey
+	Karnaugh-Veitch-Diagramm (KV-Diagramm)
+
+Vereinfachung mit den Rechenregeln der Schaltalgebra
+
+Auflösung von Negationen (De Morgansche Regel)
+\(ab) = \a + \b oder \(a + b) = \a\b
+
+Erweitern von Termen ( b + \b = 1 oder \bb = 0 )
+a = a ( b+ \b)= ab + a\b oder a= a + b\b = (a+b)(a + \b)
+
+Kürzen von Termen, Absorbtionsgesetz ( b + \b = 1 oder b\b = 0)
+ab + a\b= a (b + \b)= a oder (a+b)(a + \b)= a + (b\b)= a
+Als Ausgangspunkt für die Vereinfachung sollte die KDNF verwendet werden.
+Eine bereits vorliegende DNF kann durch Erweitern in eine KDNF überführt werden.
 
 
 
