@@ -4,8 +4,7 @@ Schalter realisieren eine eindeutige Trennung zwischen zwei definierten
 Zuständen (binäre Entscheidung): Schalter entweder offen oder geschlossen.
 Zentrale Bedeutung der Schalter bei logischen Verknüpfungen.
 Schalter sind für die verschiedensten physikalischen Größen realisierbar:
-elektrisch/elektronisch, pneumatisch, hydraulisch, mechanisch, thermisch,
-optisch, . . .
+elektrisch/elektronisch, pneumatisch, hydraulisch, mechanisch, thermisch, optisch, . . .
 In der Computertechnik dominieren eindeutig elektrisch-elektronische Schalter
 
 Schalter offen : I_S = 0 bei U_S = 0 & S_0
