@@ -228,17 +228,105 @@ Zustände (Zustandsmenge) sind endlich.
 Deterministische Automaten:
 Das Verhalten der Modellmaschine ist deterministisch, für eine gegebene Folge von Eingangswerten komplett vorhersagbar, determiniert.
 
+Zustandsautomat - Schaltwerk:
+Automat – Schaltwerk
+- Automaten bilden die Grundlage für den Entwurf und die Beschreibung von sequentiellen digitalen Systemen.
+- Schaltwerke stellen eine technische Realisierung der Automaten dar.
+- Schaltwerke sind deterministische endliche Automaten (DEA) (auch FSM – Finite State Machine)
+- Jeder DEA kann durch ein Schaltwerk realisiert werden und umgekehrt, jedes Schaltwerk kann als DEA beschrieben werden.
+- Nichtdeterministische endliche Automaten (NDEA) können durch geeignete Maßnahmen in deterministische endliche Automaten (DEA) umgeformt werden.
+
+Deterministische Endliche Automaten (DEA):
+Ein deterministischer endlicher Automat (DEA) A kann als 7-Tupel definiert werden:
+A = (X, Y, Z, f, g, z⁰, E)
+X: Eingabealphabet
+Y: Ausgabealphabet
+Z: Zustandsmenge
+y = f(x,z) Ausgangsfunktion		f : X × Z → Y	
+z⁺ = g(x,z) Übergangsfunktion		g : X × Z → Z
+z⁰ ∈ Z	Anfangszustand
+E ⊆ Z Finalzustandsmenge
+x ∈ X Eingangsvektor
+y ∈ Y Ausgangsvektor
+z ∈ Z Zustandsvektor
+z⁺ ∈ Z Zustandsfolgevektor
+x ∈ U Menge der Eingangsvariablen
+y ∈ V Menge der Ausgangsvariablen
+z ∈ W Menge der Zustandsvariablen
+
+- Mit Hilfe der beiden Funktionen f, g und dem Anfangszustand z⁰ kann das
+	Verhalten eines Automaten ausreichend beschrieben werden.
+		z⁺ = g(x,z)
+		y = f(x,z)
+		z⁰ = ( )
+		z := z⁺	Zustandsübergang der Speicherglieder
+- Bei Schaltwerken ist zusätzlich die Beschreibung der Speicherglieder erforderlich (Typ, Steuerung).
+- Die Anzahl der Zustände, die ein Automat bei Vorgabe von f, g und z⁰ überhaupt einnehmen kann, 
+	kann kleiner sein als die maximal mögliche Zustandsanzahl.
+
+Zustandsbestimmung
+Der Zustand z^n eines deterministischen endlichen Automaten (DEA) zum
+Zeitpunkt t_n bestimmt sich entweder aus dem Zustand z^(n-1) und dem Eingangswert
+x^(n-1) zum vorherigen Zeitpunkt t_(n-1) oder aus dem Anfangszustand z⁰ und der
+gesamten Folge der Eingangswerte x⁰ , ..., x^(n-1) von t_0 beginnend, bis zum vorherigen
+Zeitpunkt t_(n-1).
+Im momentanen inneren Zustand des Automaten sind implizit alle seine vorhergehenden Zustände enthalten.
+Beginnend mit einem Anfangszustand z⁰ bestimmt eine Folge von Eingangswerten x⁰ , ..., x^n eine Folge von Zuständen z¹ , ..., z^n und
+entsprechend eine Folge von Ausgangswerten y⁰ , ..., y^n .
+➔ Der Anfangszustand z⁰ ist dabei von entscheidender Bedeutung.
+➔ Hat der Zustandsvektor z eine Dimension von i (Zustandsvariablen), dann sind
+maximal 2^i verschiedene Zustände möglich --> Zustandskodierung.
+
+Mealy-Automat (allgemeinste Form):
+Mealy-Automaten sind übergangsorientiert.
+Änderungen des Einganges beeinflussen sofort den Ausgang. Sie stellen die
+allgemeinste Form der deterministischen endlichen Automaten dar.
+
+Moore-Automat:
+Moore-Automaten sind zustandsorientiert.
+Änderungen des Einganges beeinflussen den Ausgang erst zum
+Folgezustand. Sie stellen einen Sonderfall des Mealy-Automaten.
+
+Autonomer Automat:
+Autonome Automaten sind nicht eingangsgesteuert.
+Änderungen des Einganges beeinflussen somit weder den Ausgang noch
+den Folgezustand. Sie stellen einen Sonderfall des Moore-Automaten und
+verfügen nicht über einen Eingang.
+
+Darstellung von Schaltwerken:
+Es gibt verschiedene mögliche Formen der Schaltwerksdarstellung. Alle
+Varianten sind inhaltlich gleichwertig und können ineinander überführt
+werden. Bezüglich der Anschaulichkeit und Nutzbarkeit gibt es Unterschiede.
+- Boolesche Gleichungen (Automat)
+- Zustandsfolgetabelle (Automatentabelle)
+- Zustandsübergangstabelle
+- Zustandsgraph
+- Impulsfolgediagramm
+- Schaltplan (Logikplan)
+- Schaltsymbol (DIN-Norm)
+- Hardwarebeschreibungssprachen (VHDL, Verilog, SystemC, ...)
+- Programmiersprachen
+- Binäre Entscheidungsgraphen (BDD), Speicherelemente
 
 
-
-
-
-
-
-
-
-
-
+Analyse von Schaltwerken:
+1. Schaltplan	------------->	Speicherglieder z:=z⁺ ; z⁰
+|
+|		Eingänge x, Ausgänge y, Takt, Zustandskodierung z
+v
+2. Blockschaltbild <----------	Schaltnetze f, g
+|
+|		Herauslesen der Schaltfunktionen f, g und Analyse
+v
+3. Boolesche Gleichungen f, g ----------> Zustandsfolgetabelle
+|
+|	
+v
+4. Zustandsgraph <--------- Zustandsübergangstabelle
+	|				|
+	|				|
+	v				v
+	Schaltwerksbeschreibung, Funktionalität
 
 
 
