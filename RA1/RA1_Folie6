@@ -36,9 +36,216 @@ vorangegangenen Zeitpunkten sowie ggf. vom Anfangszustand.
 abstrakt gesehen ein endlicher Automat. Falls keine besonderen
 Vorkehrungen getroffen werden, können Schaltwerke beim Einschalten
 einen unbestimmten Anfangszustand annehmen.)
+
 Speicherglied (nach DIN44300) :
-Ein Bestandteil eines Schaltwerkes, der Werte von Schaltvariablen
-aufnimmt, aufbewahrt und abgibt.
+Ein Bestandteil eines Schaltwerkes, der Werte von Schaltvariablen aufnimmt, aufbewahrt und abgibt.
+
+Schaltnetz -> Speicherglied -> Schaltwerk
+
+Tabelle:
+x_1	x_2	y_1	y_2
+0	0	0	1
+0	0	1	0
+0	1	1	0
+1	0	0	1
+1	1	0	0
+
+Bei x_1 = x_2 = 0 gibt es zwei mögliche Belegungen für y_1 , y_2 ➔kein Schaltnetz
+(y_1 = y_2 = 0 und y_1 = y_2 = 1 sind keine Lösungen ➔ Widerspruch)
+Die Lösungen für y_1 , y_2 bei x_1 = x_2 = 0 sind von der vorherigen Belegung der Ausgänge y_1 , y_2 abhängig ➔ Speicherung, Zeitverhalten
+
+Zeitverhalten, Zustand:
+- Außer bei der Eingangsbelegung x_1 = x_2 = 1 werden immer komplementäre
+	Ausgangsbelegungen ausgegeben --> bistabile Kippschaltung, Flipflop.
+		x_1 ∧ x_2 = 0 → y_1 = y_2
+		x_1 ∧ x_2 = 1 → y_1 = y_2 = 0
+- Die bei der Eingangsbelegung x_1 = x_2 = 0 eingenommenen Ausgangswerte
+	werden als Zustand des Flipflop definiert 					--> gespeicherter Zustand.
+- Die mit den Eingangsbelegungen x_1 = 0, x_2 = 1 und x_1 = 1, x_2 = 0
+	eingenommene Ausgangswerte y_1 =1, y_2 =0 bzw. y_1 =0, y_2 =1 werden beim
+	Übergang der Eingangswerte zu x_1 = x_2 = 0 im Flipflop gespeichert.
+- Die mit der Eingangsbelegung x_1 = x_2 = 1 eingenommene Ausgangswerte
+	y_1 = y_2 = 0 können beim Übergang zu x_1 = x_2 = 0 im Flipflop nicht gespeichert
+	werden. Es erfolgt stattdessen nach einer Einschwingphase eine
+	Speicherung von y_1 = 1, y_2 = 0 oder y_1 = 0, y_2 = 1 				--> bistabile Kippschaltung.
+- Es handelt sich nicht um ein Schaltnetz, da keine eindeutige Abbildung der
+	Eingangsbelegungen auf die Ausgangsbelegungen möglich ist.
+
+Funktionelle Bedeutung der Zeit:
+
+R(t_n)	S(t_n)		Q(t_(n+1))	\Q(t_(n+1))	Zustandsfolgetabelle
+0	0		Q(t_n) 		\Q(t_n) 	speichern
+0	1		1		0		setzen
+1	0		0		1		rücksetzen
+1	1		-		-		nicht zulässig
+1
+
+SR-Flipflop
+Mit Ausnahme von R=S=1: Die den Eingangsbelegungen R(t_n), S(t_n) zum aktuellen Zeitpunkt t_n entsprechenden Ausgangswerte werden zum
+Folgezeitpunkt t_(n+1) als neuer Zustand des Flipflop Q(t_(n+1)), \Q(t_(n+1)) gespeichert.
+- R(t_n)=S(t_n)=0 	keine Zustandsänderung: Q(t_(n+1))=Q(t_n), \Q(t_(n+1))=\Q(t_n)
+- R(t_n)=0, S(t_n)=1 	Zustandsänderung: Q(t_(n+1))=1, \Q(t_(n+1))=0
+- R(t_n)=1, S(t_n)=0	Zustandsänderung: Q(t_(n+1))=0, \Q(t_(n+1))=1
+- R(t_n)=S(t_n)=1 	nicht zulässig, da Ausgangsbelegung nicht speicherbar
+
+SR-Flipflop, Zustandsfolgetabelle:
+SR-Flipflop (Basis-Flipflop)
+Kurzdarstellung
+R(t_n)→ R
+S(t_n)→ S
+Q(t_n)→ Q
+Q(t_(n+1)) → Q⁺
+
+(t_n)				(t_(n+1))
+R	S	Q		Q⁺		Zustandsfolgetabelle
+0 	0	0		0		speichern
+0	1	0		1		setzen
+1	0	0		0		rücksetzen
+1	1	0		- 		nicht zulässig
+
+0 	0	1		0		speichern
+0	1	1		1		setzen
+1	0	1		0		rücksetzen
+1	1	1		- 		nicht zulässig
+
+Abbildung aktueller Zeitpunkt --> Folgezeitpunkt
+
+SR-Flipflop, Zustandsübergangstabelle:
+Zustandsübergangstabelle
+(t_n)	→ 	(t_(n+1))	(t_n)
+Q 	→	Q⁺ 		R 	S
+0	→	0		X	0	speichern oder rücksetzen, nicht setzen	
+0	→	1		0	1	setzen
+1	→	0		1	0	rücksetzen
+1	→	1		0	X	speichern oder setzen, nicht rücksetzen
+
+Antwort auf die Frage: Welche Belegung der Eingänge R und S ist erforderlich, um vom Zustand Q in den Zustand Q⁺ zu gelangen (--> Zustandsübergang)?
+
+Zustandsgraph:
+Knoten: entsprechen den Zuständen
+Kanten: entsprechen den Zustandsübergängen Anfangszustand, einseitige Kante
+
+Zustandsfolgetabelle --> Zustandsübergangstabelle --> Zustandsgraph
+
+Darstellungsvarianten
+- Schaltsymbol
+- Zustandsfolgetabelle
+- Zustandsübergangstabelle
+- Zustandsgraph
+- Boolesche Gleichung
+
+Synchrone Speicherglieder:
+Asynchrone Speicherglieder:
+Der Zustand und die Ausgangswerte ändern sich unmittelbar nach der
+Änderung der Eingangswerte --> Datensteuerung (bisherige Betrachtung)
+
+Synchrone Speicherglieder:
+Der Zustand und die Ausgangswerte ändern sich synchron zu einem
+Taktsignal --> Taktsteuerung (Einführung eines Taktsignales)
+Taktsignal (Clock, Synchronisationssignal): C
+aktiver Taktzustand C=1 -->Taktzustandssteuerung
+aktive Taktflanke C↑ o. C: 0 →1 --> Taktflankensteuerung
+
+Synchrones SR-Flipflop
+- taktzustandsgesteuert
+- taktflankengesteuert
+
+Synchrones SR-FF, Zustandsfolgetabelle:
+
+Taktzustandsgesteuertes SR-Flipflop
+R	S	C	Q⁺
+0	0	1	Q	speichern
+0	1	1	1	setzen
+1	0	1	0	rücksetzen
+1	1	1	-	nicht zulässig
+X	X	0	Q 	speichern
+
+Taktflankengesteuertes SR-Flipflop
+R	S	C	Q⁺
+0	0	↑	Q	speichern
+0	1	↑	1	setzen
+1	0	↑	0	rücksetzen
+1	1	↑	-	nicht zulässig
+X	X	sonst	Q 	speichern
+
+Auf die Angabe des Taktes in der Zustandsfolgetabelle und im Zustandsgraphen
+kann verzichtet werden, wenn als Nebenbedingung die Art der Taktsteuerung mit angegeben wird (TZS oder TFS).
+Ist der Takt nicht aktiv (Zustand oder Flanke), so speichert das Flipflop in jedem Fall den aktuellen Zustand.
+
+Komplexe Speicherglieder:
+Ansteuerschaltungen für das SR-Flipflop zur Vermeidung der nicht zulässigen
+Eingangsbelegung S=R=1 und für spezielle Ansteuervarianten und Funktionen
+
+Flipflop Varianten:
+Typ 	Eingänge 	Funktionen
+T-FF	1 		invertieren, speichern
+D-FF	1		setzen, rücksetzen
+SR-FF	2		speichern, setzen, rücksetzen
+JK-FF	2		speichern, setzen, rücksetzen, invertieren
+
+Die einzelnen Flipflop-Typen lassen sich durch Zusatzbeschaltungen
+ineinander überführen. Alle Flipflop-Typen sind gleichwertig anwendbar.
+In der Computertechnik dominieren D-Flipflop (Delay-Flipflop) mit Taktflankensteuerung (teilweise auch mit Taktzustandssteuerung).
+
+D-Flipflop TFS, Darstellungsvarianten:
+Zustandsfolgetabelle
+D	Q⁺
+0	0
+1	1
+
+Zustandsübergangstabelle
+Q 	→ 	Q⁺	D
+0	→	0	0
+0 	→	1	1
+1 	→	0	0
+1	→	1	1
+
+Alle Zustandsübergänge erfolgen bei einer aktiven Taktflanke C↑ (positive Taktflanke) !
+Zustandsgraph; Boolesche Gleichung: Q⁺ := D
+
+Schaltwerke – Sequentielle Schaltungen:
+Bestandteile von Schaltwerken:
+- Speicherglieder (Flipflop)
+- Schaltnetze
+- Verbindungen, Rückführungen
+- Taktsignal (à synchrone Schaltwerke).
+
+Allgemeine Darstellungsform (Huffman-Modell)
+
+
+Zustandsautomaten, Automatentheorie:
+Automat – Modellmaschine
+- abstraktes mathematisches Modell -->
+- Kennzeichnung durch einen inneren Zustand --> Zustandsautomat
+- Automaten arbeiten sequentiell, gesteuert durch Takt oder Eingang.
+- Automaten durchlaufen eine Abfolge von Zuständen, beginnend mit einem Anfangszustand, in Abhängigkeit von Eingangswerten oder Takt.
+- Die Ausgabewerte der Modellmaschine sind von den aktuellen Eingabewerten und vom momentanen inneren Zustand der Maschine abhängig.
+
+Endliche Automaten:
+Die Menge der möglichen Eingabezeichen (Eingabealphabet), der Ausgabezeichen (Ausgabealphabet) und die Zahl der möglichen inneren
+Zustände (Zustandsmenge) sind endlich.
+
+Deterministische Automaten:
+Das Verhalten der Modellmaschine ist deterministisch, für eine gegebene Folge von Eingangswerten komplett vorhersagbar, determiniert.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
