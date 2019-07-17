@@ -328,9 +328,41 @@ v
 	v				v
 	Schaltwerksbeschreibung, Funktionalität
 
+Analysebeispiel: Foliensatz 6, Folie 31 - 34
 
+Schaltwerksbeschreibung:
+Das im Schaltplan gegebene Schaltwerk realisiert folgende Eigenschaften:
+- zwei Speicherglieder realisieren vier verschiedene Zustände
+- Moore-Automat
+- folgende Zustandsfolge wird in Abhängigkeit vom Eingang realisiert:
+	x = 0 : ( 0,0 ) → ( 0,1 ) → ( 1,1 ) → ( 1,0 ) → ( 0,0 ) → ( 0,1 ) → ...
+	x = 1 : ( 0,0 ) → ( 1,0 ) → ( 1,1 ) → ( 0,1 ) → ( 0,0 ) → ( 1,0 ) → ...
+- es handelt sich um einen 2-bit Gray-Code zyklischen Synchronzähler mit
+	Vor- und Rückwärtssteuerung (Zustandskodierung Gray-Code)
+	x = 0 : vorwärts zählen
+	x = 1 : rückwärts zählen
+- Zählrichtung kann in jedem beliebigen Zustand umgekehrt werden
+- ausgegeben wird direkt der Zählerzustand (Gray-Code)
+- Startzustand ist z⁰ = z_0 = (0,0).
 
-
+Synthese von Schaltwerken:
+1. Schaltwerksbeschreibung	------------->	Speicherglieder z:=z⁺ ; z⁰
+|
+|		Eingänge x, Ausgänge y, Takt, Zustandskodierung z
+v
+2. Blockschaltbild ---------->	Zustandsgraph
+|
+|
+v
+3. Zustandsfolgetabelle	<--------- Zustandsübergangstabelle
+|
+|		Herauslesen der Schaltfunktionen f, g und Synthese
+v
+4. Boolesche Gleichungen f, g ----------> Schaltnetze f, g + Flipflops
+	|				|
+	|				|
+	v				v
+5. Schaltplanentwurf, Schaltnetze + Speicherglieder + Anfangszustand
 
 
 
