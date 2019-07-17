@@ -1,0 +1,251 @@
+Befehlssatz
+
+Inhalt:
+- Begriffserklärung
+- Klassifikationen von Befehlssatz-Architekturen
+- Operandenspeicherung innerhalb der CPU
+- Explizit im Befehl adressierte Operanden
+- Operandenspeicherung, Adressierung
+- Operationen des Befehlssatzes
+- Typ und Länge der Operanden
+- Beispiele zu Befehlssatz-Architekturen
+- JVM (STACK)
+- R2000 (MIPS)
+- ALPHA AXP
+- Intel Pentium II
+- UltraSPARC II
+- AT91 ARM
+- AMD Athlon
+
+Begriffserklärung:
+Algorithmus: Die Informationsverarbeitung in einem Rechner erfordert die
+	schrittweise Umsetzung eines definierten Algorithmus. Der Algorithmus wird
+	als geordnete Folge von Anweisungen, Befehlen dargestellt.
+Befehl: Ein Befehl (instruction) ist eine eindeutig spezifizierte Arbeitsanweisung
+	an den Prozessor (CPU). Er ordnet eine Operation an, die in der Regel an
+	spezifizierten Daten (Operanden) vorzunehmen ist und ein Ergebnis
+	(Resultat) liefert. (maschinenlesbar → Maschinenbefehl)
+Befehlssatz: Der Menge aller in einem Prozessor implementierten Befehle
+	bildet den Befehlssatz. Die Architektur eines Rechners wird wesentlich durch
+	den Befehlssatz des verwendeten Prozessors bestimmt (ISC-Instruction Set
+	Computer → wesentliches Architekturmerkmal).
+	Die Menge aller Maschinenbefehle definiert die Maschinensprache.
+Befehlskomponenten: Die Komponenten eines Befehlssatzes sind die
+	Operation, der Datentyp und die Operanden, Adressierung des Befehls.
+Maschinensprache: Durch die Menge der im Prozessor realisierbaren
+	Maschinenbefehle ist eine hardwareabhängige Programmiersprache für den
+	Rechner, die Maschinensprache gegeben → Maschinenprogramme.
+	Rechner einer Prozessorfamilie realisieren eine weitestgehend ähnliche
+	Maschinensprache (Binärkompatibilität).
+
+Hauptmerkmale des Befehlssatzes:
+Befehlsvorrat: Die Menge aller verfügbaren Maschinenbefehle bildet den
+	Befehlsvorrat. Sie werden in der Befehlsliste geordnet zusammengefaßt.
+Befehlsformat: Die innere Struktur der Maschinenbefehle, dargestellt durch
+	Binärworte, wird durch das Befehlsformat bestimmt. Entsprechend dem
+	Befehlsformat werden die einzelnen Komponenten des Befehls binär codiert
+	im Befehlswort zusammengefaßt.
+Orthogonalität: Ein Befehlssatz heißt orthogonal, wenn eine möglichst kleine
+	Anzahl von grundlegenden Befehlen existiert, die beliebig miteinander
+	kombinierbar sind und sich in ihrer Funktionalität nicht oder nur wenig
+	überschneiden. Die Komponenten eines Befehlssatzes (Operation, Datentyp,
+	Adressierung) sollten orthogonal zueinander sein (voneinander unabhängig).
+	Jede Operation sollte jede relevante Adressierungsart bzw. jeden relevanten
+	Datentyp zulassen.
+Symmetrie: Ein Befehlssatz heißt symmetrisch, wenn jeder Befehl mit jedem
+	relevanten Datentyp ausgeführt werden kann, sowie jede zulässige
+	Adressierungsart benutzt werden kann.
+Regularität: Ein Befehlssatz heißt regulär, wenn er nach konsistent
+	anwendbaren Regeln strukturiert ist. Regularität und Orthogonalität stehen in
+	enger Wechselbeziehung.
+
+Befehlsstruktur:
+Die Befehlskomponenten (Operation, Datentyp und Operanden, Adressierung)
+werden im Befehlswort strukturiert zusammengefaßt und binär codiert. Die
+Befehlswortlänge ist allgemein nicht für jeden Befehl des Befehlssatzes einheitlich (byteweise abgestuft).
+Operationscode =  Operationsteil (Opcode)
+Operand & Adresse & ... = Operandenteil (Adressteil)
+Die Positionen von Opcode und Adressteil sind nicht fest (der Opcode kann am
+Anfang oder Ende des Befehlswortes stehen aber auch über das Befehlswort verteilt sein).
+Der Operandenteil kann je nach Befehlsformat gleichzeitig auch mehrere
+Operanden und oder Adressen, wie auch andere Informationen enthalten.
+
+CISC/RISC:
+Je nach Umfang des im Prozessor realisierten Befehlssatzes können zwei
+Kategorien von Befehlssatz-Architekturen (ISA) unterschieden werden:
+1. CISC (Complex Instruction Set Computer)
+	Befehlsvorrat: 400..500 Befehle/Befehlsformate
+	z.B.: DEC VAX, IBM 360, Intel x86
+2. RISC (Reduced Instruction Set Computer)
+	Befehlsvorrat: 40..50 Befehle/Befehlsformate
+	z.B.: Sun SPARC, SGI MIPS, DEC ALPHA, HP PARISC, IBM PowerPC
+Diese Unterscheidung beruht nicht primär auf Unterschieden in der Hardware-Realisierung, dem eingesetzten Betriebssystem, . . .
+
+Motivation für RISC:
+90/10 Regel beim Befehlssatz
+Bei einem komplexen Befehlssatz (CISC) werden 90% aller Operationen mit nur 10% der Befehle des Befehlssatzes durchgeführt.
+R. Chou und M. Horowitz: 
+	"The goal of any instruction format should be: 
+	(1) simple decode, 
+	(2) simple decode, 
+	(3) simple decode."
+Albert Einstein: "Keep it simple, as simple as possible, but no simpler."
+
+CISC:
+• Befehlsworte und Opcode in komplexen Befehlsformaten mit variablen
+	Längen und vielen komfortablen Adressierungsarten
+• leistungsfähige, komplexe Befehle führen zu einer Verkürzung des
+	Maschinenprogramms und damit zur Erhöhung der Codedichte
+• Realisierung der Maschinenbefehle durch Ausführen von Mikroprogrammen
+	im Prozessor (der Befehlszyklus wird durch eine Mikroprogramm-Steuerung realisiert)
+• Anzahl der benötigten Taktzyklen pro Befehl ist unterschiedlich (mehr als 1 Taktzyklus/Befehl)
+
+RISC:
+• stark reduzierter Umfang an Befehlsformaten und Adressierungsarten (meist
+	weniger als 4 Befehlsformate und 4 Adressierungsarten)
+• einfache wenige Basisbefehle, aus denen komplexe Operationen
+	zusammengestellt werden können
+• Load/Store-Architektur, ALU-Befehle realisieren keine Speicherzugriffe,
+	Speicherzugriffe erfolgen nur über Load/Store-Befehle
+• Universalregister-Architektur (meist 32 oder mehr Universalregister)
+• festverdrahtete Maschinenbefehle und fester Befehlszyklus, keine Mikroprogramm-Steuerung
+• Ausführung der meisten Befehle in nur einem Taktzyklus
+
+Klassifikationen von Befehlssatz-Architekturen:
+Merkmale der Klassifikation
+• Operandenspeicherung innerhalb der CPU, wo und wie
+	- Zahl der explizit im Befehl adressierten Operanden
+	- Operandenspeicherung, Adressierung, wie spezifiziert
+	- Operationen des Befehlssatzes
+	- Typ und Länge der Operanden, wie spezifiziert
+• Alle bekannten Rechnerarchitekturen stellen temporären Operandenspeicher 
+	innerhalb der CPU bereit (Register, Stack, Akkumulator).
+
+Operandenspeicherung innerhalb der CPU:
+Hauptvarianten, Alternativen der Operandenspeicherung
+temporärer		explizite	Quelle für	Ziel für	Zugriff auf
+Operandenspeicher 	Operanden 	Operanden 	Resultate 	Operanden
+
+Stack			0 		Stack 		Stack 		PUSH/POP auf Stack
+Akkumulator		1		ACCU/Speicher	ACCU		LOAD/STORE auf ACCU
+Registersatz		2 oder 3	Register/	Register/	LOAD/STORE auf Register
+(Universalregister)			Speicher 	Speicher
+
+Stack-Architektur (stack architecture):
+	Stack - Speicher nach dem LIFO Prinzip (last in - first out)
+	SP - stack pointer (Zeiger auf zuletzt eingetragene Daten)
+	PUSH - Operand vom Speicher in den Stack transportieren, automatisches pre-dekrement
+	POP - Operand vom Stack in den Speicher transportieren, automatisches post-inkrement
+
+Akkumulator-Architektur (accumulator architecture):
+	ACCU - Akkumulator (Universalregister)
+	LOAD - Operand vom Speicher in den ACCU transportieren
+	STORE - Operand vom ACCU in den Speicher transportieren
+
+Universalregistersatz-Architektur (GPR architecture):
+	GPR - Universalregistersatz (general-purpose register file)
+	LOAD - Operand vom Speicher in den GPR transportieren
+	STORE - Operand vom GPR in den Speicher transportieren
+
+Vor- und Nachteile der Architekturtypen:
+
+Typ 		Vorteile 		Nachteile
+Stack 		einfachstes Modell, 	kein direkter Zugriff auf Stack,
+		gute Codedichte 	nur relativ zum SP → Engpass
+ACCU		kurze Befehle		ACCU ist einziger temporärer Speicher,
+		minimale Hardware 	höchster Speicherverkehr → Engpass
+GRP 		allgemeinstes Modell, 	alle Operanden explizit adressieren,
+		Zwischenspeicherung 	lange, komplexe Befehlswörter,
+		der Operanden		schlechte Codedichte
+
+
+Motivation für Universalregister-Architekturen
+1. Register erlauben einen schnelleren Zugriff auf die Operanden
+2. einfachere Adressierung der Register (kurze Adresslängen)
+3. Einbeziehung der Spezialregister in den Universalregistersatz
+4. nutzbar als zusätzliche Ebene in der Speicherhierarchie
+5. vielfältige Möglichkeiten der Zwischenspeicherung von Operanden
+6. für Compiler einfacher und effektiver nutzbar (z.B. Variablenübergabe)
+
+Explizit im Befehl adressierte Operanden
+Grundsätzlich werden unterschieden:
+monadische Operation: (unäre, einstellige Operation) B := op A
+dyadische Operation: (binäre, zweistellige Operation) C := A op B
+
+Für eine zweistellige Operation (Verknüpfung « op » von zwei Operanden zu
+einem Resultat) sind mindestens folgende Angaben erforderlich:
+• Art der Operation → op
+• Adresse des 1. Operanden (1. Quelloperand) → A
+• Adresse des 2. Operanden (2. Quelloperand) → B
+• Adresse für das Resultat (Zieladresse) → C
+
+Folgende zusätzliche Angaben sind bei vollständiger Beschreibung eines
+Befehls mit Programmverzweigungen noch denkbar:
+• Adresse des 1. Folgebefehls ohne Verzweigung → NI0
+• Adresse des 2. Folgebefehls bei Verzweigung → NI1
+Operanden und Resultate (Adressen und Befehle) stehen entweder in prozessorinternen temporären Speichern, z.B. Registern 
+oder im Hauptspeicher. Beide werden durch Adressen angesprochen.
+Die Codierung aller Angaben in einem Befehlswort führt zu einem 5-Adress-Befehl. Der Operandenteil umfaßt dabei die 1. und 2. Quelladresse
+der Operanden, die Zieladresse für das Resultat und die beiden Adressen der möglichen Folgebefehle.
+
+5-Adress-Befehlsformat:
+Operationsteil = Opcode (op)
+Operandenteil (Adressteil) = 1. Quelladr. (A) | 2. Quelladr. (B) | Zieladresse (C) | 1. Folgebefehl NI0 | 2. Folgebefehl NI1
+
+Beispiel
+Opcode: 		8 Bit		→ 256 verschiedene Befehle codierbar
+Adressraum:		32 Bit		→ 4 GByte Speicher adressierbar
+Befehlswortlänge:	168 Bit		→ 6 32-Bit-Worte pro Befehl
+
+Übliche Befehlswortlängen z.B. 32 . . . 64 Bit ( → 168 Bit sehr uneffektiv)
+→ Reduzierung des Operanden-/Adressteils (Erhöhung der Codedichte)
+
+Massnahmen zur Reduzierung des Operandenteils:
+• Befehlszähler: enthält die Adresse für den unmittelbaren Folgebefehl
+• Verzweigungs-/Sprungbefehle: enthalten Adressen der Folgebefehle
+• implizite Adressierung: Quell oder Zieladressen implizit im Operationsteil
+• überdeckte Adressierung: gleichzeitige Nutzung als Quell-/Zieladresse
+• Direktoperanden: Operanden werden direkt im Operandenteil codiert
+• Registeradressen: gesonderter Adressraum, wesentlich kürzere Adressen
+• mehrstufige Adressierung: Umrechnung der Quell- und Zieladressen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
