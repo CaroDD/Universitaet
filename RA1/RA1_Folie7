@@ -1,0 +1,405 @@
+Architekturkonzepte
+
+Inhalt:
+- Darstellung und Beschreibung von Rechern
+- Rechner- und Prozessorarchitektur
+- Schichtenmodell des Rechners
+- Hauptkomponenten des Rechners
+- Verbindungsstruktur des Rechners
+- Klassifikation von Rechnerarchitekturen
+- Rechnersysteme
+- Zusammenfassung Architekturkonzepte
+
+Darstellung und Beschreibung von Rechern:
+Rechner sind dem Prinzip nach nichts anderes als hochkomplexe, oft
+unüberschaubare, endliche Automaten, also elektrische Schaltwerke.
+Hauptbestandteile von Schaltwerken sind:
+- Ein-, Ausgangsklemmen,
+- Verknüpfungsglieder,
+- Schaltnetze,
+- Speicherglieder,
+- Verbindungsnetzwerk.
+Die Anzahl der innere Zustände eines Schaltwerkes ergibt sich direkt aus der
+Anzahl der vorhandenen Speicherglieder.
+
+Schaltwerk - Rechner
+			"einfache" Schaltwerke		Rechner
+Ein-, Ausgänge 		endliche Anzahl			nahezu unendliche Vielfalt
+Schaltwerke 		einfache Logik 			komplex, verteilt
+Speicherglieder 	konzentriert angeordnet 	über das System verteilt
+innere Zustände 	überschaubar, gering 		unüberschaubar, extrem
+Vernetzung 		einfache Rückführungen 		hochkomplex, lokal, global
+Darstellung 		Logische Schaltung 		hochkomplexe Systeme
+Beschreibung 		Boolesche Gleichungen 		Automaten-, Architekturmodelle
+
+Rechner können aufgrund ihrer Komplexität nicht wie Schaltwerke dargestellt
+und beschrieben werden. Die Darstellung und Beschreibung von Rechnern
+erfolgt daher auf einem relativ hohem Abstraktionsniveau (Architekturebene).
+
+Darstellungs- und Beschreibungsebenen:
+Ebene 				Darstellung / Beschreibung
+Architekturebene: 		System- und Verhaltensdarstellung
+				Hardware-, Architekturbeschreibungssprachen
+Register-Transfer-Ebene: 	Vernetzung von Komponenten, Module, Busse
+				Hardwarebeschreibungssprachen
+Logikebene: 			Vernetzung von Verknüpfungs- und Speichergliedern
+				Netzlisten, Logikplan
+Schaltungsebene: 		Bauelemente, Verbindungen, Technologie
+				elektrische Netzwerke, Strom, Spannung, Ladung
+
+Einfache Modelle für Rechner:
+Für die einfache Beschreibung und Modellierung von Rechnern sind spezielle,
+erweiterte Automatenmodelle erforderlich.
+
+Turing-Maschine
+Einfaches theoretisches Automatenmodell, das vor allem für theoretische
+Untersuchungen des Rechners gut geeignet ist: Berechenbarkeit – Entscheidbarkeit – Akzeptierbarkeit.
+Zur Beschreibung praktischer, realer Rechner nicht geeignet.
+
+von-Neumann-Rechner
+Erweitertes Automatenmodell zur Beschreibung voll programmgesteuerter Rechner. 
+Mit diversen Erweiterungen zur Beschreibung praktischer, realer Rechner geeignet.
+
+Rechner- und Prozessorarchitektur
+Rechnerarchitektur
+• Analyse und Synthese von Rechnerstrukturen und deren Organisationen
+• Aufbau und Eigenschaften von Rechnern als einheitliches System
+• Untersuchung des äußeren Erscheinungsbildes eines Rechners
+• Weitestgehende Abstraktion von inneren Vorgängen des Rechners
+• Klassifizieren, Vergleichen, Bewerten und Entwerfen von Rechnern
+• Komponenten und deren Verbindungen in der Struktur von Rechnern
+• Kommunikations- und Verarbeitungsstruktur und deren Organisation
+• Implementierung und Verhältnis von Hard- und Softwarerealisierung
+
+Prozessorachitektur
+• Beschränkung auf den Prozessor (auch Mikroprozessor, Mikrocontroller) als
+integrierte Verarbeitungseinheit und seine Verbindungen nach außen.
+
+
+Schichtenmodell des Rechners:
+Schicht 6	Programmiersprache (HLL)	
+						Compiler
+Schicht 5	Assemblersprache (ASL)		
+						Assembler
+Schicht 4	Betriebssystemmaschine (OSL)	
+						Betriebssystem
+Schicht 3	Befehlssatzarchitektur (ISA)
+						Mikroprogramm
+Schicht 2	Mikroprogrammsteuerwerk (MPL)
+						Steuerdaten
+Schicht 1	Digitale Schaltwerke (FSM)
+						Strom, Spannung
+Schicht 0	Physikalische Struktur
+
+Schicht 1-3: Hardware
+Schicht 3-6: Software
+
+Vereinfachtes Schichtenmodell
+Software-Systeme		Nutzerprogramm, Dienstprogramme
+	|			Compiler, Assembler, Betriebssystem
+	v
+Befehlssatz-Architektur (ISA)	Instruction Set Architecture
+	|
+	v	
+Hardware-Systeme (HSA)		Steuerwerke, Schaltwerke, Vernetzung
+				Verknüpfungsglieder, Speicherglieder
+
+Der Befehlssatz als Architekturmerkmal eines Rechners, Instruction Set
+Architecture (ISA), definiert die Software – Hardware – Schnittstelle,
+Software ⇒ Hardware-System-Architecture (HSA).
+
+Hauptkomponenten des Rechners:
+Eingabegeräte	----->	 Zentralprozessor (CPU) ----->	Ausgabegeräte
+Eingabedaten			|			Ausgabedaten
+				v
+				Hauptspeicher
+				(Primärspeicher)
+				|
+				v
+				Zusatzspeicher
+				(Sekundärspeicher)
+				|
+				v		
+				Zusatzspeicher
+				(Archivspeicher)
+
+
+Hauptkomponenten:
+CPU  - Zentrale Verarbeitungseinheit mit Rechenwerk und Steuerwerk (Mikroprozessor)
+Primärspeicher -  Hauptspeicher (DRAM, SRAM)
+Sekundärspeicher - Zusatzspeicher mit direktem Zugriff (Festplatte)
+Archivspeicher - Massenspeicher mit verzö gertem Zugriff (CD, DVD, Tape)
+Systembus - verbindet alle Komponenten des Computers miteinander (PCI-Bus)
+Ein-/Ausgabegeräte - realisieren die Kommunikation des Computers nach außen 
+			(Monitor, Keyboard, Maus, Drucker, Netzkarte, Modem, Sound, . . .)
+
+Verbindungsstruktur des Rechners:
+Die Verbindungsstruktur eines Rechners stellt ein Architekturmerkmal bzgl. der
+Verbindung der einzelnen Rechnerkomponenten untereinander bzw. auch
+zwichen den Komponenten und der Umwelt dar (Ein-/Ausgabekomponenten).
+Die Verbindungen können als Stern, Bus, Ring, Baum, Feld, Crossbar
+(steuerbarer Kreuzschienenverteiler), . . . ausgeführt sein
+
+Busstrukturen:
+Princeton Architektur 			Harvard Architektur
+(J.von Neumann) 			(H. Aiken)
+Speicher (Daten / Befehle)		Befehlsspeicher			Datenspeicher
+	|					|			|
+	| Systembus				| Befehlsbus		| Datenbus
+ _______|_________				|			|
+|		  |				v			v
+Befehls-	Daten-				Befehls-		Daten-
+prozessor	prozessor			prozessor		prozessor
+
+Die Busse können unterteilt sein: Datenbus, Adressbus, Steuerbus, Befehlsbus.
+Weitere Komponenten und weitere abgesetzte Busse sind möglich.
+
+Klassifikation von Rechnerarchitekturen:
+
+- Ordnungsstruktur und -prinzip von Rechnerarchitekturen
+- Anordnung, Organisation und Verbindungen der Rechnerkomponenten
+- Operationsprinzip, Verarbeitungsprinzip, Kommunikationprinzip des Rechners
+- Befehls- und Datenflü sse und deren Organisation
+- Parallelität auf verschiedenen Ebenen
+- Prinzip der Datenspeicherung und -konsistenz des Rechners
+
+Eine eindeutige Klassifikation von Rechnerstrukturen ist nicht möglich. Vielmehr
+werden durch die Klasseneinteilung nur Grundprinzipien hervorgehoben. Die
+einzelnen Klassen können sich dabei weitgehend überdecken.
+Die Zuordnung zu den einzelnen Klassen erfolgt jeweils nach der
+hervorzuhebenden Haupteigenschaft der Rechnerarchitektur.
+Eine Architektur kann somit auch mehreren Klassen zugeordnet werden.
+
+Kontrollflußarchitektur
+Die Daten werden direkt in den Befehlen (Instruktionen) mitgeführt oder durch diese adressiert (zugewiesen).
+Die Abarbeitung wird durch die Befehlsfolge, den Kontrollfluß festgelegt.
+Befehl IA: ADD D2 D6 D4 → D2:=D6+D4
+Kontroll- und Datenfluß sind orthogonal. Der Kontrollfluß steuert den Datenfluß.
+
+Datenflußarchitektur:
+Die Befehle werden direkt im Datenfluß mitgeführt oder in der Verarbeitungseinheit
+durch den Datenfluß konfiguriert.
+Die Abarbeitung wird durch den Datenfluß und die Hardwarekonfiguration bestimmt.
+Der Datenfluß enthält implizit den Kontrollfluß, er bestimmt die Abarbeitung.
+
+
+Kontrollflußarchitektur - Datenflußarchitektur
+Kontrollflußarchitektur
+/\
+| von-Neumann 	RISC,CISC - Universalprozessor (GPP)
+| Harvard 	ASIP - Applikationsspezifischer Befehlssatzprozessor
+| Superscalar	DSP - Digitaler Signalprozessor
+| VLIW		ASSP Applikationsspezifischer Signalprozessor
+|		RPA - Rekonfigurierbare Computerarchitektur
+|		CCM - Custom Computing Machine
+|		Systolische Feld-Architekturen
+|		Xputer, Datenflußrechner
+V
+Datenflußarchitektur
+
+--> Breites Spektrum von Architekturen zwichen Kontroll- und Datenflußarchitektur.
+
+Parallelitätsebenen in Rechnerarchitekturen:
+Bitebene: 				BLP 	Die Bitstellen eines Datums oder mehrere
+	(Bit Level Parallelism)			Daten werden parallel verarbeitet.
+Befehlsebene:				ILP 	Mehrere Befehle eines Kontrollflusses
+	(Instruction Level Parallelism) 	werden parallel ausgeführt.
+Kontrollflußebene:			MT 	Parallele Ausführung mehrerer Teile (Threads)
+	(Thread Level Parallelism)		eines Kontrollflusses (Multithreaded).
+Programmebene:				MP 	Parallele Ausführung mehrere Programme,
+	(Application Level Parallelism)		Prozesse (Multiprocessing).
+Datenflußebene:				DFP 	Die Datenflußverarbeitung ist vom Konzept
+	(Data Flow Processing)			her hochparallel.
+
+Bit- und Befehlsebenenparallelität werden feinkörnig (fine grained) bezeichnet,
+Kontrollfluß- und Prozeßparallelität dagegen grobkörnig (coarse grained).
+
+Parallelarchitekturen nach Flynn:
+Klassifikation nach M. Flynn (1972)
+Zweidimensionale Klasseneinteilung der Rechnerarchitekturen nach der Anzahl der Befehls- und Datenströme.
+-> SISD (Single Instruction Stream, Single Data Stream)
+-> SIMD (Single Instruction Stream, Multiple Data Stream)
+-> MIMD (Multiple Instruction Stream, Multiple Data Stream)
+-> MISD (Multiple Instruction Stream, Single Data Stream) - nicht realisierbar
+
+Klasseneinteilung nach Flynn:
+SISD Single Instruction – Single Data (von-Neumann Rechnerkonzept).
+MISD Multiple Instruction – Single Data, leere Klasse (Pipeline-Rechner ?).
+SIMD Single Instruction – Multiple Data
+	Feldrechner: Parallele Anordnung von gleichartigen Verarbeitungs-
+		einheiten, die alle gleichzeitig den selben Befehl ausführen.
+	Vektorrechner: Anordnung der Verarbeitungseinheiten als Pipeline zur
+		zeitlich überlappten Befehlsabarbeitung (Vektor-, Matrixoperationen).
+MIMD Multiple Instruction – Multiple Data, Multiprocessor und Multicomputer.
+	SMT: Simultaneous Multithreaded (Intel’s Hyperthreading – HT)
+	MTA: Multithreaded Architecture
+	MPP: Massively Parallel Multiprocessing
+	SMP: Symmetric Multiprocessing
+	COW: Cluster Of Workstations
+
+Speicheranbindung bei MIMD-Systemen:
+UMA 		Uniform Memory Access, globaler gemeinsamer Adressraum
+NUMA 		Non Uniform Memory Access, verteilter gemeinsamer Adressraum
+NORMA 		No Remote Memory Access, physikalisch und programmtechnisch verteilter getrennter Speicher (z.B. Cluster)
+COMA 		Cache-Only Memory Access
+CC-NUMA 	Cache Coherent NUMA
+NCC-NUMA	Non Cache Coherent NUMA
+UCA 		Uniform Communication Architecture
+NUCA 		Non Uniform Communication Architecture
+DSM 		Distributed Shared Memory
+VSM 		Virtual Shared Memory
+
+
+Übersicht Klassifikation nach Fynn:
+Rechnerarchitektur
+	SISD
+	SIMD
+		Feldrechner
+		Vektorrechner
+	MISD
+	MIMD
+		Multiprozessor
+			UMA
+			COMA
+			NUMA
+		Multicomputer	
+			MPP
+			COW
+
+Klassifikation nach Verbindungsnetzwerken:
+Verbindungsnetzwerk:
+	statisch oder dynamisch konfigurierbar, rekonfigurierbar 
+	Stern, Bus, Ring, Baum, Feld, Crossbar, . . .
+Verbindungstopologie:
+	regulär, irregulär oder hierarchisch
+Verbindungsaufbau:
+	zentral oder verteilt
+Blockierungsverhalten:
+	blockierend, blockierungsfrei, oder rearrangierbar blockierungsfrei
+Betriebsverhalten:
+	synchron oder asynchron
+Vermittlungsart:
+	Leitungsvermittlung, Paketvermittlung oder Cut-Through-Routing
+
+Klassifikation nach W. Giloi:
+Rechnerarchitektur: Element im kartesichen Produkt von Operationsprinzip und Struktur
+Das Operationsprinzip definiert das funktionelle Verhalten der Architektur durch
+Festlegung einer Informationsstruktur und einer Kontrollstruktur. Die Informa-
+tionsstruktur lässt sich als eine Menge von abstrakten Datentypen spezifizieren.
+Die Struktur einer Rechnerarchitektur ist gegeben durch Art und Anzahl der
+Hardware-Betriebsmittel sowie die sie verbindenden Kommunikationseinrichtungen.
+
+Operationsprinzipien:
+• von Neuman Operationsprinzip,
+• Operationsprinzipien der Programmparallelität,
+• Operationsprinzipien der Datenparallelität.
+
+Operationsprinzipien nach W. Giloi:
+Implizite Parallelität: 	Explizite Parallelität:
+• Operationsebene,		• standardisierten Programmstruktur,
+• Anweisungsebene,		• standardisierten Datenstrukturen, Datenparallelitä t,
+• Prozeßebene,			• selbst-beschreibenden Informationseinheiten,
+• Programmebene.		• selbst-identifizierenden Daten.
+
+Streng sequentieller Kontrollfluß des v. Neumann Rechners:
+• konventioneller sequentieller Kontrollfluß für das Programm und seine Daten,
+• sequentieller Kontrollfluß aber gleichzeitig parallele Ausführung mehrerer Operationen in jedem Rechenschritt,
+• sequentieller Programmkontrollfluß bei assoziativem Zugriff auf die Daten,
+• viele sequentielle Kontrollflüsse gleichzeitig
+
+PMS Klassifikation (Processor, Memory, Switch):
+Hardware-Beschreibungssprache für Rechnerarchitekturen (Bell & Newell, 1971)
+PMS-Symbole:
+Symbol 	Bezeichnung 	Bemerkung
+C	Computer	vollständige Rechnerbeschreibung
+P	Processor	Prozessorkomponente
+M	Memory		aufteilbarer adressierbarer Speicher
+S	Switch		steuerbare Verbindungskomponente (Bus, Crossbar, Mux)
+. . .	. . .		. . .
+
+PMS-Darstellung auch als Strukturdiagramm (Foliensatz 7, Folie 27)
+
+Rechnersysteme:	
+Computertyp 		Hauptanwendung
+
+Wegwerfcomputer 	Glückwunschkarten, Logistik, Identifikation
+Controller 		Eingebettete Systeme, Spezialanwendungen
+Signalprozessor 	Digitale Signalverarbeitung, Kommunikationstechnik
+Personalcomputer 	Universalrechner, Arbeitsplatzrechner
+Workstation, Server 	Arbeitsplatzrechner, Netz-Server, Daten-Server
+Workstation-Cluster 	Abteilungsrechner, Hochleistungsrechner
+Mainframe 		Großrechner, Hintergrundrechner, Stapelverarbeitung
+Supercomputer 		Hochleistungsdatenverarbeitung, Wetterberechnung
+			HPC (High Performance Computing)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
