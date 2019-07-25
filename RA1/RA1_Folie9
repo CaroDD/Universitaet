@@ -209,19 +209,331 @@ Massnahmen zur Reduzierung des Operandenteils:
 • Registeradressen: gesonderter Adressraum, wesentlich kürzere Adressen
 • mehrstufige Adressierung: Umrechnung der Quell- und Zieladressen
 
+Befehlsformate:
+- 3-Adress-Befehlsformat
+- 2-Adress-Befehlsformat
+- 1-Adress-Befehlsformat
+- VLIW-Befehlsformat
+	Aus mehreren Einzelbefehlen zusammengesetzter komplexer Befehl
+	kein festes Befehlsformat, an Operation und Architektur angepasst
+	speziell für die Nutzung von Parallelität, (z.B. DSP-Architekturen)
 
 
+Zuordnung Befehlsformat - Architekturtyp:
+Die GPR-Architektur (3-Adress-Maschine) ist bzgl. der verschiedenen
+Befehlsformate am universellsten, alle Formate sind prinzipiell möglich.
+
+Bei der Stack-Architektur (0-Adress-Maschine) ist die Universalität nicht direkt
+sichtbar, Organisation und Funktionalität des Stacks im Zusammenhang mit der
+ALU sind entscheidend.
+
+Operandenspeicherung, Adressierung:
+Folgende Betrachtungen nur für Universalregister-Architekturen!
+Wesentliche Befehlssatz-Charakteristiken bzgl. der Operanden:
+1. Operandenzahl (für typischen ALU-Befehl)
+	2-Adress-Befehlsformat (diadisch)
+	3-Adress-Befehlsformat (triadisch)
+2. Zahl der Speicheradressen (Speicheroperanden)
+	0 . . . 3 Adressen für Speicherzugriffe
+Die Adressen des Operandenteils, die nicht für einen Speicherzugriff genutzt
+werden, werden folglich entweder für Registeradressen oder auch für
+Direktoperanden verwendet.
+
+Kombinationen von Register- und Speicheradressen
+Klassifizierung der Kombinationen Register-Speicher
+(Typen von Universalregister-Architekturen):
+RR	Register - Register	(Load/Store-Architektur)
+RS	Register - Speicher
+SS	Speicher - Speicher
+
+Architekturen, die keinen Speicherzugriff für einen typischen ALU-Befehl
+erlauben, werden auch Load/Store-Architekturen genannt.
+
+Vor- und Nachteile der einzelnen Typen:
+Typ 	Vorteile 			Nachteile
+RR 	einfache Befehlscodierung 	höhere Befehlsanzahl
+	feste Befehlswortlänge 		gesonderte Load/Store-Befehle
+	einfache Codegenerierung 	relativ schlechte Codedichte
+	einfache Taktsteuerung
+
+RS 	Datenzugriff ohne gesonderte	Operanden nicht äquivalent
+	Load/Store-Befehle
+	gute Codedichte
+
+SS	kompakteste Form		große Befehlslängenunterschiede
+	keine Register für 		viele Speicherzugriffe
+	Zwischenwerte
+RISC-Befehlssätze → Load/Store-Architekturen (nicht generell)
+
+Speicheradressierung:
+Interpretation von Speicheradressen
+Byte-orientierter Speicherzugriff (kleinste adressierbare Einheit)
+→ Probleme bzgl. Byte-Reihenfolge bei Zugriff auf größere Einheiten
+(Halbwort-, Wort-, Doppelwort-Zugriff, . . . )
 
 
+Vereinbarungen zur Bytereihenfolge in einem Wort...
+Bezeichnung		Bedeutung 				Beispiel
+little endian 		Byteadresse x...x00 liegt bei		Intel 80x86,
+byte ordering 		niedrigster Wertigkeit im Wort 		DEC VAX
+
+big endian		Byteadresse x...x00 liegt bei		MIPS,
+byte ordering 		höchster Wertigkeit im Wort		SPARC
+
+Für die Verarbeitung im Rechner ist die Byte-Reihenfolge meist unbedeutend.
+Probleme allgemein nur bei Byte-Wort-Umrechnungen.
+Beim Datenaustausch zwischen Rechnern unterschiedlicher Byte-Reihenfolge
+ist diese unbedingt zu beachten (ggf. Konvertierungen).
+
+Speicher-Alignment:
+Der Zugriff auf Einheiten, die größer als ein Byte sind, kann ausgerichtet (aligned)
+oder nicht ausgerichtet (misaligned) erfolgen. Ein Zugriff zu einer Einheit der
+Länge m Bytes ab der Byte-Adresse A ist ausgerichtet, wenn gilt: A mod m = 0 .
+
+Alignment-Restriktion:
+Soll z.B. auf ein Wort auf einer nicht ausgerichteten Halbwortgrenze (x...x010)
+zugegriffen werden, so müssen bei ausgerichtetem Wortzugriff die beiden
+benachbarten Worte (x...x000 und x...x100) eingelesen werden und
+anschließend die darin enthaltenen Halbworte (x...x010 und x...x100) wieder zu
+einem Wort zusammengesetzt (ausgerichtet) werden.
+Ein nicht ausgerichteter Speicherzugriff erfordert im allgemeinen mehrere
+ausgerichtete Zugriffe und eine anschließende Ausrichtung
+(Ausrichtungsnetzwerk). Ausgerichtete Zugriffe sind allgemein schneller.
+Ausgerichtete Zugriffe erfordern bei kürzeren Einheiten als die Registergröße
+ebenfalls ein Ausrichtungsnetzwerk (Multiplexer-Netzwerk, Barrel-shifter).
+
+Adressierung:
+Operanden, Adressen und Befehle können im Hauptspeicher oder im
+Registerspeicher stehen. Sie werden über ihre Adressen angesprochen, die aus
+verschiedenen Komponeten zusammengesetzt sein können.
+
+Adressen: Adressen beziehen sich auf Konstante (Direktoperand), Register
+	(Registeradresse) oder den Hauptspeicher (Speicheradresse).
+
+Statische, absolute Adressierung (physische Adressen): 
+	Die physischen Adressen werden fest, statisch zur Programmierzeit
+	angegeben. Programme und Daten sind vollständig lageabhängig.
+
+Dynamische, relative Adressierung (effektive Adressen): Die effektive
+	Adresse wird erst zur Laufzeit durch eine Adressrechnung gewonnen. Im
+	Adresswerk werden dann aus den effektiven Adressen die eigentlichen
+	physischen Adressen für die Adressierung gebildet.
 
 
+Relative Adressierung:
+Formale Notation der Adressrechnung
+Hauptspeicheradresse		(Assembler)	:	A
+Registeradresse			(Assembler)	:	RA
+Direktoperand			(Assembler)	:	#Operand
+Hauptspeicherinhalt von A	(Assembler)	:	(A) oder @(A) auch ((A))
+Hexadezimalwert			(Assembler)	:	$HEX
+Hauptspeicherinhalt von A			:	M[A]
+Registerinhalt von RA				:	RA
 
+Adressierungsarten:
+Adressierungsarten sind alle Möglichkeiten eines Prozessors aus relativen
+Adressen effektive/physische Adressen zu berechnen (zur Laufzeit).
 
+Vorteile des effektiven Einsatzes der Adressierungsarten:
+• Einsparung von Hauptspeicherplatz, Rechenzeit und Programmierzeit
+• Lageunabhängigkeit der Daten und Programme (relative Adressierung) (Position-Independent Code, PIC)
+• Wiederverwendbarkeit von Programmteilen (Unterprogrammtechnik, ...)
+• Ermöglichung der wiederholten Befehlsausführung auf verschiedene Daten
+	(z.B. Tabellen, Schleifen), sowie bedingten Operationen (Assembler-Programmierung)
 
+Adressierungsarten:
+Adress.art 			Beschreibung
+implizit			Adressen, Operanden sind durch den Opcode selbst festgelegt
+immediate			Operand wird im Befehl explizit mitgeführt (Direktoperand)
+direkt				Adresse wird im Befehl explizit mitgeführt (Direktadresse)
+indirekt 			Befehl enthält die Adresse des Speicherplatzes in dem sich
+				die eigentliche Adresse befindet (Adresse von Adresse)
+relativ				Befehl enthält einen Offset (Verschiebung) mit dem die Adresse
+(based)				relativ zu einer Basisadresse (Basisregister) gebildet wird
+indiziert			Befehl enthält eine Basisadresse, die durch Addition eines
+				Index (Indexregister) modifiziert wird
+segmentiert 			Adresse wird an den Inhalt eines Segmentregisters angehängt (concatenate, Seitenadressierung)
+virtuell			Umsetzung einer virtuellen Adresse in eine physische
 
+Übersicht Befehl – Register - Speicher
+	--> Folie 39-41
 
+Gebräuchliche Adressierungsarten
+	--> Folie 42
 
+Beispiele:
+Adressierungsart 	Befehl (Assembler) 	Ergebnis (Zuweisung)
+immediate 		ADD R2, #7 		R2 := R2 + 7
+direkt 			ADD R2, R3 		R2 := R2 + R3
+indirekt (Register) 	ADD R2, (R3) 		R2 := R2 + M[R3]
+indirekt (Speicher) 	ADD R2, @(R3) 		R2 := R2 + M[M[R3]]
+relativ (Displacement) 	ADD R2, 10(R3) 		R2 := R2 + M[10 + R3]
+relativ-indiziert 	ADD R2, (R3+R4) 	R2 := R2 + M[R3 + R4]
 
+Operationen des Befehlsatzes:
+Bezüglich der Funktionalität sind vier Klassen von Befehlen unterscheidbar:
+Operationstyp			Beispiel
+Datenübertragung		Register-Register
+				Register-Speicher
+				Register-E/A
+
+Datenmanipulation		arithmetische Operationen
+				logische Operationen
+				Schiebe-/Rotationsoperationen
+
+Verzweigungen			Sprung- und Verzweigungsoperationen
+(bedingt, unbedingt)		Prozedurrufe und -rückkehr
+				Traps
+
+Systemsteuerung			Betriebssystemrufe
+				Speicherverwaltung
+				Interrupts, Traps
+
+Datenübertragung (Beispiele):
+Befehl 	Bedeutung
+LD	Laden eines Registers					load
+ST	Speichern des Inhalts eines Registers			store
+MOVE 	Übertragung (beliebige Richtung)			move
+EXC	Vertauschen der Inhalte					exchange
+TFR	Übertragung eines Registers in ein anderes		transfer
+PUSH	Ablegen eines oder mehrerer Register in den Stack	push
+POP	Laden eines oder mehrerer Register aus dem Stack	pop
+READ	Lesen des Prozessor-Statusregisters			read
+WRITE	Schreiben des Prozessor-Statusregisters			write
+IN	Laden eines Registers aus einem Peripheriebaustein	input
+OUT 	Übertragen eines Registers in einen Peripheriebaustein	output
+
+Datenmanipulation, arithmetisch (Beispiele):
+Befehl 	Bedeutung
+ABS	Absolutbetrag				absolute
+ADD	Addition				addition
+SUB	Subtraktion				substract
+MUL	Multiplikation				multiply
+DIV	Division				divide
+COM	Einerkomplement				complement
+NEG	Vorzeichenwechsel, Zweierkomplement	negate
+CLR	Löschen					clear
+CMP	Operandenvergleich			compare
+DAA	Dual-Dezimal-Umwandlung			decimal adjust
+DEC	Dekrement				decrement
+INC 	Inkrement				increment
+
+Datenmanipulation, Boolsche (Beispiele):
+Befehl 	Bedeutung 
+AND 	AND-Verknüpfung 	and
+OR 	OR-Verknüpfung 		or
+EOR 	XOR-Verknüpfung 	exclusive or
+NOT 	NOT-Verknüpfung		not
+
+Datenmanipulation, Flag- und Bit- (Beispiele):
+Befehl 	Bedeutung
+SEF	Setzen eines Bedingungs-Flag		flag set
+CLF	Löschen eines Bedingungs-Flag		flag clear
+TST	Prüfen eines Flags oder Bits		test
+BSET	Setzen eines Bit			bit set
+BCLR	Rücksetzen eines Bit			bit clear
+BCHG	Invertieren eines Bit			bit change
+BFCLR	Rücksetzen der Bits eines Bitfeldes	clear bits
+BFSET	Setzen der Bits eines Bitfeldes		set bits
+BFFFO	Finden der ersten 1 im Bitfeld		find first one
+BFEXT	Lesen eines Bitfeldes			extract bits
+BFINS 	Einfügen eines Bitfeldes		insert bits
+
+Datenmanipulation, String- oder Block- (Beispiele):
+Befehl 	Bedeutung 
+MOVS 	Transferieren eines Blocks 			move string
+INS 	Einlesen eines Blocks von der Peripherie 	input string
+OUTS 	Ausgabe eines Blocks an die Peripherie 		output string
+CMPS 	Vergleich zweier Blöcke 			compare string
+COPS 	Kopieren eines Blockes 				copy string
+SCAS 	Suchen eines Zeichens in einem Block 		scan string
+
+Datenmanipulation, Schiebe- und Rotation- (Beispiele):
+Befehl 	Bedeutung 
+SHF 	Verschieben eines Registerinhaltes 		shift
+ASL 	arithmetische Links-Verschiebung 		arith. shift left
+ASR 	arithmetische Rechts-Verschiebung 		arith. shift right
+LSL 	logische Links-Verschiebung 			shift left
+LSR 	logische Rechts-Verschiebung 			shift right
+ROT 	Rotation eines Registerinhaltes 		rotate
+ROL 	Rotation nach links 				rotate left
+ROR 	Rotation nach rechts 				rotate right
+SWAP 	Vertauschen der beiden Hälften eines Registers 	swap
+
+Verzweigungen (Beispiele):
+Befehl 		Bedeutung 
+JMP 		unbedingter Sprung zu einer Adresse 		jump
+BCC 		Verzweigen falls Bedingung cc erfüllt 		branch
+BRA 		Verzweigen ohne Bedingungsabfrage 		branch always
+CALL, JSR 	Sprung in ein Unterprogramm 			jump to subroutine
+BSRCC 		JSR, wenn Bedingung cc erfüllt 			branch to subr.
+RTS 		Rücksprung aus einem Unterprogramm 		return from subr.
+TRAP, INT 	Sprung in Unterbrechungsroutine 		software interrupt
+RTI, RTE	Rücksprung aus Unterbrechungsroutine 		return from int.
+
+Cc-Bedingungen für Verzweigungen (Beispiele):
+cc 	Bedingung 	Bedeutung
+CS 	CF=1 		branch on carry set
+CC 	CF=0 		branch on carry clear
+VS 	OF=1 		branch on overflow
+VC 	OF=0 		branch on not overflow
+EQ 	ZF=1 		branch on zero/equal
+NE 	ZF=0		branch on not zero/equal
+MI 	SF=1		branch on minus
+PL 	SF=0		branch on plus
+PA 	PF=1		branch on parity/parity even
+NP 	PF=0		branch on not parity/parity odd
+
+Cc-Bedingungen für Verzweigungen (Beispiele):
+vorzeichenlose Operanden:
+cc	Bedingung	Bedeutung
+LO 	CF=1		branch on lower than
+HS 	CF=0 		branch on higher or same
+LS 	CF ∨ ZF=1 	branch on lower or same
+HI 	CF ∨ ZF=0 	branch on higher than
+
+vorzeichenbehaftete Operanden
+cc	Bedingung		Bedeutung
+LT	SF / OF = 1		branch on less than	//SF = | OF=1
+GE 	SF = | OF=0 		branch on greater or equal
+LE 	ZF ∨ (SF = | OF)=1 	branch on less or equal
+GT 	ZF ∨ (SF = | OF)=0 	branch on less greater than
+
+Systemsteuerung (Beispiele):
+Befehl 		Bedeutung 
+NOP 		keine Operation 			no operation
+WAIT 		Warten auf spezielles Eingangssignal 	wait
+SYNC 		Warten auf einen Interrupt 		sync
+HALT, STOP 	Anhalten des Prozessors			stop
+RESET 		Rücksetzsignal für Pripherie 		reset
+SVC 		Betriebssystem-Aufruf 			supervisor call
+
+Typ und Länge der Operanden:
+Operandentypen (Datentypen)
+Der Typ der im Befehl adressierten Operanden wird allgemein im Befehl selbst
+festgelegt. Die Codierung erfolgt dabei im Opcode zusammen mit der durchzuführenden Operation.
+Alternativ wird auch die Abspeicherung von Typkennungen (Tag) zusammen mit
+den Daten verwendet (Datenflußmaschinen, . . . ) verwendet. Sogenannte
+"Tagged" Architekturen sind jedoch eher die Ausnahme.
+
+Numerische Daten:
+• vorzeichenlose ganze Zahlen (unsigned integer)
+• vorzeichenbehaftete ganze Zahlen (signed integer)
+• binär codierte Dezimalzahlen (binary coded decimal integer, BCD)
+• Gleitkommazahlen (floating point)
+
+Nichtnumerische Daten:
+• alphanumerische Zeichen (characters, ASCII)
+• Zeichenketten (character strings)
+• Boolesche Werte (boolean values)
+• Bitfelder (bit map)
+• Zeiger, Adressen (pointer)
+
+Operandenlänge (Datenformat):
+Die Operandenlänge ist allgemein durch den Operandentyp gegeben, wobei pro
+Typ auch unterschiediche Längen möglich sind (im Befehl codiert).
+
+Beispiele: Folie 58 - 86
 
 
 
