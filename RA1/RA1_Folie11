@@ -1,0 +1,128 @@
+Speicherarchitektur - Cache
+
+Inhalt:
+- Cache-Konzept
+- Associativity
+- Größe Berechnungen
+- Read – Write – Replace Strategie
+
+Cache-Speicher:
+- CAM-Speicher (Content Addressable Memory) als Pufferspeicher zur Überbrückung
+	bzw. Anpassung stark unterschiedlicher Zugriffszeiten (z.B. Prozessorregister –
+	Hauptspeicher – Festplatte).
+- Der Cache arbeitet inhaltsorientiert, ist nicht direkt adressierbar. Der Vergleich mit
+	dem Inhalt kann auch maskiert erfolgen (Ausblenden einzelner Bits). Ein Cache-Zugriff
+	ist nicht immer eindeutig.
+- Im Cache werden nur Kopien der aktuellen Speicherinhalte der darunter liegenden
+	Hierarchieebene abgebildet. Die aktuellen Daten einer Hierarchieebene befinden
+	sich auch immer in allen darunter liegenden.
+- Zur Überbrückung sehr großer Differenzen in der Zugriffszeit bzw. im Datendurchsatz
+	können auch mehrere Caches hintereinander geschaltet werden (Primary Cache,
+	Secondary Cache, übliche Bezeichnung L1, L2, ... Ln).
+- Der Cache-Speicher kann sich mit auf dem CPU-Chip befinden (On-Chip Cache, oft
+	nur L1) oder extern (Off-Chip Cache).
+- In Multiprozessorsystemen teilen sich u.U. mehrere CPUs einen Cache (z.B. L3, L4)
+
+Cache-Begriffe:
+Adressspeicher (Tag-RAM):
+		Hauptspeicheradresse bzw. Adressteil des Datenblockes (Cache-Line).
+	Valid-Bit: Cache-Inhalt bzgl. der Adresse ist aktuell, gültig.
+	Dirty-Bit: Cache- und Hauptspeicherinhalt der Adresse sind nicht konsistent.
+Datenspeicher (Data-RAM):
+	Datenblöcke (Cache-Line): Blöcke des Cache-Speichers --> Blockprinzip.
+	Datenblockgröße (Cache-Line-Size): Blockgröße in Worten (Byte).
+Cache-Treffer (Cache-Hit):
+	Daten / Befehle aktuell im Cache gefunden.
+	Trefferrate (Hit-Rate): Maß für die Effizienz des Caches.
+Cache-Fehlzugriff (Cache-Miss):
+	Daten / Befehle nicht im Cache gefunden bzw. nicht aktuell.
+	Fehlerrate (Miss-Rate): 1 - Trefferrate.
+	Fehlerzuschlag (Miss-Penalty): Zugriffszeit nach Cache-Fehlzugriff.
+
+Cache-Eigenschaften:
+Struktur:
+	Ein Cache-Eintrag besteht aus dem Datenblock (Cache-Line --> Blockprinzip)
+	und dessen Adresse, Adressteil als Tag (Etikett) sowie Statusinformationen.
+Sichtbarkeit:
+	Transparent (nicht sichtbar im Befehlssatz) oder nicht transparent (sichtbar,
+	wird durch den Befehlssatz gesteuert, z.B. Laden, Invalidieren, . . . ).
+Adressraum:
+	Realer Adressraum (realer Cache) oder virtueller (virtueller Cache).
+Architektur:
+	Befehle und Daten gemeinsam (Unified Cache) oder getrennt (Split Cache).
+Organisation:
+	Lösung der Probleme der Speicherhierarchie: Abbildung, Identifikation,
+	Ersetzung, Aktualisierung, Konsistenz, Kohärenz.
+
+Struktur des Caches: Folie 7 & 8
+
+Cache-Adressraum: -> Folie 9
+Virtueller Cache					Realer Cache
+- schnell, Cache und MMU nebenläufig			- langsam, Adressen durch MMU
+- Invalidierung bei Prozesswechsel,			- direkter I/O-Cache-Transfer
+  notwendig, da gleiche Adressen möglich		  möglich, da reale Adressen
+- besondere Eignung als Befehls-Cache,			- für Snooping geeignet,
+  da Rückschreiben entfällt				  da 1:1 Adress-Daten-Abbildung
+
+Cache-Architekturen:
+Harvard - Architektur:
+Split Cache, getrennt für Daten und Befehle (separate Lokalitäten)
+Princeton - Architektur:
+Unified Cache, gemeinsam für Daten und Befehle (überlagerte Lokalitäten)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
