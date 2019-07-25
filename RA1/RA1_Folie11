@@ -103,7 +103,7 @@ c_t Kapazität des Tag-Speichers, ohne V,D
 c_s = k × c_cl Kapazität eines Satzes (Byte)
 
 
-Cache-Berechnungen:s
+Cache-Berechnungen:
 Hauptspeicheradresse (Aufteilung)
 w_a = w_t + w_i + w_w + w_b 	(Summe der Bitanzahlen)
 
@@ -123,11 +123,36 @@ Tag-Speichergröße (ohne V,D)
 c_t = w_t ⋅ n_cl Bit	(Bitanzahl der Tagadresse * Cache-Zeilenanzahl)
 
 
+Cache-Analyse:
+Beispielaufgabe: Ein 4-fach satzassoziativer Cache hat eine Daten-
+Speichergröße von 4 MiByte. Die Cache-Zeile enthält 16 Worte zu je 4 Byte.
+Bestimmen Sie die Aufteilung der Hauptspeicheradresse (32 bit) sowie die
+Größe des Tag-Speichers, ohne V- und D-Bit!
+1. Bitanzahl der Wort-, Byteadresse:
+w_w = ld 16 = 4,
+w_b = ld 4 = 2
 
+2. Cache-Zeilengröße
+w_t = w_a - ( w_i + w_w + w_b ) = 12
+c_cl = n_w × n_b = 64 Byte
 
+3. Daten-Speichergröße
+c_d = n_cl × c_cl  
+n_cl = c_d / c_cl = (4 × 2^20)/ 64 = 2^16
 
+4. Cache-Zeilenanzahl 
+n_cl = 2^(w_i) × k
+w_i = ld((n_cl)/k) = ld((2^16)/4 = 14
 
+5. Bitanzahl der Tag-Adresse
+w_a = w_t + w_i + w_w + w_b
+w_t = w_a - (w_i + w_w + w_b) = 12
 
+6. Tag-Speichergröße
+c_ct = w_t × n_cl = 3 × 2^18 Bit
+
+w_a = 32, w_t = 12, w_i = 14
+w_w = 4, w_b = 2, ct = 3 × 2^18 Bit
 
 
 
