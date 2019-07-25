@@ -70,12 +70,57 @@ Split Cache, getrennt für Daten und Befehle (separate Lokalitäten)
 Princeton - Architektur:
 Unified Cache, gemeinsam für Daten und Befehle (überlagerte Lokalitäten)
 
+Cache Assoziativität:
+Vollassoziativer Cache (fully-associative)
+Ein Speicherblock des HS (Hauptspeicher) kann sich in einer beliebigen Cache-Zeile des
+Caches befinden. Der Cache besteht aus einem Satz (s=1) mit k=n_cl Zeilen
+	--> k-fach assoziativ (k-Wege).
+
+Direkt abgebildeter Cache (direct-mapped)
+Ein Speicherblock des HS kann sich nur in einer bestimmten Zeile des
+Caches befinden. Die Zeile wird durch den Index in der HS-Adresse
+festgelegt. Der Cache besteht aus s=n_cl Sätzen mit je einer Cache-Zeile (k=1)
+	--> 1-fach assoziativ (1-Weg).
+
+K-Wege satzassoziativer Cache (k-way set-associativ)
+Ein Speicherblock des HS kann sich nur in einem bestimmten Satz des
+Caches befinden. Der Satz wird durch den Index in der HS-Adresse
+festgelegt. Der Cache besteht aus s=n_cl /k Sätzen mit je k Cache-Zeilen
+	--> k-fach satzassoziativ (k-Wege).
+
+Cache-Berechnungen:
+w_a Bitanzahl der Hauptspeicheradresse
+w_t Bitanzahl der Tag-Adresse
+w_i Bitanzahl der Index-Adresse
+w_w Bitanzahl der Wort-Adresse		n_w = 2^(w_w) Anzahl der Wörter je Cache-Zeile
+w_b Bitanzahl der Byte-Adresse		n_b = 2^(w_b) Anzahl der Byte je Wort
+n_cl Anzahl der Cache-Zeilen
+s Anzahl der Sätze (Mengen)		s = 2^(w_i)
+k Assoziativität im Satz
+c_cl Kapazität der Cache-Zeile (Byte)
+c_d Kapazität des Daten-Speichers (Byte)
+c_t Kapazität des Tag-Speichers, ohne V,D
+c_s = k × c_cl Kapazität eines Satzes (Byte)
 
 
+Cache-Berechnungen:s
+Hauptspeicheradresse (Aufteilung)
+w_a = w_t + w_i + w_w + w_b 	(Summe der Bitanzahlen)
+
+Cache-Zeilengröße (cache line size)
+c_cl = 2^(w_w) × 2^(w_b) Byte 
+	= n_w × n_b Byte
+	(Wort-Anzahl je Cache-Zeile * Byte-Anzahl je Wort)
+
+Cache-Zeilenanzahl
+n_cl = 2^(w_i) × k = s × k	(Satz-Anzahl je Cache * Assoziativität je Satz)
+
+Daten-Speichergröße
+c_d = n_cl × c_cl	(Cache-Zeilenanzahl * Cache-Zeilengröße)
 
 
-
-
+Tag-Speichergröße (ohne V,D)
+c_t = w_t ⋅ n_cl Bit	(Bitanzahl der Tagadresse * Cache-Zeilenanzahl)
 
 
 
