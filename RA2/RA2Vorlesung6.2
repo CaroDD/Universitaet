@@ -1,4 +1,4 @@
-Vorlesung 6.2
+Vorlesung 6.2 Foliensatz 5
 Speicher
 
 RAM 
@@ -183,19 +183,385 @@ Enhanced DRAM (EDRAM)
 	- EDRAM: nutzt dafür einen SRAM-Cachespeicher
 	--> \CAS-Zugriffszeit bei Cache-Hit von 15 ns
 
-
 Extended-Data-Output-DRAM (EDO-DRAM), 1995
 — Weiterentwicklung des Fast-Page-Mode-DRAMs
-— Signal hat bei FPM DRAM zwei Aufgaben:
-- Fallende Flanke übernimmt gültige Speicheradresse bei Leseoperation
-- Steigende Flanke signalisiert, dass Datum gelesen wurde und Datentreiber hochohmig gestellt werden
-können
-Ø Erst nach weiterer !"#-Precharge-Zeit kann nächste Spaltenadresse angelegt werden (begrenzt Datenrate)
-— EDO-RAM steuert die Datentreiber nicht durch die Rückflanke von !"# sondern durch interne
-Signale
-- Nächste Spaltenadresse kann mittels !"# übergeben werden, während am Ausgang das vorherige Datum
-noch gültig ist
-Ø Bezogen auf FPM DRAM ist der Datenausgang länger aktiv à „Extended-Data-Output"
+— \CAS Signal hat bei FPM DRAM zwei Aufgaben:
+	- Fallende Flanke übernimmt gültige Speicheradresse bei Leseoperation
+	- Steigende Flanke signalisiert, dass Datum gelesen wurde und Datentreiber hochohmig gestellt werden können
+	--> Erst nach weiterer \CAS-Precharge-Zeit kann nächste Spaltenadresse angelegt werden (begrenzt Datenrate)
+— EDO-RAM steuert die Datentreiber nicht durch die Rückflanke von \CAS, sondern durch interne Signale
+	- Nächste Spaltenadresse kann mittels \CAS übergeben werden, während am Ausgang das vorherige Datum noch gültig ist
+	--> Bezogen auf FPM DRAM ist der Datenausgang länger aktiv --> „Extended-Data-Output"
+
+EDO Page Mode-Lesezyklus für vier Datenbytes bei einem EDO-DRAM
+— Verkürzung der !"#-Zykluszeit um ca. 15 ns auf ca. 25 ns bei einem 60-ns-DRAM
+--> Folie 37
+
+Burst Extended Data Output DRAM (BEDO-DRAM)
+— Burst
+	- Verwendung von Cache-Speichern in Mikroprozessoren führt zum „cachlineweisen“ Auslesen des Speichers
+	- Auslesen von aufeinanderfolgenden Adressen (gebündelte Adressen) nennt man Burst
+	- Reihenfolge der Spaltenadressen ist bekannt und damit Optimierung möglich
+	- BEDO-DRAM ist bzgl. der Burst-Zugriffe optimiert
+— \CAS-Signal hat andere Bedeutung als beim EDO-DRAM
+	- Erstes \CAS-Signal legt mit fallender Flanke erste Spaltenadresse fest
+	- Danach hat \CAS die Bedeutung eines Zählimpulses, der einen Spaltenzähler inkrementiert
+	- 10 ns nach der fallenden Flanke von \CAS (beginnend mit zweiten \CAS) liegen gültige Daten am Ausgang 
+		--> bei Viererburst sind fünf \CAS-Takte nötig
+
+Burst Mode-Lesezyklus für vier Datenbytes bei einem BEDO-DRAM:
+— Darstellung einer 4-Wort-Blockübertragung: 2-1-1-1-Burst:
+	Transportzeit von zwei Takten für das erste Wort und jeweils ein Takt für die Folgeworte
+— Moderne Prozessoren gestatten die Überlappung von Blockbuszyklen (pipelined burst cycles)
+— Best case von zwei direkt aufeinanderfolgenden Blockbuszyklen: 2-1-1-1-1-1-1-1
+
+Synchroner DRAM (SDRAM), 1997
+— Alle zeitabhängigen Vorgänge werden mit dem Bustakt synchronisiert
+— Nutzt bausteininterne Verschränkung von zwei Speicherbänken (Interleaving)
+— Vereinfachung der Ansteuerung
+— Zusammenfassung der vier wesentlichen Steuersignale (\CS, \RAS, \CAS, \WE) zu einem
+	4-Bit-Steuerwort, über das z.B. folgende Aktionen eingeleitet werden:
+		- Aktivieren einer Zeile mit gleichzeitigem Anlegen der Zeilenadresse (ACTIV)
+		- Starten des Lese- oder Schreibvorgangs mit gleichzeitigem Anlegen der Spaltenadresse (READ, WRITE)
+		- Precharge einer Speicherbank (PRE)
+			- Precharge ist eine „Vorlade-Vergleichstechnik“, die im Leseverstärker den Ladezustand des Speicherkondensators sichert
+			- Notwendig, da mit zunehmender Miniaturisierung der Speicherzelle auch ihre Speicherkapazität kleiner wird
+— Bei steigender Flanke des Taktsignals: Übernahme des Steuerwortes
+
+Burst-Lesebetrieb bei einem synchronen DRAM (SDRAM) (--> Folie 41)
+— Auslesen eines 4-Byte-Burst aus Bank 0 und anschließend aus Bank 1
+
+Double Data Rate SDRAM (DDR-SDRAM), 1999 (Durchbruch 2002)
+— SDRAM, der nicht nur bei der steigenden Flanke des Taktsignals sondern auch bei der fallenden
+	Flanke des Taktsignals ein Datum überträgt
+--> Fast doppelt so hohe Datenübertragungsrate wie „normaler“ SDRAM, der nur bei aufsteigender Flanke Daten übernimmt
+	- DDR SDRAM für 133 MHz Takt: 2,1GB/s
+	- „normaler“ SDRAM für 133 MHz Takt: 1,06 GB/s
+— DDR-Verfahren führt nur unter folgender Bedingung zur Beschleunigung:
+	- Anzahl zusammenhängend angeforderter Daten („Burst-Length“) muss gleich oder größer als die doppelte Busbreite sein
+	- Trotzdem oft nicht exakt doppelt so schnell, da Adress- und Steuersignale nur mit einer Flanke gegeben werden
+
+DDR2-SDRAM, 2004
+— Prefetching
+	- DDR-SDRAM: Zweifach-Prefetch
+	- DDR2-SDRAM: Vierfach-Prefetch
+	- Pro Adressierung werden die Daten von mehreren Spaltenadressen ausgelesen und in einen Parallel-Seriell-Wandler (Schieberegister) geschrieben
+	- Aus Schieberegister können Daten mit höherer (externer) Taktrate ausgegeben werden
+	- Minimale Burstlänge = Länge des Schieberegisters
+	--> DDR2-SDRAM liest (mindestens) vier aufeinanderfolgende Adressen
+	- DDR-SDRAM liest (mindestens) zwei aufeinanderfolgende Adressen
+— Niedrigere Spannung
+	- DDR-SDRAM: 2,5 Volt
+	- DDR2-SDRAM: 1,8 Volt Signal- und Versorgungsspannung
+
+DDR3-SDRAM, 2007
+— Achtfach-Prefetch
+--> DDR3-SDRAM liest (mindestens) acht aufeinanderfolgende Adressen
+— DDR3-SDRAM: 1,5 Volt Signal- und Versorgungsspannung
+--> Verbesserter mobiler Einsatz
+— Gestattet Datenrate „Triple Channel“
+	- DDR-SDRAM und DDR2-SRAM gestatten nur Datenrate „Dual Channel“
+	- Dual Channel
+		- Fähigkeit aktueller PC-Chipsätze und Speichercontroller, zwei Arbeitsspeichermodule gleicher Kapazität parallel zu betreiben
+		- Separate Busse vom Speicherkontroller zu den einzelnen Modulen nötig
+	- Triple Channel
+		- Drei Arbeitsspeichermodule gleicher Kapazität parallel
+
+DDR4-SDRAM, 2014
+— Weiterhin Achtfach-Prefetch
+— CRC für Datenbus
+-->  Fehlererkennung
+— 1,2 Volt Signal- und Versorgungsspannung
+— Höhere Frequenzen
+
+
+Speichertransferrate DDR, DDR2, DDR3
+— Theoretisch maximal mögliche Speichertransferrate pro Modul:
+	Speichertransferrate pro Modul in Byte/s = 
+		Takt der Speicherzelle x Bit pro Übertrag x Anzahl Taktflanken / 8 Bit pro Byte
+- DDR-400: (200 MHz x 64 Bit x 2) / 8 Bit pro Byte = 3,2 GB/s
+	- Dual-Channel: 6,4 GB/s
+- DDR2-800: (200 MHz x 64 Bit x 4) / 8 Bit pro Byte = 6,4 GB/s
+	- Dual-Channel: 12,8 GB/s
+- DDR3-1600: (200 MHz x 64 Bit x 8) / 8 Bit pro Byte = 12,8 GB/s
+	- Dual-Channel: 25,6 GB/s
+	- Triple-Channel: 38,4 GB/s
+
+Fehlererkennung und –korrektur in DRAM
+
+Übersicht
+— Fehler können in Computerspeichern auftreten, durch z.B. Spannungsspitzen im Netzteil
+— Schutz vor solchen Fehlern bieten Codes für die Fehlererkennung und Fehlerkorrektur
+	- Ergänzung des Speicherwortes durch zusätzliche Bits
+	- Beim Lesen des Wortes aus dem Speicher wird anhand der Zusatzbits festgestellt, ob ein Fehler aufgetreten ist
+— Hamming-Abstand (Hamming Distance)
+	- Anzahl der Bitstellen, in denen sich zwei Codewörter voneinander unterscheiden
+	- Hamming-Abstand 3 für folgende beiden Code-Wörter
+		- 0011 1001, 1010 1101
+	
+Fehlererkennung durch Paritätsbit (Parity Bit)
+— Daten wird einzelnes Paritätsbit angehängt
+— Paritätsbit wird so gewählt, dass die Anzahl der 1-Bits im Codewort gerade (oder ungerade) ist
+— Hamming-Abstand = 2, da zwei Einzelbitfehler notwendig sind, um von einem gültigen Codewort
+	zu einem anderem gültigen Codewort zu gelangen
+— Einzelfehler können erkannt, jedoch nicht korrigiert werden
+
+Hamming-Code, mit dem sich alle Einzelbitfehler korrigieren lassen
+— Den m Datenbits werden r Prüfbits hinzugefügt
+— Formel für Anzahl der Prüfbits:
+	(m + r + 1) <= 2^r
+	--> für 16 Datenbits sind 5 Prüfbits erforderlich
+— Bits werden mit 1 (nicht 0) beginnend nummeriert
+— Alle Bits, deren Bitnummer eine Potenz von 2 ist, sind Paritätsbits
+
+Beispiel:
+16-Bit-Datenwort 1111 0000 1010 1110
+--> Anordnung der Paritätsbits (P) für dieses Datenwort
+	PP1P 111P 0000 101P 0111 0 (Speicherwort 21 Bit)
+— Jedes Paritätsbit prüft eine Auswahl von Bits des Speicherwortes und setzt sich so, dass Parität erreicht wird (z.B. gerade Parität)
+— Im Allgemeinen wird Bit b von den Bits b_1 , b_2 , ...,b_j so geprüft, dass b_1 + b_2 + ... + b_j = b gilt
+— Daraus ergibt sich folgendes Prüfschema:
+	- Bit 1 prüft die Bits 3,5,7,9,11,13,15,17,19,21
+	- Bit 2 prüft die Bits 3,6,7,10,11,14,15,18,19
+	- Bit 4 prüft die Bits 5,6,7,12,13,14,15,20,21
+	- Bit 8 prüft die Bits 9,10,11,12,13,14,15
+	- Bit 16 prüft die Bits 17,18,19,20,21
+— Finden eines Bitfehler
+	- Berechnung aller Paritätsbits
+	--> Sind alle richtig, gab es keinen oder mehr als einen Fehler
+	--> Gab es falsche Paritätsbits
+		- Addition aller falschen Paritätsbits (1 für Bit 1, 2 für Bit 2, 4 für Bit 4 usw.)
+		- Summe ist die Position des falschen Bits (z.B. Bit 1 und 4 sind falsch, Summe = 5 
+		   --> Bit 5 muss invertiert worden sein und kann nun korrigiert werden
+		
+Festwertspeicher (ROMs)
+
+Übersicht
+— Festwertspeicher können während des Betriebes ausschließlich gelesen werden
+— Verwendung zum Abspeichern unveränderlicher Daten
+	- Beispiel: Maschinenprogramme in der Mikroprozessortechnik
+— Typischerweise über asymmetrische NOR-arrays
+
+Beispiel Pseudo-nMOS-ROM
+— Adressen und Wordlines wie in SRAM
+— Gespeicherte Werte:
+	- word0: 010101
+	- word1: 011001
+	- word2: 100101
+	- word3: 101010
+	
+Prinzipieller Aufbau
+— Anordnung der Speicherzellen als quadratische Matrizen
+— Jedem Kreuzungspunkt von Bit- und Wortleitung ist eine Speicherzelle zugeordnet
+	- „1“ wenn Verbindung über Koppelelement
+	- „0“ wenn keine Verbindung über Koppelelement
+— Koppelelemente können auch bipolare Transistoren oder MOSFETs sein
+
+Lesevorgang
+— Adressierung des Speicherplatzes über H-Pegel an Wortleitung
+— Wenn Bitleitung über Koppelelement mit Wortleitung verbunden:
+	- Strom fließt in den angeschlossenen Leseverstärker
+	- Leseverstärker erzeugt H-Pegel am Speicherausgang dieser Bitleitung
+— Kein Koppelelement
+	- Kein Strom in den Leseverstärker
+	- Leseverstärker liefert L-Pegel
+
+Programmierung
+— ROM – Zu speichernde Information wird bei der Herstellung mittels Metallisierungsmaske mit eingegeben
+	- Teures Verfahren
+	- Für große Stückzahlen geeignet
+	- Auch Bezeichnung als maskenprogrammierte ROMs
+— Programmierbares ROM (PROM) – nach der Herstellung von außen mittels Programmiergerät
+	- Werden Kleine Sicherungselemente aus Titan-Wolfram, die in Reihe mit den Koppelelementen liegen,
+	  werden durch elektrische Impulse durchgebrannt
+	- Programmierung erzeugt also Nullen und ist irreversibel
+
+Programmierung UV-löschbares, programmierbares ROM (EPROM - Erasable PROM)
+— Koppelelement sind spezielle MOS-Transistoren
+— Transistoren besitzen zusätzliches, isoliert angebrachtes, elektrisch „schwebendes“ Gate (Floating Gate)
+— (Programmierung und Speicherzelle auf nächster Slide)
+— Programmierung ist reversibel
+	- Speicherchip wird mit UV-Licht bestrahlt, was Programmierung rückgängig macht (Dauer: 10-30 Minuten)
+	- Muss zum Löschen aus Schaltung entfernt werden
+
+EPROM Programmierung
+— Im unprogrammierten Zustand enthält Floating Gate keine Ladungen
+	- Koppeltransistor verhält sich wie gewöhnlicher MOS-Transistor
+	- In jeder Speicherstelle eine „1“
+— Programmierung mit ca. 20V Programmierspannung
+	- Injektion elektrischer Ladungen in das Floating Gate
+	- Schwellwertspannung des Koppeltransistor wird so erhöht, dass er nicht mehr durchschalten kann
+	- Betreffende Speicherstelle enthält eine „0“
+[WeHa11 Figure 12.57]
+Profil eines Floating Gate nMOS Transistors
+
+Programmierung: EAROM, EEPROM
+— EAROM (Electrically Alterable ROM - Elektrisch änderbarer Festwertspeicher)
+	- Meist geringe Kapazität, Einsatz in Konsumelektronik
+— EEPROM (Electrically Erasable Programmable ROM)
+	- Hohe Kapazität
+	- Ersatz für bisher gebräuchliche EPROMs in Computersystemen
+	- Weiterentwicklung der Floating-Gate-Technologie
+	- NMOS-Transistor als Koppelelement, der ein Floating Gate aus Polysilizium besitzt, das in SiO 2 eingebettet ist
+	- Floating-Gate wird von der Drain-Diffusionszone nur durch eine 20nm dünne Oxidschicht (Tunneloxid) getrennt
+	- Oxidschicht kann bei entsprechenden Feldstärken von Elektronen durchtunnelt werden
+	- Tunneleffekt wird auch beim Löschvorgang genutzt
+	- EEPROM kann auch beim Löschen in der Schaltung bleiben
+
+Nutzung von EEPROMS zum Aufbau nichtflüchtiger RAMs (NOVRAMs)
+— EEPROMS haben langen Schreibzyklus von ca. 10ms/Byte
+	- Können herkömmliche SRAMs nicht ersetzen
+— Sollen RAM-Inhalte bei Ausfall der Betriebsspannung sichergestellt werden, koppelt man ein
+	SRAM monolithisch mit einem EEPROM als Hintergrundspeicher
+		- Normalbetrieb: NOVRAM arbeitet als RAM
+		- Netzspannungsausfall: gesamter RAM-Inhalt wird innerhalb von ca. 10 ms parallel in das EEPROM gerettet
+
+Flash-Speicher (Flash Memory)
+— Haben sich aus den EEPROMs entwickelt
+— Wesentlicher Unterschied besteht in Löschtechnik
+	- EEPROM gestattet jedes Byte individuell zu löschen
+	- Flash-Speicher löscht blockweise
+— Name Flash (Blitz) stammt aus Anfängen der Entwicklung
+	- Gesamter Speicher wurde mit Spannungsimpuls (wie vom Blitz) gelöscht
+— Aufteilung des gesamten Flash-Speichers in Blöcke von ca. 8-64 KiB
+	- Jeder Block kann separat gelöscht werden
+— Genutzt in SSDs (spätere Folien, vorher noch HDDs)
+
+Magnetplatten
+
+Die Anfänge
+— Erste Festplatte 1956
+— IBM 350 RAMAC
+	- 500 kg
+	- 50 Scheiben
+	- Kapazität?
+	--> 5 MByte (~1 Lied als MP3)
+
+Prinzip
+— Besteht aus einer oder mehreren runden Aluminiumscheiben mit magnetisierbarer Beschichtung
+	- Zumeist mehrere vertikal übereinander montierte Scheiben
+	- Pro Oberfläche eigener Plattenarm mit Schreib-/Lesekopf
+	- Alle Plattenarme mechanisch gekoppelt (gleichzeitige radiale Bewegung)
+— Schreib-/Lesekopf mit einer Induktionsspule schwebt knapp über der Oberfläche auf einem Luftkissen
+— Schreiben:
+	- Strom fließt durch den Schreib-/Lesekopf, magnetisiert die Fläche direkt unter sich
+	- Magnetpartikel werden in Abhängigkeit von der Stromrichtung nach links bzw. rechts ausgerichtet
+— Lesen:
+	- Läuft unter dem Schreib-/Lesekopf ein magnetisierter Bereich vorbei, wird ein positiver bzw. negativer Strom induziert
+
+Aufbau einer Scheibe
+— Ablegen der Daten
+	- Ausschnitt einer Plattenspur
+	- Spur (Track)
+	- Kreisförmige Sequenz der Bits, die bei einer vollen Umdrehung auf der Platte geschrieben werden
+	- Ist in eine bestimmte Anzahl von Sektoren fester Länge (zumeist 512 Datenbytes) unterteilt
+
+Problem der Datenverteilung
+— Magnetscheiben rotieren unabhängig von Position der Köpfe mit gleicher Winkelgeschwindigkeit
+--> Äußere Spuren haben mehr Platz als innere Spuren
+— Lösung bei älteren Laufwerken
+	- Innerste Spur verwendet maximal mögliche lineare Speicherdichte
+	- Speicherdichte wird nach außen hin geringer
+	- Jeder Sektor hat den gleichen Bogenwinkel
+— Lösung bei neueren Magnetplatten
+	- Oberfläche wird in Zonen unterteilt
+	- Anzahl der Sektoren pro Spur erhöht sich, je weiter außen die Spur liegt
+	- Führt zu Kapazitätserhöhung, erschwert aber die Verfolgung der Daten
+
+Magnetspeicher sind empfindlich gegenüber
+— Schmutz (Kann sich auf die Platten legen, deswegen Platten in Schutzatmosphäre)
+— Magnetismus (kann Daten ändern)
+— Schräge Anbringung im Gehäuse (Ungleichmäßige Belastung)
+— Temperatur (Ausdehnung der Spuren)
+— Vibrationen (Kann den Plattenarm aufschwingen)
+	- Auch Lärm ... siehe Beispiel
+— Es gab trotzdem MP3-Player mit Magnetspeicher ... (ca 2004)	
+--> Quelle: Youtube, Bryan Cantrill, Shouting in the Datacenter (feat. Brendan Gregg)
+
+Kosten für HDDs sinken nicht mehr
+— 2 TByte Magnetspeicher (5200/5400/5900 RPM)
+— März 2019 ca. 90$
+
+Flash Storage und Solid State Disks SSDs
+
+Kosten für SSDs sinken noch
+— 2 TByte SSDs
+— März 2019 ca. 400$
+— Aber: tendenziell fallend
+
+Überblick
+— NOR-Flash
+	- Gut für schnelles Lesen fest gespeicherter Daten
+	- Einsatz: Firmware von Handys, Digitalkameras
+— NAND-Flash
+	- Höhere Speicherdichte als NOR-Flash
+	- Einsatz: USB-Sticks, MP3-Player, Speicherkarten, ...
+	- Grundlage für SSDs
+
+Flash-Chips
+— Anordnung der einzelnen Speicherzellen in zweidimensionalem Array
+--> Zusammenfaltung ergibt dreidimensionale Struktur
+— Zusammenfassung der Speicherzellen zu Seiten von vier KiByte
+— Bytes sind kleinste adressierbare Einheit
+— Speicherung von Verwaltungsinformationen für jede Seite in „Spare Page“
+
+Aufbau eines Speicherblocks und Schreibvorgang
+— Block besteht aus pages, string select (ssl), ground select (gsl)
+— Löschen auf block Granularität
+— Schreiben auf page Granularität
+	- Es wird immer eine ganze page geschrieben
+	- Wordline wird auf 20 V gesetzt (andere pages 10V)
+	- gsl ist off, ssl on
+	- Siehe EPROM: Tunneln von Elektronen setzt Wert 0
+	- Programmierung kann 1 nicht schreiben, also wird kompletter Block bei Neuprogrammierung gelöscht
+
+Aufbau eines Speicherblocks und Lesevorgang
+— Block besteht aus pages, string select (ssl), ground select (gsl)
+— Es werden immer ganze pages gelesen
+	- Bitlines werden geladen (precharged)
+	- gsl, ssl auf 3.3 V um Block auszuwählen
+	- Ausgewählte Wordline: 0.0 V, andere WLs: 4.5 V
+	--> Alle Transistoren on außer ausgewählte page
+	- Je nach Status wird Zelle in page 0 oder 1 lesen
+
+Multi-Level Cells (MLCs)
+— Typischerweise speichert jede Zelle (single-level cell, SLC) ein Bit (0, oder 1)
+	- Ca. 50.000 – 100.000 Programmierzyklen Lebenserwartung
+— In Multi-level Zell (MLC) Systemen werden 2 Bit je Zelle gespeichert
+	- Unterschiedliche Durchlässigkeit der Zelle, je nach Wert
+	- Höhere Leistungsaufnahme
+	- Geringere Lebenserwartung
+	- Wahrscheinlichere Fehler (ECC!)
+	--> Geringere Leserate
+— Dadurch reduzieren sich die Kosten pro gespeicherten Byte
+— Weitergehend: triple-level cells (TLCs), quad-level cells (QLCs)
+	- Geringere Lebenserwartung
+	- Geringere Leserate
+
+Controller
+— SSD-Controller und Flash-Controller oft als integrierter Baustein
+
+Bsp.: JMF602 von JMicron (oftmals in SSDs eingesetzt)
+— Herkömmliche HDDs: Adressierung mittels Logical Block Addressing (LBA)
+	- Sektoren (512 Byte) kleinste adressierbare Einheit
+	- Sektoren werden durchnummeriert
+— Controller von SSDs simulieren Schnittstellenverhalten von HDDs
+	- Host-System nutzt Logical Block Addressing
+	- Intern Adressierung einzelner Bytes mittels Zeilen- und Spaltenadresse
+— Zusatzaufgabe für Flash-Controller:
+	Überprüfung und Korrektur ausgelesener Bits auf Fehler mittels Error Correction Code (ECC)
+
+Zusammenfassung
+— Technologische Basis: Floating-Gate-MOSFETS
+— Technologiespezifisches Problem: Abnutzung der Speicherzellen --> Wear-Leveling
+— Alternative zu herkömmlichen HDDs
+	- Keine beweglichen mechanischen Teile --> stoßunempfindlich
+	- Höhere Transferraten möglich, insbesondere bei verteilten Zugriffen
+	- Geringerer Energiebedarf, vor allem in Ruhe
+— Einsatz derzeitig in Systemen mit hoher Transaktionslast
+— Vollständige Ersetzung von HDDs noch zu teuer
+
+
 
 
 
