@@ -1,0 +1,492 @@
+RA2 GPUs
+Vorlesung 7, Kapitel 6
+Graphics Processing Units = GPUs
+
+GPUs belong to the category of accelerators
+GPUs are:
+— Hardware components
+— Specialized for graphics processing
+— Controlled by a host processor
+— Mostly (energy-)efficient for highly (data-)parallel applications
+
+Standard Processors (Repetition Lecture 2)
+— Designed for all purposes and sequential tasks
+— Can be seen in transistor usage
+— Ca 1/3 off-chip Kommunikation (PCIe, DRAM, UPI)
+— Ca 1/4 Cache
+— Only ca 8% Execution Units
+— Remaining?
+	- Voltage Control / Power Delivery
+	- On-Chip-Network
+	- Out-Of-Order Engine
+	- Speculative Execution
+AMD Ryzen core layout (en.wikichip.org)
+
+General Purpose Graphics Processing Units
+— More data parallelism available
+— Possible strategies:
+	- SIMD (see lecture 3)
+	- MIMD (see lecture 3,4)
+	- Hardware Multi Threading (see lecture 4)
+	- Which is used?
+— Parallel programming needed
+
+Example: AMD Raven Ridge APU (Ryzen 5 2400G) 
+--> Folie 5 - 8 
+
+Graphics Cards for General Purpose Computing
+
+Some Accelerator Cards
+--> Folie 10
+
+NVIDIA --> Folie 11 - 12
+
+Current Top500 List: 5 Systems in the Top-10 Use GPGPUs
+Rank	System 									Performance Rmax (PFlop/s)
+1 	Summit IBM Power System AC922, IBM POWER9 22C 3.07GHz, 			143	
+	NVIDIA Volta GV100, Dual-rail Mellanox EDR Infiniband ,
+	IBM DOE/SC/Oak Ridge National Laboratory, United States
+ 
+2 	Sierra IBM Power System S922LC, IBM POWER9 22C 3.1GHz, 			94.6
+	NVIDIA Volta GV100, Dual-rail Mellanox EDR Infiniband ,
+	IBM / NVIDIA / Mellanox, DOE/NNSA/LLNL, United States 
+
+3 	Sunway TaihuLight Sunway MPP, Sunway SW26010 260C 1.45GHz, 		93.0
+	Sunway, NRCPC National Supercomputing Center in Wuxi, China 
+
+4 	Tianhe-2A TH-IVB-FEP Cluster, Intel Xeon E5-2692v2 12C 2.2GHz, 
+	TH Express-2, Matrix-2000, 
+	NUDT National Super Computer Center in Guangzhou, China 61,4
+
+5 	Piz Daint Cray XC50, Xeon E5-2690v3 12C 2.6GHz, 			21.2
+	Aries interconnect , NVIDIA Tesla P100 ,
+	Cray Inc. Swiss National Supercomputing Centre (CSCS), Switzerland 
+
+6 	Trinity Cray XC40, Xeon E5-2698v3 16C 2.3GHz, 				20.2
+	Intel Xeon Phi 7250 68C 1.4GHz, Aries interconnect,
+	Cray Inc., DOE/NNSA/LANL/SNL, United States 20,2
+
+7 	AI Bridging Cloud Infrastructure (ABCI) PRIMERGY CX2570 M4, 		19.9
+	Xeon Gold 6148 20C 2.4GHz, NVIDIA Tesla V100 SXM2, Infiniband
+	EDR, Fujitsu, National Institute of Advanced Industrial 
+	Science and Technology (AIST), Japan 
+
+8 	SuperMUC-NG ThinkSystem SD530, Xeon Platinum 8174 24C 3.1GHz, 		19.5
+	Intel Omni-Path , Lenovo, Leibniz Rechenzentrum, Germany
+
+9 	Titan Cray XK7, Opteron 6274 16C 2.200GHz, 				17.6
+	Cray Gemini interconnect, NVIDIA K20x, Cray Inc., 
+	DOE/SC/Oak Ridge National Laboratory, United States 
+
+10 	Sequoia BlueGene/Q, Power BQC 16C 1.60 GHz, Custom, 			17.1
+	IBM, DOE/NNSA/LLNL, United States 
+
+
+Usage of Accelerators in der Top500 (November 2018)
+--> Folie 14
+
+NVIDIA CUDA History
+— CUDA 1.1: atomic functions operating on 32-bit values in global memory
+— CUDA 1.2: atomic functions operating on 32-bit values in shared memory
+— CUDA 1.3: double precision values
+— CUDA 5.0: dynamic parallelism
+— CUDA 7.5: half-precision floating-point operations
+— CUDA 8.0: atomic addition operating on 64-bit floating point values in global memory and shared memory
+— CUDA 9.0: Tensor core
+
+GPU Architecture
+HowTo GPU Architecture 
+• CPU cores are built for processing instructions as fast as possible
+• Remove that logic to get space for more compute throughput (more ALUs, more registers, ...)
+• Add SIMD processing, i.e. one instruction is processed on multiple data by multiple ALUs
+• Replicate these compute unit 
+• Keep multiple contexts available to jump in, if others have to wait
+--> Concurrent but interleaved instruction streams help to hide latencies
+
+Example:
+16 cores á 8 ALUs for fused multiply-add (FMA)
+= 256 GFLOPs (@ 1GHz) = 16 * 8 * 4 = 512 concurrent FMAs
+(4 resident contexts per core)
+
+Comparison of CPU & GPU Architecture (--> Folie 19)
+CPU latency-minimizing architecture
+- Powerful ALUs reduce operation latency
+- Large caches with short latency and prefetching
+- Control logic for out-of-order and speculative execution
+- Branch prediction reduces branch latency
+- Data forwarding reduces data latency
+- Good for sequential parts where latency matters
+- Much faster than GPUs for sequential code
+
+GPU throughput-oriented architecture
+- Many, long latency, heavily pipelined ALUs for high throughput
+- More transistors dedicated to computation
+- Small caches, no prefetching
+- No branch prediction
+- No data forwarding
+- Requires massive number of threads to tolerate memory latencies
+- Good for parallel parts where throughput matters
+- Much faster than CPUs for data-parallel codes
+
+CPU & GPU Architecture (--> Folie 20)
+Low Latency or High Throughput
+- CPU architectures try to minimize latency within each thread
+- GPU architectures try to hide latency with work from multiple threads, requires a large
+	number of concurrent threads to maximize throughput
+
+CPU & GPU Architecture – Threads
+CPU threads are heavyweight:
+	- for multithreading capability threads must be swapped on and off CPU execution channels
+	- context switches are slow (compared to GPU threads)
+	- CPUs with 16 cores run 16 threads concurrently (or 32 threads with 2-way SMT)
+
+GPU threads are lightweight:
+	- thousands of threads can be queued up for work on the multiprocessors
+		NVIDIA P100: 2048 resident threads/SM * 56 SM = 115k threads,
+		3584 FP32 cores = 3584 FP32 ops at the same time
+	- resident threads have resources statically allocated on the multiprocessors
+	- context can be switched quickly (as long as the threads are resident on the multiprocessor)
+
+GPU Architecture – SM
+[NVIDIA] Streaming Multiprocessors (SMs)
+- perform the actual computations
+- have own control units, registers, execution pipelines, caches, shared memory
+- have access to global memory
+- are independent from each other, work concurrently
+
+Global Memory - Graphics Double Data Rate (GDDR)
+— Higher frequencies than DDR RAM
+	- GDDR3: 625 MHz
+	based on DDR2 (250 MHz), changes like lower voltage
+	- GDDR5: 625–1000 MHz
+	DDR4: 400 MHz
+— Broader bus than DDR RAM (64-128 Bit) à higher bandwidth
+	- Usually 256 - 512 Bit
+	- Many parallel memory banks
+— Changes, which imply higher latency e.g. GDDR4 :
+	- Larger buffers for higher bandwidth
+	- Less address pins, more voltage pins
+— Currently GDDR6
+
+Global Memory - High Bandwidth Memory (HBM)
+— Closer to the processor
+	- Memory in the same package
+	--> No separate pins per processor
+— Broader busses
+	- E.g. 1 HBM Stack with 4 DRAM Dies on the package and 2x128-bit channels per die à 1024 Bit
+	- 4 HBM stacks à 4096 Bit
+— HBM2:
+	- Up to 8 dies per stack
+— Example:
+NEC SX-Aurora TSUBASA, Intel Xeon Phi, AMD Fiji,
+NVIDIA Tesla P100, NVIDIA Volta V100
+Graphics P
+
+NEC SX-Aurora TSUBASA mit HBM2 Speicher CC BY-SA 4.0,
+https://commons.wikimedia.org/w/index.php?curid=64236294
+(Folie 25)
+
+GPU Architecture – Peak Bandwidth and FLOPS
+Memory Bandwidth = Memory Bus Width x Effective Memory Clock Speed
+P100 with HBM2: 4096-bit x 1406 MHz = 719.872 GB/s
+K80 with GDDR5: 384-bit x 2*2505 MHz = 240.480 GB/s
+(GDDR5 bases on DDR3 SDRAM, DDR=double data rate)
+	- The bandwidth metric is valid for memory bound kernels
+	- If your throughput (=measured bandwith) is << 75%, optimizations are
+	possible, e.g. by memory access optimizations
+
+FLOPS = Floating Point Operations per Second
+	= Instructions/Cycle x Clock Rate/Core x Number_of_Cores
+P100, Fused Multiply-Add: 2 x 1480 MHz x 3584 = 10.6 TFLOPS
+1xK80 GPU, Fused Multiply-Add: 2x 875 MHz x 2496 = 4.368 TFLOPS	
+
+NVIDIA Volta Architecture (--> Folie 27)
+Tesla V100 (2017)
+	- 80 SMs (84 on die)
+	- 5120 FP32 + 5120 INT
+		+ 2560 FP64 cores
+		+ 640 Tensor cores @ 1462 MHz (Boost)
+	- 30 / 15 / 7.5 TFLOPs (FP16/FP32/FP64)
+	- 16 GB 4096-bit HBM2
+	- 12nm fabric, 21.1B transistors
+	- $10000
+
+A More Detailed Look at the Volta Architecture (V100)
+— PCIe Interface
+— GigaThread Engine (Scheduler)
+— Memory Controller + HBM
+— HighSpeedHub + NVLINK
+— 6 MiB L2 Cache
+— 6 GPU Processing Clusters (GPCs)
+	- 7 Texture Processing Clusters (TPCs)
+	- 14 Streaming Multiprocessors (SMs)
+
+NVIDIA TESLA V100 GPU ARCHITECTURE, Nvidia, WP-08608-001_v1.1, August 2017
+Graphics Processing Units (GPUs) --> Folie 28
+
+A More Detailed Look at the Volta SMs (--> Folie 29)
+— 4 Texture Units
+— 128 KiB L1D Cache / Shared Memory (split, e.g., 64KiB each)
+— L1 Instruction Cache (128 KiB)
+— 4 processing blocks (partitions)
+	- L0 Instruction Cache (12 KiB)
+	- Warp Scheduler, Dispatch Unit
+	- 64 KiB Register File
+	- 8 FP64, 16 FP32, 16 Int, 2 Tensor Cores
+	- 8 Ld/St
+	- 4 Special Function Units (SFUs)
+		
+AMD Vega Architecture (--> Folie 30)
+AMD Radeon Pro, Vega10 (2017)
+	- 64 compute units (NCU)
+	- 4096 streaming processors (SP) @ 1500 MHz Boost
+	- 24.6 / 12.29 / 0.768 TFLOPs (FP16/FP32/FP64)
+	- 16 GB 2048-bit HBM2
+	- 14nm fabric, 12.5B transistors
+	- on-board SSDs: SSG=solid state graphics, per own PCIe3.0 M.2, only
+		~2GB/s, but reduces latency and bus contention
+	- $7000
+
+AMD GPGPU Performance (--> Folie 31 - 32)
+
+AMD Accelerated Processing Unit (APU)
+— Processors with integrated GPU (iGPU)
+— iGPU with higher (single) performance than processor (1.83 : 0.158 TFLOPS for Ryzen7 2800H)
+— Typical flow: Host processor controls GPGPU
+— Alternative: Heterogeneous System Architecture (HSA)
+	- Developed by HSA Foundation (AMD, ARM, Qualcomm, Samsung, ...)
+	- Pre-condition: common address space
+	- ISA-agnostic
+	- No copying of data
+	- CPUs can create GPU-Tasks, but also the other way around
+	- Can also work with common GPUs, would need support from hardware vendors
+
+Example: AMD Raven Ridge APU (Ryzen 5 2400G)
+--> Folie 34 - 36
+
+Programming of GPUs
+
+GCoE Projects 
+--> Folie 38
+
+Three Options for Heterogeneous Programming 
+			Applications
+Libraries 		Compiler Directives	Programming Languages
+-----------------------------------------------------------------------------
+easy to use		easy to use		most performance
+most performance	portable code		most flexibility
+
+Programming with NVIDIA CUDA: Where is the data parallelism?
+— A kernel defines the computation & data access of a single thread
+— Many CUDA threads perform the same computation in parallel
+— CUDA uses a relaxed, more expressive SIMD programming model:
+	=> SIMT (Single Instruction, Multiple Threads)
+— SIMT is hybrid of SIMD and SMT
+— SIMT allows multiple register sets, addresses and flow paths
+— SIMT uses scalar spelling, ie.:
+
+int idx = /* compute global thread id */;
+a[idx] = b[idx]+c[idx];
+
+Simultaneous Multithreading (SMT) --> Folie 41
+While one thread waits for data (e.g. due to a cache miss), another thread can jump in
+--> thread or context switching by SMT
+
+Single Instruction Multiple Threads (SIMT) (--> Folie 42)
+SIMT: something in between SMT and SIMD
+• SIMD processing can be realized by
+	• Explicit vector instructions (x86 SSE, AVX, ...)
+	• Scalar instructions with implicit hardware vectorization (SIMT)
+• Easier to handle branches
+• Nvidia: warps, AMD: wavefronts
+
+Efficiency		<----------------->	Flexibility
+SIMD 				SIMT		    SMT
+Single Instruction, 				Simultaneous Multi-Threading
+Multiple Data
+
+General Structure of a NVIDIA GPU  --> Folie 43
+
+Mapping of Threads on Hardware
+— Each thread is scheduled on one core
+— Arrangement of threads is called thread block
+— Each thread block is scheduled on one streaming multiprocessor (SM)
+— Each SM holds fast-accessible shared memory that can be used to share data among threads of one thread block
+— Each SM can hold multiple thread blocks. The arrangement of blocks is called grid. The order of
+	block execution is not fixed. Multiple blocks can reside on one SM.
+— To make scheduling easier, the SM divides thread blocks into warps (groups of 32 threads, which
+	are executed in SIMD fashion). The order of warp execution is not fixed.
+— When an SM executes a warp, all threads of that warp execute the instruction concurrently
+— The SM checks which warps are “ready to execute” to hide latencies
+		
+Block Size Restrictions
+— Total number of threads in a block is the product of the number of threads in each dimension
+— Total number of threads and threads per dimension have limits
+CUDA Compute Capability 	2.x	3.x 	5.x 	6.x 	7.0
+Micro Architecture 		Fermi* 	Kepler 	Maxwell Pascal 	Volta
+Max. block size in x,y		1024	1024	1024	1024	1024
+Max. block size in z		64	64	64	64	64
+Max. threads per block		1024	1024	1024	1024	1024
+Comprehensive tables of device properties: https://en.wikipedia.org/wiki/CUDA
+* Fermi is deprecated as of CUDA8 and without compiler support as of CUDA9
+
+Grid Size Restrictions
+— Total number of blocks in a grid is the product of the number of blocks in each dimension
+— Total number of blocks and blocks per dimension have limits
+— Gives a kernel launch error if launch configuration is invalid (check by cudaGetLastError)
+
+CUDA Compute Capability 	2.x	3.x 	5.x 	6.x 	7.0
+Micro Architecture 		Fermi* 	Kepler 	Maxwell Pascal 	Volta
+Max. grid size in x		2^31 -1	2^31 -1	2^31 -1	2^31 -1	2^31 -1
+Max. grid size in y or z	65535	65535	65535	65535	65535
+Max. resident blocks per SM	16	16	32	32	32
+Max. resident threads per SM	2048	2048	2048	2048	2048
+
+NVIDIA GPGPU Floating-point Performance --> Folie 52
+
+Communication between CPU and GPU
+
+Host/Device Communication – PCIe Bottleneck
+Host Memory	<-------------------->	Device Memory
+DRAM		transfer data		GDRAM
+| < 80 GB/s				| > 200 GB/s
+|	       ~10 μs			|
+CPU   ------------------------------->	GPU
+|	  dispatch kernels		|	
+|					|
+IO ------------------------------------	IO
+  PCIe Bus <16 GB/s (bidirectional)
+
+CPU “uploads” data to GPU
+	- per Virtual Memory or DMA from host memory to device memory
+	- If CPU is on another socket, data has to pass socket interconnect (QPI..)
+	- data is transferred through PCIe, including PCIe switches if present
+CPU “downloads” data from GPU (as before, just the other direction)
+
+CPU: only able to read/write device memory of GPU (global & texture & constant)
+GPU: acts as slave, but can read/write host memory directly, when pinned/non-pageable memory is used
+(-> DMA – Direct Memory Access)
+
+Bottlenecks --> Folie 55 - 56
+
+Other Problems
+— Data has to be copied (again and again), Example:
+	- Host processor copies data from GPGPU
+	- Host processor copies data to send buffer
+	- OS triggers the sending of the buffer to the target system
+	- Host processor on target system copies data from buffer to own memory
+	- Host processor on target system copies data from own memory to GPGPU
+— Number of GPGPUs per processor limited:
+	- Host processor used for synchronization and copying for all GPGPUs
+	- Bandwidth limitation gets worse with more GPGPUs
+— No cache coherence between host processor and GPGPU, no common address space
+
+Solutions
+— CUDA 5.0: GPUDirect RDMA
+	- Allows Remote Direct Memory Access without active usage of host processor
+	- Lowers numbers of copy operations needed
+— P100 (Pascal): NVLINK
+	- Communication between multiple NVIDIA GPGPUs
+	- Alternative to PCIe communication
+
+NVLINK --> Folie 59
+
+NVLINK on POWER8+ --> Folie 60
+
+Memory on GPUs
+
+Memory Hierarchy --> Folie 62
+
+GPU Architecture - Memory --> Folie 63
+Memory 		On-Chip	Cached	Access 	Scope
+Register 	Yes 	- 	R/W 	Thread
+Local		No 	Yes 	R/W 	Thread
+Shared 		Yes 	- 	R/W 	Block
+Global 		No 	Yes** 	R/W 	Global
+Constant 	No 	Yes* 	R 	Global
+Texture 	No 	Yes* 	R 	Global
+Surface 	No 	Yes*	R/W 	Global
+* Has its own cache
+** may use read-only data cache
+
+Summary: Memory sizes
+Memory 				Size
+Register 			65.536 x 32-bit per SM
+Local Memory 			Device memory (up to 16 GB)
+Shared Memory 			16/48 KB per block, {48,64,96,112} KB per SM
+Global 				Device memory (up to 16 GB)
+Constant			64 KB
+Texture 			Device memory (up to 16 GB)
+L1 Cache 			48-128 KB
+L2 Cache 			1536 – 6144 KB
+Constant Cache 			8-10 KB
+Texture/Read-only data cache 	12-48 KB
+
+Memory Hierarchy – Register (Banks)
+Register	<--------->	Thread
+Number of 32-bit registers per multiprocessor: 64k (except Compute Capability 3.7: 128k)
+What?		Register is the memory for the ALUs, so it is on-chip and fast!
+How?		Declare a variable, e.g. int counter;
+Who?		A register is assigned to a single thread only
+Scope?		Lifetime of a thread
+Access?		Read+Write, thread-private
+Problems?	Affects occupancy and if a thread wants too many registers,
+		they become spilled out to local memory (slow)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
