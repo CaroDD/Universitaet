@@ -1,0 +1,49 @@
+Übung 3:
+
+3.1: 
+a) Merkmale der RISC Architektur
+- vereinfachter Befehlssatz
+	-> Ein-Zyklus-Operationen (im Pipelining 1 Instruktion wird pro Takt fertig)
+	-> fest verdrahtete Steuerung (Kein Microcode)
+	-> Load/Store Architektur (Alle Operanden für Berechnungen müssen explizit in/von Register geladen/gespeichert werden, 
+		General Purpose Register --> mehr Register (typischerweise))
+
+	-> einfacher zu dekodieren
+	-> feste Befehlsbreite (begrenzte Anzahl der Befehle, IF gleich lang, Befehlsanfang vorhersehbar, erleichtert Pipelining, da Adresse des nächsten Befehls bekannt)
+	(-> 3 Address Format üblicherweise)
+	--> Reduzierung der Prozessorhardware (kleinere Chipfläche, höhere Ausbeutung, -> günstigere Fertigung)
+	
+Waver: große Scheibe mit Prozessorkernen drauf (Anzahl der Prozessoren & Größe des Wavers bestimmen Gesamtgröße des Prozessors) 
+
+b) einheitliche Befehlslänge (kein Komprimieren möglich durch kurze Befehle): 
+- IF verbessert
+- Begrenzung der Anzahl der Befehle -> 6 Bit Opcode -> 2⁶ Befehle = 64 Befehle
+	- für Arithmetik mehr durch fanc in R-Format
+- Begrenzung der Anzahl der Register -> 5 Bit -> 32 Register
+- für 32 bit Wert als Immediate werden 2 Befehle gebraucht
+
+3.2. 32 Bit HDN
+Es kann nur 32 Bit addiert, subtrahiert ... werden, Direktoperand (Immediate) hat 16 Bit
+	--> Bit 0 ... 15 muss aufgefüllt werden mit Most Signifikant Bit (MSB) des Immediate
+	--> Zweierkomplement: 1 für neg. Zahlen, 0 für pos. Zahlen
+GPR[R5] <-- (IR_16)¹⁶##IR_(16...31)
+
+3.3. I-Typ-Befehle
+- Ladebefehle
+	Direktoperand wird hier als "Displacement" bezeichnet
+	GPR[rd] <- M[GPR[rs1] + ((IR_16)¹⁶##IR_(16...31))]_(0...31)	//rd = destination register
+	Das heißt, es wird Speicheradresse M[Basisadresse (rs1) + Displacement (IR_(16...31))] in Zielregister rd geladen
+- Speicherbefehle
+	M[GPR[rs1] + ((IR_16)¹⁶##IR_(16...31))] <- GPR[rs2]			//rs = source register
+	Wert in GPR rs2 wird in Speicheradresse M[Basisadresse (rs1) + Displacement (IR_(16...31))]
+- Immediate ALU Befehle
+	Direktoperand wird über opcode mit Inhalt des GPR (General Purpose Register) rs1 verknüpft. Ergebnis wird in GPR rd geschrieben.
+	GPR[rd] <- GPR[rs1] op((IR_16)¹⁶##IR_(16...31))
+- Verzweigungsbefehle (bedingt)
+	Immediate heißt hier Offset if(GPR[rs1]) PC <- PC + ((IR_16)¹⁶##IR_(16...31)) 
+	--> Wenn Sprungbedingung in rs1 erfüllt ist, wird Programmcounter (PC) um vorzeichenerweiterten Offset erhöht
+	--> durch Befehl BEQZ Branch equal zero wenn rs1 = 0
+			 BNEZ Branch not -”-	wenn rs1 != 0
+- Sprungbefehle
+
+

@@ -1,0 +1,207 @@
+RA2 Übung 1
+
+1.1. Komponenten der von-Neumann Architektur:
+	Speicher (Hauptspeicher)
+	CPU
+	Verbindungseinrichtung (Bus)
+	E/A Einheit (Ein-/Ausgabe)
+	CISC/RISC Prozessoren
+
+	CPU: instruction fetch (IF), instruction decode (ID), execution (EX)  
+	Steuerwerk:
+		IF: Befehlszähler (PC) sorgt dafür, dass Befehle aus dem Speicherregister weitergeleitet werden 
+		ID: Befehlsdecoder/-dekodierer
+		Microcode ROM 
+		Ablaufsteuerung
+		EX,ALU,EU (Execution)
+		Write Back (WB) (--> MEM): Adresse berechnen möglich
+	Zentrale Steuerschleife: ID
+		Befehlszähler getriebene Ablaufsteuerung
+		Alternativ: Datengetrieben
+		
+	Rechenwerk:
+		Flag: Overflow, 0, Rest der Division, ... (zusätzliche Information)
+		eigentliche Rechenoperation
+		beeinflusst Steuerwerk durch Flags
+		ALU:
+			op.1	op.2
+			|	|
+			|	|
+		--------v -----	v ------
+	        |	   		|<-- Steuersignale vom Steuerwerk
+		|	   ALU		|
+		|_______________________|		
+			|	   |
+			|	   |
+			v	   v
+			Ergebnis   Flags
+
+1.2. Unterschiede von-Neumann & Harvard Architektur:
+Verbindungseinrichtung <--> CPU <--> Verbindungseinrichtung
+	|					|
+	|					|
+	v					v
+Befehlsspeicher				Datenspeicher
+
+Vorteil: Entlastung des Datenbusses, Beschleunigung des Prozesses
+Datenbus: von-Neumann Flaschenhals (Bus überfordert, verlangsamt Prozess, ALU muss warten)
+Nachteil: Fehleranfällig, teurer, platzintensiver
+Lösung/Zwischenstufe: Cache (zwischen CPU und Speicher)
+	Einfachheit, aber Geschwindigkeit
+
+1.3./1.4. Giloi
+Vorher: Ausdruck insb. der Möglichkeiten der Programmierschnittstelle (jetzt: Instruction fetch architecture ISA)
+* Befehlssatz/Befehle
+* Registerstruktur
+* Adressierungsmodi
+* Interruptbehandlung
+* E/A Funktionalität
+
+Definition von Giloi: 
+Interne Struktur und Organisation eines Rechners ist wichtig (Harvard/von-Neumann)
+ 		 			 RA
+					/  \
+		Hardwarestruktur   				Operationsprinzip
+		/	|	\				/		\
+Hardwarebetriebs-	Verbindungs-			Informationss.		Steuerungss. --> Ablaufsteuerung | Datenzugriffsverwaltung | Ressourcenverwaltung
+mittelstruktur 		-struktur \ 			/	|	\
+/		\		  Kooperationsregeln   /	|	 \
+Prozessor-	Speicherstruktur	       	Klasse v. Objekten	Menge d. Funktionen, die auf die Datenobjekte anwendbar sind
+struktur 						Menge d. Maschinendarstellung der Datenobjekte
+
+Prozessorstruktur:
+* Anzahl der Kerne
+* Execution Units (ALU,FPU, ...)
+* IF Unit
+* ID Unit
+* Branch Prediction (sagt voraus, wie ein Sprung ausgeführt wird)
+* Steuerwerk
+
+Speicherstruktur:
+* Cache (verschiedene Stufen L1, L2, L3) (CPU --> Speicher) (Speichergröße nimmt zu, Zugriffsgeschwindigkeit sinkt)
+* Register
+* HDD
+* optionaler Speicher
+* Flash
+
+Verbindungsstruktur:
+* Datenbus
+* Steuerbus
+* Adressbus		
+* On-Chip 	
+* Off-Chip, PCI, USB, ...
+* Netzwerk (Ethernet, WLAN, ...)
+* Speicherbus
+* Verbindungsnetzwerk zwischen den Prozessoren (On-Chip)
+
+Informationsstruktur:
+Klasse:
+* Doppelt verkettete Liste
+
+Maschinendarstellung:
+* Festkomma-Datenformate nach IEEE754
+* Gleitkomma-Datenformate nach IEEE754
+
+Menge der Funktionen: 
+* Assemblerbefehl: ADD R6, R4, R1
+
+Ablaufsteuerung:
+* PC getrieben 
+* PC-getriebene Ablaufsteuerung
+
+Datenzugriffsverwaltung:
+* Assoziativer Zugriff
+* Zugriff über Addresslogik
+* Zugriff auf den Cache
+
+Ressourcenverwaltung:
+* wer darf wann welche Ressource nutzen
+
+RA\Hardwaresstruktur\Hardwarebetriebsmittelstruktur\Verbindungsstruktur
+
+1.5. Moores Law & Auswirkung auf HW-Struktur
+Anzahl der integrierten Schaltelemente (Transistoren) verdoppelt sich alle 18-24 Monate.
+Transistoren werden kleiner - Halbierung der Transistorabmessung alle 3 Jahre (gleiche Chipgröße) 
+Kapazität & Stromverbrauch sinkt, Taktfrequenz / Performance steigt
+erhöhte Leistungsaufnahme
+Zusätzliche Komponenten integrieren
+--> Speicher (Register), Caches
+		Scratch Path Memory = Stück Speicher, direkt kontrollierbar
+		Caches = Speicher/Daten müssen konsistent sein
+--> mehr Recheneinheit: Superskalarität
+--> neue Recheneinheiten, Funktionseinheit: SIMD, FPU, GPU, DRAM Controller (DRAM wird nur um 7% / Jahr schneller)
+		Freie Lücke mit z.B. Grafikkarte besetzen (Grafikprozessor verschwindet)
+		Vorteil: bessere Kontrolle der Leistungsverteilung, Übersicht über Leistungsbedarf
+--> mehr Kerne
+Bessere Übersicht
+Physische Verkleinerung, Material, Geldeinsparung
+		DDR = Data Data Rate (RAM Speicher) 
+
+1.6.FLYNNsche Kategorie
+a) SISD SIMD MISD MIMD
+SISD = Single Instruction Stream Single Data Stream
+SIMD = Single Instruction Stream Multiple Data Stream
+MISD = Multiple Instruction Stream Single Data Stream
+MIMD = Multiple Instruction Stream Multiple Data Stream
+
+SISD = Ein Datenstrom wird durch einen Befehlsstrom verarbeitet (von Neumann Rechner) auch aktuelle Prozessorkerne (Ohne MT[Multithreading], ohne SIMD)
+	Grund: unabhängige Funktionseinheit, eigenständige Abarbeitung, Beim Stoppen immer noch Sequentielle Ausführung für Software sichtbar (in Hardware Pipelining) 
+SIMD = 1 Befehlsstrom bearbeitet mehrere Datenströme: braucht entsprechende Befehle
+	Feldrechner: 	1 Leitwerk/Steuerwerk (v.Neumann) kontrolliert mehrere Ausführungseinheiten/EXUs (arbeiten parallel), auch aktuelle Prozessoren: SIMD (MMX (->Green Screen), SSE, AVX, ...)
+			taktsynchron
+	Vektorrechner:	D = A * B + C --> Chaining (Verbinden mehrerer Pipelines)
+			nicht taktsynchron
+MISD = leere Klasse ("MISD ist Mist")
+MIMD = Mehrere Befehlsströme, mehrere Datenströme, Multicore, Multiprozessorsysteme, (Multithreading)
+
+1 Thread = 1 Befehlsstrom
+Steuerwerk in der CPU (Prozessorkern)
+
+b) Single Core PC = SISD
+2. = MIMD
+3. = MIMD
+4. = SIMD
+5. = MIMD
+6. = SISD
+7. = SIMD
+
+1.7. Merkmale von MMX, SSE, AVX
+MMX = SIMD (Feldrechnerprinzip)
+	64 Bit Register werden in Integer aufgeteilt (8-64 Bit)
+	Daten werden mit 1 Befehl bearbeitet
+	Feldrechnerprinzip
+SSE = SIMD, Feldrechnerprinzip (Pentium 3)
+	128 Bit Register, 4x single precision Gleitkommadaten
+	später SSEZ gleiche Register, aber auch double precision und integer
+AVX = SIMD (Sandy Bridge, Core Prozessor)
+	256 Bit, floating point
+	3 Address-Format (c = a + b)
+AVX2: AVX + Integer (Haswell, 4th Generation Core)
+FMA: fased multiply add
+AVX-512: 512 Bit Register (Skylake Server, Xeon Phi)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
