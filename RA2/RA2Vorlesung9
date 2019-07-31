@@ -1,0 +1,536 @@
+Vorlesung 9, Kapitel 8
+Verbindungsnetzwerke in parallelen Rechnersystemen
+
+Gliederung
+— Einführung
+— Statische Verbindungsnetzwerke
+— Dynamische Verbindungsnetzwerke
+— Performance-Messung
+— Kommunikationsleistung herkömmlicher LANs
+— Hochgeschwindigkeitskommunikationen
+— Aktuelle Trends und Herausforderungen
+
+Einführung
+Überblick
+— Beim Übergang von der von-Neumann-Architektur zu parallelen Rechnerarchitekturen ist die
+  Art der Verbindung zwischen den beteiligten Komponenten von wesentlicher Bedeutung
+	- für die Leistungsfähigkeit und
+	- für die Fehlertoleranz des Gesamtsystems
+— Die Verbindungseinrichtung als eine Komponente der Architektur von Rechnersystemen wird in
+  Anlehnung an die Rechnerarchitektur-Definition von Giloi RA = (S, O) ebenfalls durch diese
+  beiden Aspekte näher gekennzeichnet:
+	- Struktur: Topologie (Nachbarschaftsbeziehung) zwischen den zu verbindenden Einheiten
+	- Operationsprinzip: Art der Nachrichtenübertragung (Schaltersteuerung der Leitungsverbindungen und
+	  Erzeugung der Steuersignale)
+
+Aufgaben von Verbindungseinrichtungen
+— Die Aufgabe der Verbindungseinrichtungen besteht darin, den Transport von Informationen
+  (Befehlen, Programmdaten, Adressen und Steuerinformationen) zwischen den Hardware-
+  Komponenten zu ermöglichen
+— Verbunden werden
+	- Prozessoren, Speicher mehrere Verarbeitungsknoten bzw.
+	- E/A-Einheiten miteinander mehrere Rechner miteinander
+— Durch die Parallelverarbeitung ergeben sich Synchronisations- und Kommunikationsprobleme,
+  die die Verbindungseinrichtungen unterschiedlich stark belasten 
+
+Unterscheidung
+— Einheitlich und am häufigsten angewandt ist die Unterscheidung nach der Art des Verbindungsaufbaus
+— Statische Verbindungsnetzwerke
+	- Feste Zuordnung zwischen Eingängen und Ausgängen
+— Dynamische Verbindungsnetzwerke
+	- Veränderbarkeit der Zuordnung zwischen Eingängen und Ausgängen durch Steuerbits
+— Mögliche Blockierungen (mit Zeitverlust) bei Nutzung von Teilnetzwerken für mehrere Verbindungen
+
+Unterscheidungsmerkmale I
+Unterscheidungsmerkmal					Erklärung
+Verbindungsaufbau					• statisch: fest installierte Verbindungen zwischen Paaren von Netz-
+(Teilweise erfolgt als nächstes eine			  knoten, zwischen Knoten keine zusätzlichen Schaltelemente, alle
+topologische Untergliederung.)				  Knoten bilden zusammenhängenden Netzgraphen
+							• dynamisch: Netze mit dieser Art des Verbindungsaufbaus enthalten
+							  ein Schaltnetz, über das interne Verbindungskanäle zum Aufbau
+							  unterschiedlicher Wege geschaltet werden. Die externen Verbin-
+							  dungskanäle sind einzelnen Komponenten des Netzwerks fest zu-
+							  geordnet. Alle notwendigen Steuerungsfunktionen sind im Schalt-
+							  netz konzentriert.
+
+Topologie						• reguläre Topologie: regelmäßige Struktur --> Taxonomie regulärer
+(Teilweise erfolgt als nächstes eine			  Verbindungstopologien
+Untergliederung hinsichtlich des			• irreguläre Topologie: Unterscheidung in amorphe und zufällige 
+Verbindungsaufbaus.)					  Topologien
+
+Verbindungsart						• Leitungsvermittlung: Durchschalteverbindung (circuit switching)
+							  während der gesamten Informationsübertragung; hohe Nettodaten-
+							  rate nach dem Verbindungsaufbau möglich; Ressourcenblockierung
+							• Paketvermittlung: relativ kleine Nachrichtenpakete, die verschiede-
+							  nen logischen Verbindungen zugehören können, werden gleichzei-
+							  tig durch das Netzwerk gesandt. Die Leitungen zwischen den
+							  Vermittlungsstationen können kurz nacheinander von mehreren
+							  verschiedenenen Datenpaketen mit unterschiedlichen Zielen be-
+							  nutzt werden; bessere Ressourcenausnutzung; kleinere Nettoda-
+							  tenraten
+							• Nachrichtenvermittlung: Kombination von Leitungs- und Paketver-
+							  mittlung
+
+Verbindungssteuerung					• zentral: Routing-Information wird unabhängig von der zu übertra-
+							  genden Information der Wegsteuerung zur Verfügung gestellt
+							• dezentral: autonome Entscheidung in den verteilten Schaltknoten
+							  durch Auswertung der Verwaltungsinformationen in den Datenpaketen
+
+
+Paketformat						Verpackung der zu übertragenden Nachricht in Pakete mit Nutz- und
+							Verwaltungsdaten (Verwaltungsdaten: Header, Zieladresse, Quell-
+							adresse, Paketnummer, Paketendekennzeichen, Trailer)
+
+Routing							• Adressspezifikation: zielbasiert | quellenbasiert
+							• Wegewahl: deterministisch | adaptiv
+							• Flusssteuerung:
+								- Store-and-forward: vollständige Zwischenspeicherung der
+								  Nachricht auf dem Zwischenknoten; danach Weiterversenden
+								  in Richtung des Empfängers
+								- Virtual-cut-through: Nachricht wird als Kette von Übertragungs-
+								  einheiten von Zwischenknoten zu Zwischenknoten transportiert.
+								  Der Header bestimmt den zu wählenden Weg. Die restlichen
+								  Übertragungseinheiten folgen in Analogie zum Pipelineprinzip.
+								  Die Zwischenspeicherung erfolgt nur im Konfliktfall, ist aber in
+								  jedem Zwischenknoten für das ganze Nachrichtenpaket möglich.
+								- Wormhole-routing: identisch mit virtual-cut-through, solange
+								  keine Nachrichtenkanäle blockiert sind. Falls der Header auf
+								  einen belegten Kanal trifft, wird er abgeblockt. Bis zur
+								  Aufhebung der Blockierung verbleiben alle nachfolgenden
+								  Übertragungseinheiten ebenfalls in ihrer Position.
+
+Statische Verbindungseinrichtungen
+— Jeder Knoten besitzt eine bestimmte Anzahl fester Leitungen (Links) zu definierten benachbarten Knoten
+— Das Netzwerk selbst beschränkt sich auf Verbindungsleitungen – 
+	Vermittlungsfunktionen werden nicht ausgeführt
+— Interprozesskommunikationen werden bereits zur Übersetzungszeit des Programms festgelegt
+— Keine Möglichkeiten der Rekonfigurierbarkeit im Netz
+— Es existiert aus grafentheoretischer Sicht kein optimales VNW, da alle Vor- und Nachteile aufweisen
+— Bevorzugung modularer Strukturen
+
+Beispiele für Statische Verbindungseinrichtungen
+Ring, Chordalring, 2D-Torus, Stern, Systolisches Array, Hypercube 3. Ordnung
+--> Folie 12 - 14
+
+Vergleich Hypercube / Baum
+— Vergleicht man eine dreidimensionale Hypercube-Struktur mit einer Baumstruktur, dann kann man feststellen:
+	- Die Hypercube-Struktur verbindet in 3 Schritten nur 8 Knoten, es sind aber bei einem diagonalem Durchlauf 6 verschiedene Wege möglich
+	- Die Baumstruktur verbindet dagegen in nur 2 Schritten 10 Knoten
+
+Ausgewählte Metriken statischer Verbindungsnetzwerke II
+Knotenzahl N: Anzahl der Knoten, die durch das statische Verbindungsnetzwerk Daten miteinander austauschen können
+Grad d: Anzahl der Kanten (bzw. Links) pro Knoten
+Durchmesser k: Maximaler Abstand zwischen 2 Knoten in Linkverbindungen;
+	       Maximum aller kleinsten Pfadlängen zwischen zwei Knoten
+Mittlerer Knotenabstand:
+	\a : Summe der nach der Anzahl der Nachrichten gewichteten Pfadlängen i
+\a = \sum_(i=1)^k (i*p_i)	p_i : Prozentsatz der Nachrichten, die die Pfadlänge i haben
+
+\a´ : mittlerer Knotenabstand unter folgenden Voraussetzungen:
+	- Symmetrisches Netz
+	- Gleichverteilung der von den Nachrichten zurückgelegten Pfadlängen i
+	
+Knotenvernetzung: 			Minimale Knotenausfallzahl für den Zerfall des
+(~konnektivität; ~zusammenhang) 	Netzes in zwei (beliebig große) Teile
+Kantenvernetzung: 			Minimale Kantenausfallzahl für den Zerfall des
+(~konnektivität; ~zusammenhang) 	Netzes in zwei (i. a. verschieden große) Teile
+Halbierungsbreite: 			Minimale Kantenausfallzahl für den Zerfall des Netzes in
+					zwei gleichgroße Teile (Spezialfall der Kantenvernetzung)
+Bisektionsbandbreite: 			Ausgangspunkt: Teilung des Netzes in zwei gleichgroße Teile
+(Halbierungsbandbreite) 		(siehe: Halbierungsbreite). Multiplikation der
+					verbleibenden Verbindungskanäle zwischen den Netzhälften
+					mit der Übertragungsbandbreite
+Konnektivität:				Minimum aus den Werten Knotenvernetzung und Kantenvernetzung
+Erweiterungsinkrement: 			Kleinste Knotenzahl für Erweiterung
+
+Kenngrößen ausgewählter statischer Verbindungseinrichtungen 
+Netzwerk		Grad d 		Durchmesser k		Mittlerer		Konnektivität 		Kleinste
+								Knotenabstand \a				Erweiterung
+								(Näherungswerte sind  
+								nur für große N gültig)	
+Stern (N>2)		1 bzw (N-1)	2			2/N * (N-1) = 2		1			1
+
+Ring (N>2)		2		N/2 abgerundet		N²/(4*(N-1) (N gerade)	2			1
+								sonst: (N+1)/4 = N/4 
+2D-Gitter		{2,3,4}		2*(√N -1)		= √N -1			2			2*√N +1
+(M_S =M_R =√N)													(Zeilen- und Spaltenerweiterung)
+
+Binärer			ld(N)		ld(N)			(ld(N)*2^(ld(N)−1)-1)/	ld(N)			N
+Hypercube							2^(ld(N))-1 
+(N=2^n)								= ld(N)/2
+
+
+Dynamische Verbindungseinrichtungen
+— Verbindungen werden durch aktive Koppelelemente innerhalb des VNW realisiert
+— Vermittlungsfunktionen werden durch diese Koppelelemente eigenständig ausgeführt
+— Koppelelemente können in mehreren Stufen angeordnet sein
+— Bei mehrstufigen Netzen ist die Verdrahtung zwischen den Schaltstufen oft nicht über das gesamte Netz einheitlich
+
+
+Bussysteme
+— Durch die wahlweise Zuschaltung einzelner Verarbeitungsknoten zum Datentransfer
+	an einen Bus ist das Bussystem eine typische dynamischen Verbindungseinrichtung
+— Der Bus bildet die Engstelle im busgekoppelten Multiprozessorsystem, so dass auch
+	Doppelbusse oder allgemein Mehrfachbusse eingesetzt werden
+— Bussysteme und auch Mehrbussysteme werden für MPS mit höchstens p = 30
+	Prozessoren eingesetzt, um Zugriffskonflikte in Grenzen zu halten
+
+Mehrprozessorsystem mit Mehrfachbus
+--> Folie 23
+
+Kreuzschienenverteiler (--> Folie 25)
+Der Kreuzschienenverteiler (crossbar) ist gekennzeichnet durch:
+— einen Durchmesser 1, d.h. beliebige Sende-/Empfänger-Verbindungen können unter
+	Einsatz jeweils nur einer Schaltzelle realisiert werden,
+— hohe Transfergeschwindigkeiten und
+— sehr hohen Aufwand 
+
+Dynamische Verbindungseinrichtungen
+Das Ziel der Entwicklung für effiziente dynamische Verbindungseinrichtung besteht darin,
+schnelle umfassende Verbindungen mit vertretbarem Aufwand
+zu schaffen, wofür zellenbasierte Systeme eine vielversprechende Lösung sein können.
+
+Zellenbasierte Systeme (--> Folie 27)
+Zellen mit 2 Eingängen und 2 Ausgängen bilden die Basis für solche Systeme
+
+Einstufige Netzwerke (--> Folie 28)
+Eine Spalte von Schaltzellen wird durch Rückkopplung der Ausgänge auf die Eingänge verbunden,
+die Zellen werden mehrfach durchlaufen. Im Bild ist ein Durchlauf von 1 am Eingang nach 6 am
+Ausgang gezeigt.
+
+Mehrstufige Netzwerke (--> Folie 29)
+Mehrere Spalten von Schaltzellen, auch mit Rückführungen, sind fest miteinander verbunden
+Auf dieser Basis gibt es zahlreiche Realisierungen für spezielle Einsatzfälle
+
+Omega Netzwerk (--> Folie 30/31)
+— OMEGA-Netze bestehen aus n = log_2 N Schaltstufen mit jeweils N/2 Beta-Zellen (deutliche
+Reduzierung im Vgl. zu N 2 Beta-Zellen im Crossbar-Netz)
+— Indizierung der Ein- und Ausgänge sowie der Leitungen zwischen den Schaltstufen von 0 bis N-1
+in aufsteigender Reihenfolge
+— Die Basis bildet das einstufige Shuffle Exchange-Change-Netz, welches entsprechend auf n = log_2 N
+Schaltstufen erweitert wird
+— Die exchange Operation wird von den Koppelelementen ausgeführt, die shuffle Funktion
+dagegen implizit durch die Verbindungsleitungen
+— Daraus ergibt sich das maximal n shuffle und n exchange Operationen ausgeführt werden
+können und somit exakt ein Weg von jedem Eingang zu jedem Ausgang eines OMEGA-Netzes
+existiert
+
+Clos Netzwerk (--> Folie 32 - 35)
+— Motivation: Konstruktion eines blockierungsfreien Netzwerks mit geringerem Hardware-Aufwand als bei Crossbar-Netzen
+—Allgemeiner Aufbau:
+	– Dreistufiges Netzwerk, mit den drei Parametern
+		- n ... Anzahl der Eingänge pro KE in Stufe 0 und Anzahl der Ausgänge pro KE in Stufe 2
+		- q ... Anzahl der Ausgänge pro KE in Stufe 0 und Anzahl der Eingänge pro KE in Stufe 2, sowie Anzahl der KE in Stufe 1
+		- r ... Anzahl der KE in Stufe 0 und 2, sowie die Anzahl der Ein- und Ausgänge in Stufe 1
+	– Ein KE entspricht einem Kreuzschienenverteiler
+	– Die Verdrahtung zwischen den einzelnen Stufen erfolgt über eine Perfect-Shuffle-Permutation
+— Verbindungen in einem Clos-Netz können mit Hilfe einer Paull‘schen Verbindungsmatrix repräsentiert werden
+— Die Reihen entsprechen den KE der Eingangsstufe, die Spalten dagegen den KE der Ausgangsstufe
+— Verläuft eine Verbindung von KE A (Stufe 0) zu KE B (Stufe 2) über KE C (Stufe 1), so wird C in der Matrix an Position (A,B) eingetragen
+— In Abhängigkeit wie die drei Parameter gewählt werden, ist das Clos-Netzwerk blockierungsfrei, rearrangierbar oder blockierend
+— Das Clos-Netzwerk ist:
+	blockierungsfrei, wenn q ≥ 2n – 1
+	rearrangierbar, wenn r ≥ n
+	blockierend, sonst
+
+Beweis der Blockierungsfreiheit über die Paull‘sche Matrix:
+– Kommunikation X -> Z -> Y nur möglich, wenn in Reihe X und Spalte Y höchstens n – 1 verschiedene Einträge vorhanden sind
+– Im ungünstigsten Fall sind alle Elemente der Reihe und Spalte verschieden (entsprechen also
+	unterschiedlichen KE der mittleren Stufe), so dass zumindest ein weiteres KE in der mittleren Stufe
+	zur Verfügung stehen muss
+		--> Ist der Fall wenn q ≥ 2n – 1
+
+PERFORMANCE-MESSUNG
+
+Messung der Kommunikationsleistung I
+— Die Kommunikationsleistung eines VNWs wird allgemein über
+– die Latenz
+– die Bandbreite, Schrittgeschwindigkeit, Datenrate oder den Datendurchsatz sowie
+– den Overhead
+bestimmt.
+Kommunikationslatenz
+— Kommunikationszeit allgemein:
+T_K = T_L + T_Ü
+T_Ü = (S_N + S_S) / DR
+
+T_L ... Latenz
+T_Ü ... Übertragungszeit
+S_N ... Nutzdatenmenge
+S_S ... Steuerdatenmenge
+DR ... Datenrate
+
+Bandbreite, Schrittgeschwindigkeit, Datenrate und Datendurchsatz
+— Die Bandbreite [Hz] bestimmt die maximale Frequenz, mit der ein rekonstruierbarer Signalwechsel stattfinden kann.
+— Die Schrittgeschwindigkeit [Baud] entspricht der Anzahl der definierten messbaren
+	Signaländerungen innerhalb eines Zeitintervalls. Die maximale Schrittgeschwindigkeit kann
+	nach dem Nyquist-Shannon-Abtasttheorem über die Bandbreite bestimmt werden:
+		Max. Schrittgeschwindigkeit [Baud] = 2 * Bandbreite [Hz]
+— Die Datenrate [bit/s] ist die Gesamtmenge an Daten, welche innerhalb eines definierten
+	Zeitraums übertragen werden können.
+— Der Datendurchsatz [bit/s] wird dagegen über die Menge an reinen Nutzdaten definiert, die
+	innerhalb eines Zeitintervalls übertragen werden können.
+--> Fälschlicherweise werden diese Begriffe häufig synonym verwendet!
+
+— Berechnung des Datendurchsatzes allgemein:
+D_bps ... Datendurchsatz
+S_Bytes ... Gesendete Nutzdatenmenge in Bytes
+T_comm ... Kommunikationszeit die benötigt wurde, um S bytes zu übertragen
+
+D_bps = S_Bytes / T_comm
+
+Overhead
+— Zwei Interpretationen im Zusammenhang mit Netzwerken:
+	1. Menge an Informationen, die zusätzlich zu den Nutzdaten übertragen werden müssen, um eine Kommunikation zu ermöglichen.
+	2. Von der CPU geleisteter Aufwand, der notwendig ist um diese Informationen zu berechnen.
+— Beispiel Ethernet mit den Protokollen TCP und IP:
+- Die Berechnung der Informationen			Ethernet Header Version II
+  (wie bspw. Quell-/Zieladresse,				(14 Byte)
+  Checksummen, Sequenznummern,				IP Header
+  Setzen von Kontroll-Flags) muss für				(mind. 20 Byte)
+  jedes Ethernet-Frame durchgeführt			TCP Header
+  werden.							(mind. 20 Byte)
+- Belastung des Prozessors, insofern			Nutzdaten (1460 Byte)
+  keine Möglichkeit besteht diese			Frame Check Sequence
+  Aufgabe auszulagern.						(4 Byte)
+						
+
+Bewertung der Kenngrößen:
+T_K = T_L + (S_N + S_S)/DR
+
+— Einzige vom Nutzer beeinflussbare Größe: S_N
+— Für S_N --> 0 ist die Kommunikationszeit abhängig von der Latenzzeit
+— Für S_N --> ∞ ist die Kommunikationszeit abhängig von der Datenrate
+— Fazit:
+	- Anwendungen, die große Datenmengen übertragen müssen
+	-->  System mit hoher Datenrate und niedrigem Overhead
+	- Anwendungen, die häufig kleine Pakete senden
+	--> System mit niedriger Latenz und niedrigem Overhead
+
+KOMMUNIKATIONSLEISTUNG HERKÖMMLICHER LANS
+
+— Fast-Ethernet:
+	- Maximale Datenrate: 100 Mbit/s
+	- Gemessener Datendurchsatz: ~80 Mbit/s
+	- Gemessene Latenz: ~80 μs
+	- CPU-Auslastung: ~20%
+— Gigabit-Ethernet:
+	- Maximale Datenrate: 1000 Mbit/s
+	- Gemessener Datendurchsatz: ~680 Mbit/s
+	- Latenz: ~80 μs
+	- CPU-Auslastung: ~65%
+
+Bewertung der Kennwerte für GbE 
+— Durchsatz:
+	- Erreichter Durchsatz liegt 32% unter dem Maximalwert
+	- Ca. 6% des Durchsatzes werden durch Protokolldaten sowie den Ethernet-Header beansprucht
+	--> Wo gehen die anderen 26% verloren?
+	- In Hochgeschwindigkeitsnetzwerken ist eine Ausnutzung der maximalen Datenrate von >95% auf Anwendungsebene wünschenswert
+— Latenz:
+	- Bei einer einzelnen Kommunikation bleiben 80 μs vom Nutzer unbemerkt
+	- ABER:
+		- Prozessor mit einer Taktrate von 2 GHz -> 160000 Taktzyklen
+		- Nutzung von 100000 CPUs -> 16*10 9 Taktzyklen
+		- ...
+	- Latenzzeiten sollten sich in Hochgeschwindigkeitsnetzwerken auf unter 5 μs belaufen
+— Overhead:
+	- CPU-Auslastung bei kleinen Nachrichten kaum relevant, da die Kommunikation schnell beendet ist und der
+	  Prozessor wieder zur Verfügung steht
+	- Während der Übertragung großer Datenmengen steht der Prozessor der Anwendung in diesem Beispiel
+	  lediglich 35% der Gesamtkommunikationszeit zur Verfügung
+	--> Starke Beeinträchtigung der erreichbaren Rechenleistung
+	- Nach der Initialisierung der Kommunikation sollte der Prozessor wieder der Anwendung zur Verfügung
+	  stehen, so dass trotz der Kommunikation eine hohe Rechenleistung erreicht werden kann:
+	--> Folie 45	
+	--> Kommunikationsleistung herkömmlicher LANs in HPC- und Cluster-Systemen i.A. nicht ausreichend!
+
+Ursachen für geringe Kommunikationsleistung I
+— Software:
+	- Protokolle wie UDP, TCP und IP sind vorrangig auf heterogene, instabile und unsichere Netzwerke ausgerichtet
+	- Kommunikation ist als Betriebssystemdienst implementiert
+	- Hoher Aufwand für den korrekten Ablauf im Multiuser- bzw. Multiprogramming-Betrieb
+	- Bewältigung einer Vielzahl von Aufgaben durch Standard-Kommunikations-Software, welche dazu die CPU nutzt
+	- Dazu gehören bspw.:
+		- Adressumsetzung
+		- Schutz der Adressräume
+		- Verwaltung der Sende- und Empfangspuffer
+		- Segmentieren bzw. Zusammensetzen von Nachrichten
+		- Nummerierung, Überwachung und Sortierung von Paketen
+		- Initialisierung der DMA-Hardware
+		- Auslösung und Behandlung von Interrupts
+— Hardware: (--> Folie 47)
+	- Unzuverlässige Übertragung, weshalb der erhöhte Overhead durch die Sicherheitsmechanismen gerechtfertigt ist
+	- Anbindung der Netzwerkschnittstell erfolgt i.d.R. über den I/O-Bus
+	--> Potenzieller Engpass
+	- Zugriff auf die HW ausschließlich über das Betriebssystem
+
+HOCHGESCHWINDIGKEITS-KOMMUNIKATIONEN
+Konventioneller Kommunikationsablauf: --> Folie 50
+— Kommunikation über Kernel:
+	- Wechsel aus dem User- in den Kernel-Mode
+	- Unterbrechung des momentan laufenden Prozesses
+	- Verarbeitung der Kommunikation
+	- Erneuter Kontextwechsel damit der unterbrochene Prozess weiterarbeiten kann
+— Pro: Sicherer Zugriff auf die Kommunikationsgeräte im Multiuser- und Multiprogramming-Betrieb
+— Contra:
+	- Kontextwechsel erhöhen die Verzögerungszeiten
+	- CPU steht der Anwendung während der Verarbeitung der Kommunikation nicht zur Verfügung
+	- Sicherheitsmechanismen verursachen zusätzlichen Overhead
+
+OS-Bypass (--> Folie 52)
+- Speicher der Netzwerkkarte kann von der Anwendung unter Umgehung des Betriebssystems direkt angesprochen werden
+- Für jede Anwendung, die auf die Netzwerkkarte zugreift, muss eine Trennung der Steuerung
+	und Pufferung im Adapter und Hauptspeicher erfolgen
+— Kommunikation unter Umgehung des Kernels (OS-Bypass):
+	- Vermeidung von Systemaufrufen durch direkten Zugriff auf den Speicher der Netzwerkkarte aus der Anwendung
+	  heraus oder über entsprechende Kommunikationsbibliotheken
+	- Minimierung des BS-Einflusses auf den Kommunikationsverlauf
+— Pro:
+	- Reduzierung der Verzögerungszeiten
+	- CPU kann während der Kommunikation weiterhin von der Anwendung genutzt werden
+	- Alle Kommunikationsschichten vom Nutzer programmierbar
+— Contra:
+	- Ressourcenverwaltung zwischen konkurrierenden Prozessen wird nicht mehr vom Betriebssystem koordiniert	
+	- Durch die Umgehung der Systembibliothek fehlen standardisierte Kommunikationsschnittstellen
+	- Fehlende Steuerfunktionen durch den Wegfall der Kommunikationsprotokolle (z.B. Verbindungsauf-/abbau, Flusskontrolle, Reihenfolge)
+
+Datentransfer 
+— Datentransfer zwischen Anwendung und Netzwerkkarte via
+	- Programmed I/O (PIO),
+	- Direct Memory Access (DMA)
+	- oder einer Kombination aus beidem
+
+— Programmed I/O:
+	- CPU transferiert Daten Wort für Wort mittels Load-/Store-Operationen direkt aus dem Anwendungsspeicher an die Netzwerkkarte
+— Vorteile PIO:
+	- Geringer Programmieraufwand (einfache Kopieroperationen)
+	- Definierter Verlauf:
+	- Sendeoperation erst abgeschlossen, wenn sich die Daten vollständig auf der Netzwerkkarten befinden
+	- Empfangsoperation wird erst ausgeführt, wenn die Daten an der Netzwerkkarte eingetroffen sind
+	- Kleine Nachrichten können sehr schnell übertragen werden, da keine zusätzlichen Kopieroperationen und keine Kontextwechsel notwendig sind
+— Nachteile PIO:
+	- Hohe CPU-Belastung bei großen Datenmengen
+	- Test, ob Nachricht empfangen wurde, erfolgt per Abfrage im Adressbereich der Netzwerkkarte (langsamer als Hauptspeicher)
+	- Nach erfolgreichem Test müssen die Daten noch gelesen werden
+
+— Direct Memory Access (DMA):
+	- Datentransfer zwischen physischen Speicheradressen erfolgt über einen DMA-Controller
+	- Allgemein notwendige Schritte:
+		- Adressumsetzung
+		- Allokation von DMA-Puffern notwendig
+		- Übergabe der Adressen an den DMA-Controller
+		- DMA-Controller führt Datentransfer aus
+	- Pro:
+		- Definierter Verlauf (siehe PIO)
+		- Geringere CPU Belastung, da Kopiervorgang in den Hauptspeicher schneller als in Speicher der Netzwerkkarte
+	- Contra:
+		- Zwei zusätzliche Kopieroperationen pro Kommunikation
+		- Allokation und Verwaltung der DMA-Puffer im Kern (System Calls)
+
+Speicherverwaltung
+— CPU nutzt virtuelle Adressen – DMA-Einheiten nutzen dagegen ausschließlich physische
+— Daher ist eine Adressumsetzung notwendig
+	--> System Call
+— Auf Systemaufrufe kann demzufolge nicht vollständig verzichtet werden
+— Ziel: Minimierung der Anzahl der Systemaufrufe
+— Lösung: Kooperation zwischen Netzwerkkarte und Betriebssystem
+	- Virtuelle Adressen und ihre physische Repräsentation werden auf der Netzwerkkarte zwischengespeichert
+	- Ist die aktuelle Adresse nicht im Cache enthalten, erfolgt ein Systemaufruf
+
+Steuermechanismen 
+— Systemaufrufe und die damit verbundenen Interrupts und Kontextwechsel sind unumgänglich
+	--> Effiziente Gestaltung der Steuermechanismen ist maßgeblich für die resultierende Kommunikationsleistung
+— Mögliche Optimierung der Systemaufrufe:
+	- Sicherung auf bestimmte Register beschränken
+	- Anstatt die Daten bei der Übergabe zu kopieren erfolgt lediglich eine Mitteilung über den Speicherort
+	- Verzicht auf Parameterüberprüfung
+	- Direkte Rückkehr zum aufrufenden Prozess
+— Mögliche Optimierung der Unterbrechungsroutinen:
+	- Verarbeitung mehrerer ausstehender Unterbrechungen ohne Auslösung einer erneuten Unterbrechung
+	- Optimierung der Unterbrechungsroutine für die konkrete Netzwerkkarte (z.B. Priorisierung, Bereitstellung
+	   von ausreichend Speicher, präzise/unpräzise)
+— Abfrage anstelle von Unterbrechung:
+	- Anwendung selbst überprüft periodisch, ob neue Pakete eingetroffen sind
+	- Realisierung mit Hilfe der Einblendung von Statusregistern in den Adressraum der Anwendung
+	- Vorteil:
+		- Unterbrechung und Systemaufruf nur beim Eintreffen einer Nachricht und nicht bei jeder Statusabfrage
+	- Nachteile:
+		- Verzögerte Reaktion auf eingehende Nachricht
+		- Gefahr des aktiven Wartens
+
+Zusammenfassung
+— Entscheidendes Kriterium für Hochgeschwindigkeitsnetzwerke ist ein hoher Datendurchsatz bei
+	minimaler Latenzzeit und geringstmöglichen Overhead
+— Kommunikationsleistung konventioneller Netzwerke weitestgehend unzureichend
+— Optimierung ist an vielen Stellen möglich, setzt allerdings i.d.R. zusätzliche Hardware-
+	Unterstützung, einschneidende Änderungen im Betriebssystem und/oder eine homogene Umgebung voraus
+
+
+AKTUELLE TRENDS UND HERAUSFORDERUNGEN
+
+Entwicklung der Prozessoranzahl 
+--> Folie 62 & 63
+
+Herausforderungen
+— Verbindungsaufbau
+— Datenrate
+— Blockierungswahrscheinlichkeit
+— Ausfalltoleranz
+— Stabilität
+— Energieeffizienz
+— Kosten
+— Sicherheit
+
+Aktuelle Netzwerktechnologien
+--> Folie 65 & 66
+
+Ethernet (--> Folie 67/68)
+— Spezifikation der Bitübertragungs- und Sicherungsschicht des OSI-Referenzmodells
+— Kontinuierliche Entwicklung der Datenrate seit 1973
+— Erstes System mit Fast-Ethernet erschien 06/1997 in der Top500-Liste
+— Ab 2002 stieg der Anteil der Systeme aufgrund von Gigabit Ethernet bis auf aktuell 50,4%
+— Weiterentwicklungen für den HPC-Bereich:
+	- Jumbo Frames
+	- Offload Engines
+	- iWARP bzw. “RDMA over Ethernet“
+
+InfiniBand (--> Folie 69 - 71)
+— Ende der 90er war die Datenrate des PCI-Bus nicht mehr ausreichend
+— Alternative Lösungsansätze wurden entwickelt:
+	- „Future I/O“ von Compaq, IBM und HP
+	- „Next Generation I/O“ von Intel, Microsoft und Sun Microsystems
+— Veröffentlichung der ersten IBA-Spezifikation im Oktober 2000 nach Zusammenlegung der
+	beiden konkurrierenden Systeme
+— InfiniBand verlor allerdings den Wettkampf um den Platz als Nachfolger des PCI-Standards
+— Einsatz als Verbindungsnetzwerk im HPC- und Cluster-Bereich aufgrund der Übertragungsleistung
+— Anfang 2006 Rückkehr aus dem wissenschaftlich-technischen Bereich auf den kommerziellen Markt
+— Offenen Standard
+— Besondere Merkmale:
+	- Bis 2020 sollen Datenraten von bis zu 1.2 TBit/s erreicht werden
+	- Remote Direct Memory Access (RDMA)
+	- Virtual Cut Through Switching
+	- Subnet Manager
+
+Omni-Path
+— Erschien November 2015 mit einer maximale Bandbreite von 100 GBit/s
+— Steht in Konkurrenz zu InfiniBand
+— Herstellerspezifische Technik
+	- Intel liefert alle Einzelbauteile für die Technik: Host-Bus-Adapter, CPU-Adapter, Kabel und Switches
+— Kommunikationsprotokoll eng an InfiniBand angelehnt, hat aber vor allem 3 wesentliche Änderungen:
+	- Link Transfer Packet: einfachere Fehlerkorrektur im Link Transfer Layer, verringert Latenz bei kleinen Fehlerraten
+	- Traffic Flow Optimization: mehrere Nachrichten in ein Paket packen
+	- Quality of Service: höher priorisierte Nachrichten können laufende Transmissionen unterbrechen
+— Omni-Path wird durch folgende Prozessoren unterstützt
+	- Intel Haswell
+	- Intel Broadwell
+	- Intel Skylake
+	- Intel Xeon Phi
+
+Ausblick
+— Die Nachfrage nach höherer Bandbreite wird aufgrund der Multi-Prozessor-Blades und den darauf
+	eingesetzten Multi-Core-Prozessoren weiter steigen
+— Hersteller und Entwickler von Netzwerken sind darauf vorbereitet, wie die Roadmap von InfiniBand zeigt
+— Problematisch ist allerdings der Datentransfer zwischen Speicher und Netzwerkkarte, da I/O-Schnittstellen
+	nicht mit der Entwicklung Schritt halten können
+- PCIe, Version 4.0, eingeführt: ca. 2017, PCIe x16 = 31,5 GByte/s
+- PCIe, Version 5.0, eingeführt: upcomming, PCIe x16 = 63,0 GByte/s
+
