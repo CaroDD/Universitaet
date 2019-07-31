@@ -248,22 +248,235 @@ Zusätzliche Parallelität wird in der Vektoreinheit ermöglicht durch
 Datenbandbreite = 32 Byte (Speicherbus-Breite) / 15ns (Speicherbus-Taktzeit) = 2,13 Gbyte/s
 — VP-200 hatte als erster Supercomputer aufgrund der MASK-Unit und der Maskenregister die
 Möglichkeit, arithmetische Operationen unter Steuerung einer logischen Maske auszuführen
+	
+Besondere Technik bei Vektorrechnern: Chaining
+--> Folie 32
 
+Speedup durch Chaining
+S_p = T_P (ohne Chaining) / T_P (mit Chaining)
+S_p = (k1 - 1 + n + k2 - 1 + n) / ((k1+k2) - 1 + n)
+n → ∞ => S_p = 2
 
+Banking (Speicherverschränkung; Interleaved Memory)
+— Problem:
+	- Zu große Speicherzugriffszeiten beim Einsatz preisgünstiger Speicher
+— Lösung:
+	- Anordnung des Hauptspeichers in Speicherbänken
+	- Aufeinanderfolgende Speicherinhalte werden separaten physischen Speicherbänken zugeordnet
+--> Folie 34
 
+Arithmetisches Pipelining
+--> Folie 35 - 38
 
+SX-4 Block Diagram (Vector)
+--> Folie 39 - 41
 
+Processor Technology
+--> Folie 42
 
+Levels of Parallelism
+— Segmentation
+— Multiple pipelines (8/16-fold)
+— Parallel usage of functional units
+— Parallel CPUs
+— Parallel nodes
 
+Measurements
+--> Folie 46
 
+Feldrechner
 
+Feldrechner (--> Folie 48)
+— Feldrechner bestehen aus einem Feld regelmäßig verbundener Verarbeitungseinheiten, die
+	eine Maschinenoperation auf verschiedene Daten anwenden
+— Ersatz des Kooperationsprinzips der Selbstbestimmung der Zellen durch das Master-Slave-Prinzip
 
+Grundschema eines Feldrechners
+--> Folie 49
 
+Entwicklungslinie:
+Ausgangspunkt für diese Rechnerarchitektur war der SOLOMON-Rechner der University of Illinois,
+der Anfang der 60er Jahre aufgebaut wurde:
+— Matrix von 32 x 32 = 1024 1-Bit-Rechenelementen unter Steuerung einer zentralen Steuereinheit (Control Unit - CU)
+— Jedes Rechenelement (RE) besitzt einen kleinen privaten Speicher von 4096 Bit = 4 KBit
+— Auszuführendes SOLOMON-Programm befindet sich in der zentralen Steuereinheit
+— Zu jedem gegebenen Zeitpunkt können alle Rechenelemente dieselbe Operation auf einem
+   Operanden ausführen, der in allen Rechenelement-Speichern dieselbe Adresse hat
+— Einzige Autonomie der Rechenelemente besteht darin, sich von einer Operationsausführung
+   suspendieren zu können
+— Jedes RE kann mit seinen vier unmittelbaren Nachbarn verkehren; Randelemente für E/A-Aufgaben
 
+Thinking Machines Corporation
+Thinking Machines Corporation (TMC) Connection Machine CM-2 bzw. CM-200 als Beispiel eines
+Feldrechners
+— Gründe, weshalb dieses System hier vorgestellt wird:
+	- CM-2 (bzw. CM-200) ist einer der insgesamt erfolgreichsten Supercomputer vom Array-Typ
+	- Produktpolitik und Firmengeschichte von TMC spiegelt die Probleme des Supercomputing eindrucksvoll wider
+	- Im Maximalausbau umfasst die CM-2 4 Quadranten mit je 16 K Rechenelementen = 64 K RE (Minimalausbau: 2 K RE)
+	- Jeder Quadrant wird von einem eigenen Mikroprogrammsteuerwerk mit Befehlen versorgt
+	- Das System kann bis zu 4 Vorrechner (üblicherweise SUN-Workstations) besitzen (Spacesharing) und ist
+	  somit auch eine MIMD-SIMD-Hybrid-Architektur
+	- Aufgaben der Vorrechner: Benutzerschnittstelle, Programmübersetzung, I/O-Aufgaben (Sekundärspeicher, Netzwerk)
 
+TMC CM-2
+--> Folie 52
 
+Beschreibung der CM-2
+— RE sind 1-Bit-ALUs, die bitseriell arbeiten
+— Jedes RE besitzt 4 KByte lokalen Speicher und ein Statusregister, über welches ein RE von der
+   Bearbeitung eines Befehls ausgeschlossen werden kann
+— Die Kommunikation mit den anderen RE erfolgt ebenfalls über das Statusregister
+— 16 RE sind zusammen mit der Hardware für die Datenweg-Vermittlung (Router) und 4
+   Speicherbänken mit je 16 KByte auf einem Chip untergebracht = 1 Cluster
+— Ein Quadrant besteht aus 1024 solcher Cluster mit je 16 RE (=16 K RE/Quadrant = 2 Würfel- Gehäuse)
+— RE des Gesamtsystems können wahlweise auf zwei Wegen miteinander verbunden werden:
+	- NEWS-Gitter:
+		- 2-dimensionales, rechteckiges Gitter
+		- Jedes RE ist mit seinen vier unmittelbaren Nachbarn verbunden
+			* günstig bei hoher Datenlokalität: sehr schnell zum Nachbarn
+			* auch zu entfernten RE möglich über store-and-forward-Verfahren
+	- Hypercube-Verbindungsnetzwerk:
+		- Topologie eines 16-dimensionalen Würfels
+		- Wormhole-Routing-Verfahren (Übertragungszeit in erster Näherung unabhängig von der Distanz der Kommunikationspartner)
+— Entscheidung trifft der Programmierer!
 
+Blockbild eines Clusters und eines Rechenelementes
+--> Folie 55
 
+Beschreibung der CM-2
+— CM-2 war ursprünglich für nicht-numerische Anwendungen konzipiert worden, insbesondere für KI-Probleme
+— Deshalb ursprünglich hauptsächlich Programmiersprache LISP
+— Probleme:
+	- Parallelisierung der LISP-Programme
+	- Fehlender Markt für nicht-numerische Supercomputer
+— Weiterentwicklung der CM-2, indem je 32 RE (^=32 Bit) ein 64 Bit-Gleitkommaprozessor der Fa. Weitek zugeordnet wurde
+	--> max. 2000 FP-Prozessoren!
+— Die Rolle der RE reduziert sich damit hauptsächlich darauf, die Parallelarbeit der Gleitkomma-
+   Prozessoren zu steuern und die Datenkommunikation zwischen ihnen durchzuführen
+— Zusätzlich 4 MBit Dual-Port-Speicher zu je 32 RE und einem FP-Prozessor
+— Daten vom Hostspeicher können über Broadcasting gleichzeitig an alle Rechenwerke gesendet werden
+— Ergebnisse von Berechnungen auf Rechenwerken können durch logische Operationen, wie AND
+   oder OR, zu einem Wert verknüpft werden, der an den Host zurückgeschickt werden kann
+— Der direkte Datenaustausch zwischen dem Host und jeweils einem RE ist möglich
+— Über den globalen Bus kann auch der Mikrocontroller direkt auf die Daten in den Speicherchips
+   in den Knoten zugreifen
+— Hauptsächliche Programmiersprachen:
+	- FORTRAN
+	- C* (Erweiterung der Sprache C um Vektorkonstrukte)
+— Verbesserung der CM-2 zur CM-200 durch Senkung der Taktzykluszeit von 142 ns auf 100 ns (10 MHz)
+	- Peak Performance: 20 GFLOPS bei 2K FP-Prozessoren, d.h. 10 MFLOPS pro FP-Prozessor
+	- Linpack max: 9,8 GFLOPS
+	- Markteinführung: 1991 (kurz nach CM-5-Ankündigung)
+
+Knotenstruktur der CM-200
+--> Folie 59
+
+ILLIAC IV als Beispiel eines Feldrechners
+--> Folie 60
+
+Aus dem SIMD-Prinzip abgeleitete Rechnerarchitekturen
+SIMD-Erweiterungen (MMX, SSE, AVX, AVX 512) bei Standard-Prozessoren
+— Anleihe beim Feldrechner
+	- Gleiche Operation wird gleichzeitig auf mehreren Operanden durchgeführt 
+
+GPGPUs
+— Innerhalb eines Warp strenges SIMD-Feldrechnerprinzip
+
+Zellulare Systeme
+— Wie Feldrechner aus einem Feld von Verarbeitungseinheiten aufgebaut
+— Verarbeitungseinheiten können jedoch zum selben Zeitpunkt verschiedene Operationen ausführen
+— Unterscheiden sich vom Feldrechner auch durch dezentrale Steuerung
+
+Aus dem SIMD-Prinzip abgeleitete Rechnerarchitekturen:
+Systolische Arrays
+— Besitzen ein Feld von Verarbeitungseinheiten mit regelmäßiger Verbindungsstruktur
+— Meist synchroner Takt vorgesehen
+	- Daten werden zu bestimmten Taktzeitpunkten an lokale Nachbarn weitergereicht
+	--> Datenströme pulsieren auf diese Weise durch das systolische Array
+
+Zellulare Systeme
+
+Charakteristik Zellularer Systeme
+Jede Zelle ist über Daten- und Aktivierungsleitungen mit Nachbarzellen verbunden
+— Es können mehrere Programme gleichzeitig ausgeführt werden
+— Zellen werden nicht wie Speicherzellen adressiert (da keine zentrale Kontrolle), sondern ein Programmschritt besteht immer aus:
+	- Wegbildungsphase
+	- Ausführungsphase
+
+Programm besteht aus einer Menge von Daten und einer Menge von Steuerwörtern.
+
+Steuerwort enthält:
+	- Operationscode und
+	- Anweisung zur Wegbildung
+
+Zellulare Systeme
+--> Folie 65
+
+Eigenschaften zellularer Systeme
+— Einsatzspektrum ist auf wohlstrukturierte Spezialanwendungen (Bildverarbeitung,
+   Mustererkennung) begrenzt
+— Broadcast ist nicht ausgeschlossen
+— Rippling ist nicht ausgeschlossen
+	- Rippling (Plätschern): Ausbreitung eines Eingangswertes wie eine Welle durch die Anordnung aufgrund
+	  der Verzögerungszeit der jeweiligen Zelle; keine einheitliche Verzögerungszeit, sondern von Funktion abhängig
+
+Systolische Arrays
+— Das Gebiet der systolischen Arrays ist eine interessante Entwicklungsrichtung der parallelen Datenverarbeitung
+— Der pulsierende Datentransfer führt auf einen Vergleich zum Blutkreislauf
+— Die für die Bearbeitung auf systolischen Arrays geeigneten Algorithmen werden als systolische
+   Algorithmen bezeichnet
+
+Charakteristik Systolischer Arrays
+— Sie besitzen ein Feld von Verarbeitungseinheiten mit regelmäßiger Verbindungsstruktur (meist
+  eine Gitterstruktur mit Verbindungen eines jeden Verarbeitungselementes zu vier oder sech Nachbarknoten)
+— In der einfachsten Variante der systolischen Arrays läuft in jedem Verarbeitungselement immer
+   dasselbe Programm ab
+— Verschiedene Verarbeitungselemente können jedoch parallel unterschiedliche Befehle ausführen
+— Meist ist ein synchroner Takt vorgesehen, wobei die Daten zu bestimmten Taktzeitpunkten an
+   lokale Nachbarn weitergereicht werden, um auf diese Weise Datenströme durch das systolische
+   Array pulsieren zu lassen (daher der Name)
+— Es gibt keine zentrale Systemaufsicht und keine Broadcast-Möglichkeit für Daten oder Befehle
+
+Modell nach Kung und Leiserson
+--> Folie 69
+
+Definition eines Systolischen Arrays
+Definition eines Systolischen Arrays nach Petkov:
+— Ein systolisches Array ist ein zellularer Automat, der aus gleichartigen und im Raum gleichmäßig
+  angeordneten Zellen besteht, die über ein regelmäßiges und lokales Kopplungsmuster
+  verbunden sind, wobei kein Rippling und kein Broadcasting auftreten.
+
+Möglichkeiten der Anordnung in systolischen Arrays
+--> Folie 71
+
+Allgemeine Darstellung der Zellfunktionen
+--> Folie 72
+
+Zellfunktionen für Formatumwandlungen
+--> Folie 73 & 74
+
+Datenflussarchitektur
+
+Datenflussarchitektur (Folie 78)
+— Ein Datenflussrechner arbeitet nach dem Datenflussprinzip
+— Steuerung des Ablaufs nicht explizit durch Kontrollfluss bestimmt, sondern implizit aus dem
+  Datenfluss abgeleitet
+
+Besonderheiten
+— Hervorhebung:
+	- Single Assignment-Prinzip der Speicherzellen
+	- Logische Variable: leer/besetzt
+	- Speicherplatz nur 1 mal besetzbar
+— Die Hauptprobleme der Multiprozessorsysteme auf Architekturebene betreffen die
+   Speicherlatenz und die Synchronisation paralleler Kontrollfäden
+— Das Datenflussprinzip erlaubt, beliebige Verzögerungen beim Zugriff auf entfernte Speicher zu
+   tolerieren und die Daten in beliebiger Reihenfolge vom Speicher anzuliefern
+
+Beispiel für das Datenfluss-Prinzip
+--> Folie 80
+
+Grundarchitektur einer dynamischen Datenflussmaschine
+--> Folie 81
 
 
 
