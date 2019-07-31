@@ -1,0 +1,672 @@
+RA2
+Leistungsbewertung
+
+Gliederung
+— Leistungsbegriff und Leistungskennwerte
+— Ziele der Rechnerbewertung
+— Rechnerbewertungsverfahren
+— Zentrale Begriffe zur Leistungsbewertung
+— Laufzeitverkürzung durch Parallelarbeit
+
+Leistungsbegriff und Leistungskennwerte
+
+Leistungsbewertung
+— Die Beurteilung von Rechnersystemen umfasst eigentlich die Aspekte
+	- Benutzerakzeptanz
+	- Verfügbarkeit
+	- Leistung
+— Benutzerakzeptanz ist schwierig objektiv zu erfassen
+— Es gibt einige Kriterien:
+	- Grafische Bedienoberfläche
+	- Spracheingabe
+	- Touchscreen
+	- Hilfeassistenten
+	- Demos
+	- Beispiele
+	- Tutorials
+
+Leistungsbewertung
+— Der Wunsch der Leistungssteigerung ist so alt wie die Computertechnik selbst
+— Objektive Angaben zur Leistung sind solange umstritten, wie keine präzisen Angaben zur
+	- Motivation für die Bewertung
+	- Aufgabenspezifische Wichtung und
+	- Voraussetzungen für die Erfassung von Kenndaten gemacht werden können.
+— Aufgabenspezifische Wichtungen werden wie firmenspezifische Aussagen stets umstrittene Angaben sein
+— Ausweg kann hier nur in aufgaben-, firmen- und architekturunabhängigen Aussagen bestehen
+— Suche nach besseren Bewertungsverfahren, die anerkannt werden und die weitere Entwicklung
+   der Prozessoren sinnvoll begleiten
+
+Ziele der Rechnerbewertung
+
+Hauptziele:
+— Vergleichbarkeit:
+	Auswahlunterstützung durch Vergleichstest an verfügbaren Anlagen nach Anwendungsfall
+— Verständnis der Rechnerarchitektur:
+	Ermittlung von Engstellen und Einflüssen zur Leistungsminderung
+— Anpassung der Rechnerarchitektur:
+	Suche nach Maßnahmen der architektonischen Gestaltung zur Kompensation dieser Leistungsminderung
+— Vorhersage und Bewertung der neuen Rechnerarchitektur:
+	Leistungsbewertung im Entwurfsstadium zur Vorhersage der Leistung und Effizienz neuer Rechnerarchitekturkonzepte
+
+Weitere Ziele:
+— Problemunabhängige Leistungsbewertung mit
+	- Auswertung der Hardware-Kenndaten
+	- Analyse der Architekturmerkmale
+— Problemabhängige Leistungsbewertung mit
+	- Analyse der Algorithmen
+	- Untersuchung der Auslastung einzelner Komponenten
+	- Auswertung charakteristischer Kennwerte
+
+Zu beachten ist:
+Die Verfolgung dieser Ziele ist immer kritisch, deshalb ist eine Vielfalt von Verfahren zur
+Rechnerbewertung entstanden, die unterschiedlich in
+— Aussagekraft
+— Wichtung der Anwendungsgebiete und
+— Aufwand
+sind.
+
+Rechnerbewertungsverfahren
+
+Rechnerbewertungsverfahren
+— Auswertung von Hardware-Kenndaten
+	- Operationsgeschwindigkeiten
+	- Mixe
+	- Kernprogramme
+— Laufzeitmessung existierender Programme
+	- Synthetische Programme
+	- Benchmarks
+— Messung des Betriebs bestehender Anlagen
+	- Hardware-Monitore
+	- Software-Monitore
+— Modelltheoretische Verfahren
+	- Simulationen
+	- Analytische Modelle	
+
+Auswertung von Hardware-Kenndaten: Operationsgeschwindigkeit
+
+Angabe der Geschwindigkeit einzelner Befehle (ADD, SUB, MUL, DIV, ...) oder der Zykluszeit bei
+sequentiell implementierten CISC-Befehlssätzen in den Formen:
+— n Befehle bestimmter Art pro Sekunde ausführbar oder
+— ein spezieller Befehl benötigt n Takte
+— Z.B. Lists of instruction latencies, throughputs and micro-operation breakdowns for Intel, AMD and
+   VIA CPUs, Agner Fog. Technical University of Denmark (Skylake, Pages 255, 258)
+
+• Vector Division of Packed Single/Double Precision Data
+• Befehl braucht 11 (single precision) bzw. 13-14 Takte (double precision), um fertiggestellt zu werden
+• Anmerkung: In dem oben genannten Dokument wird die Latenz der Verarbeitung des Befehls (EXecution)
+	aufgeführt ohne Instruction Fetch IF und Instruction Decode ID.
+		Warum? Out-of-order Execution --> Entkoppelung von IF+ID von EX und WB
+--> Folie 12
+
+— Unberücksichtigt bleiben:
+	- Organisation der Rechenanlage: Die interne Organisation bestimmt die Zeiten!
+	- Softwareaspekte (z.B. Welche Instruktionen werden von welcher Software genutzt?)
+	- Jegliche Formen der inneren Parallelität in Form Nebenläufigkeit oder Pipelining
+• Vector Division of Packed Single/Double Precision Data
+• Ein neuer Befehl dieser Art kann alle 5 bzw 8 Takte gestartet werden (im optimalen Fall)
+--> Folie 13
+
+Speicherbandbreite (--> Folie 15)
+— Häufig erfolgt die Angabe der Speicherbandbreite, d.h. die Anzahl der Bytes, die je Zeiteinheit in
+  den Speicher geschrieben oder aus ihm gelesen werden.
+— Paralleler Zugriff um hohe Bandbreiten zu erreichen
+	- 1 Anfrage führt zu 2 (DDR), 4 (DDR2) oder 8 (DDR3, DDR4) aufeinanderfolgenden Datentransfers 
+	--> Hohe Bandbreite nur für sequentiellen Zugriff
+
+Mixe
+— Haben Tradition: bereits 1946 durch von Neumann vorgeschlagen!
+— Übergang von einzelnen Operationszeiten zu mittleren Operationszeiten
+
+	T = \sum_(i=1)^n {t_i * p_i}
+
+- T 	mittlere Operationszeit
+- t_i 	Operationszeit des Befehls i
+- p_i 	relative Häufigkeit des Befehls i
+- n 	Anzahl der betrachteten Befehle
+
+Auswahl der Operationszeit des Befehls (--> Folie 17)
+— Lists of instruction latencies, throughputs and micro-operation breakdowns for Intel, AMD and VIA
+	CPUs, Agner Fog. Technical University of Denmark (Skylake, Pages 255, 258)
+— Beispiel: Workload, der nur Vektor Fließkomma Multiply and Add ausführt
+Instruction 	Latency	 	Ports (Siehe Vorlesung zu	Reciprocal
+				RISC Prozessoren, Slide 7) 	throughput
+VFMADD 		4 		0,1 				0.5
+— Im besten Fall (keine Abhängigkeiten -> Pipelining, volle Superskalarität): Reziproker Durchsatz
+	--> 2 Befehle pro Takt
+— Im schlechtesten Fall (Abhängigkeiten -> wenig Pipelining, keine Superskalarität): Latenz
+	--> 4 Takte für einen Befehl (plus Speicherzugriff, page-fault, IF,ID, ...)
+
+Auswahl der Operationszeit des Befehls (--> Folie 18)
+— Lists of instruction latencies, throughputs and micro-operation breakdowns for Intel, AMD and VIA
+	CPUs, Agner Fog. Technical University of Denmark (Skylake, Pages 255, 258)
+Instruction 	Latency 	Ports 		Reciprocal throughput
+VFMADD 		4 		0,1 		0.5
+SUB 		1 		0,1,5,6 	0.25
+Cond. Jump 			6 		1-2
+
+— Mix: 2 VFMADD, 1 SUB, 1TEST, 1 Cond. Jump
+	- Best-case: VFMADD auf Pipe 0, VFMADD auf Pipe 1, SUB auf Pipe 5, Jump auf Pipe 6
+	--> 1 Takt für 1 Schleifendurchlauf
+	- Worst-case: 5+X Takte (falsch vorhergesagter Sprung) für 1 Schleifendurchlauf (plus Speicherzugriff ...)
+
+Mixe
+— Es existieren verschiedene Mixe
+	- Ausgangspunkt war der GIBSON-Mix (1970)
+	- Gemeinsame Nachteil bei den Mixen ist die subjektive Mischung in Form der relativen Befehlshäufigkeit p_i
+	--> Ansatzpunkt für synthetischen Programme und Benchmarks
+— Bei der mittleren Operationszeit T können nur sequentiell implementierte Befehlssätze betrachtet werden
+	--> Phasenpipelining kann so nicht berücksichtigt werden
+— Mittlere Operationszeit kann als
+	- reale Zeit oder
+	- Vielfaches der Taktzykluszeit
+  angegeben werden (Clock per Instruction = CPI)
+— Mit dem “CPI”-Wert kommt man zur “MIPS”-Leistung des Systems
+
+Leistungskenndaten
+— Für die Leistungskenndaten sind unterschiedliche Werte benutzt worden, wovon die Angabe in
+	MIPS (Million Instructions per Second) weit verbreitet ist.
+— CPU-Leistung ist
+	- ein theoretisch ermittelter Wert (der nicht besser ist als die Herstellerangabe),
+	- nicht repräsentativ für die Leistung des gesamten Rechnersystems,
+	- ohne Berücksichtigung von Speicherzugriffen (in Speicherhierarchien) und
+	- ohne Beachtung von Softwareaspekten.
+— Trotzdem haben sich einige Kennwerte durchgesetzt, die eingeschränkt zu Vergleichszwecken tauglich sind.
+
+MIPS
+— MIPS ergibt bei verschiedenen Maschinenzyklen pro Befehl nur Mittelwerte
+— MIPS-Rate für einen Prozessor:
+	P_MIPS = f(MHz) / (N_i × N_M)
+
+- f 	Taktfrequenz
+- N_i 	Mittelwert der Taktzyklen pro Befehl
+- N_M 	Speicherzugriffsfaktor
+
+— Bei allen Angaben ist ein Cache-Speicher-Einsatz unberücksichtigt.
+— Herstellerangaben sind immer skeptisch zu sehen, weil nicht verbindlich definiert ist, wie diese
+  Angaben zu ermitteln sind.
+— Ebenfalls zur Ermittlung der “MIPS”-Leistung dient folgende zugeschnittene Größengleichung:
+	P_MIPS = f(MHz) / (N_i × N_M) 	(N_M = 1)
+
+— CPI-Wert = Cycles per Instruction
+— Einen wesentlichen Einfluss auf die prognostizierte Leistungsfähigkeit hat die relative Häufigkeit
+   der einzelnen Befehle, ermittelt über Auszählung (theoretisch) oder dynamische Codeanalyse (praktisch).
+
+Relative Häufigkeiten von Befehlsklassen (--> Folie 23)
+												
+Befehlsklasse				Relative Häufigkeit in Prozent			
+Load/Store 				31,2
+Verzweigungsbefehle 			16,6
+Integer-Addition/-Subtraktion 		6,1
+Vergleichsbefehle 			3,8
+Gleitkomma-Addition/-Subtraktion	6,9
+Gleitkomma-Multiplikation 		3,8
+Gleitkomma-Division 			1,5
+Integer-Multiplikation			0,6
+Integer-Division 			0,2
+Shift-Befehle 				4,4
+Logische Befehle 			1,6
+Adressrechnung mit Indexregistern 	18,0
+Andere Befehle 				5,3
+
+Chronologisch sortiert:
+Befehlsklasse				Relative Häufigkeit in Prozent
+Load/Store 				31,2
+Adressrechnung mit Indexregistern 	18,0
+Verzweigungsbefehle 			16,6
+Gleitkomma-Addition/-Subtraktion 	6,9
+Integer-Addition/-Subtraktion 		6,1
+Andere Befehle 				5,3
+Shift-Befehle 				4,4
+Vergleichsbefehle 			3,8	
+Gleitkomma-Multiplikation 		3,8
+Logische Befehle 			1,6
+Gleitkomma-Division			1,5
+Integer-Multiplikation 			0,6
+Integer-Division 			0,2
+
+MFLOPS
+— Für aktuelle Rechnersysteme und Prozessoren, insbesondere Parallelrechner und
+  Supercomputer, interessiert überwiegend die numerische Leistungsfähigkeit:
+	- MFLOPS (Million Floating Point Operations per Second), für num. Berechnungen
+	- Problem: t_Add < t_Div
+	- Z.B. auf Skylake 4 Takte Latenz vs 11-14 Takte Latenz (abhängig von Genauigkeit)
+— Hohe MFLOPS-Werte durch:
+	- Sehr kleine CPI-Werte durch Superskalarität
+	- Sehr kleine Taktzykluszeiten durch Superpipelining
+
+Probleme mit MIPS und MFLOPS
+— Wurden die MIPS-Werte theoretisch oder praktisch ermittelt?
+— Anhand welcher Programme wurden die relativen Befehlshäufigkeiten und damit die CPI-Werte ermittelt?
+— Welches Speichersystem (verzögerungsfrei oder verzögernd) wurde verwendet?
+— Welche Taktraten der Prozessoren wurden zugrunde gelegt? Gibt es unterschiedliche Typen (fc)?
+— Werden unterschiedliche Architekturphilosophien (RISC, CISC) verglichen? 
+   [CISC-Befehle haben in der Regel höhere Funktionalität]
+— Wurden die Befehlshäufigkeiten einfach übertragen? 
+   Unterschiedliche Architekturkonzepte verwenden unterschiedliche Zusammensetzungen (Adressierungsarten, Operandenarten)
+
+Benchmark-Aktivitäten
+— Frühe Kern-Benchmarks
+	- Whetstone
+	- Dhrystone
+— Algorithmischer Kern
+	- Linpack
+— State-of-the-Art:
+	- SPEC-Benchmark
+
+Whetstone-Benchmark
+— Whetstone: Schleifstein
+— 1976 von Curnow und Wichmann vorgestellt
+— Synthetischer Benchmark
+— Umfasst:
+	- Gleitkommaoperationen
+	- Integer-Arithmetik
+	- Indizierte Felder (eindimensional)
+	- Prozeduraufrufe
+	- Bedingte Sprünge
+	- Einfachzuweisungen
+	- Berechnung von Standardfunktionen (Quadratwurzel, Logarithmus, Exponentialfunktion, Sinus, Cosinus)
+— Einzelne Teile werden verschieden oft durchlaufen
+
+— Gewählte Wichtung der Teile soll Annäherung an typische wissenschaftliche Berechnung gewährleisten
+— Leistung wird in Whetstones/Sekunde angegeben
+— Nachteile des Whetstone-Benchmarks:
+	- Fehlen einer Genauigkeitsprüfung der arithmetischen Operationen
+	- Nichtberücksichtigung mehrdimensionaler Felder, bei denen insbesondere die Adressrechnung sehr aufwendig sein kann
+	- Whetstone entspricht nicht mehr den Anforderungen realen Applikationen, kaum noch verwendet
+
+Dhrystone-Benchmark
+— Betont Numerik, Textverarbeitung und Systemprogrammierung
+— 1984 von R.P. Weicker vorgestellt
+— Synthetischer Benchmark
+— Ursprünglich in ADA geschrieben, wurde erst in einer C-Version allgemein bekannt
+— Umfasst:
+	- Operationen wie Whetstone-Benchmark
+	- Vergleich von Zeichenketten
+	- Boole‘sche Operationen
+	- Bearbeitung von zweidimensionalen Feldern neben wissenschaftlichen Berechnungen auch Textverarbeitung berücksichtigt
+— Leistungsangabe in Dhrystones/Sekunde, z.B 1757 Dhrystones/s für VAX 11/780 (1-MIPS-System)
+
+Wieviel Dhrystone/s schafft ihr Android Smartphone? (--> Folie 30 - 31)
+— Installiere die App andhrystone aus dem Play Store
+— Starte die App
+— Klicke auf Start
+— Submittiere Dein Resultat hier:
+	- https://invote.tu-dresden.de/78163
+
+Dhrystone-Benchmark
+— Verwendet explizit lokale Variablen und nur wenige globale Variablen
+   (Grundlage zur effektiven Verwendung von Registern)
+— Besteht aus 12 Prozeduren, in einer Schleife enthalten, die aus 94 Statements besteht. Ein
+   Schleifendurchlauf entspricht einem Dhrystone, Ergebnisse meist in Dhrystone pro Sekunde
+— Wichtige Dhrystone Eigenschaften:
+	- Keine Fließkomma-Operationen in der Messschleife
+	- Wichtiger Teil der Anweisungen sind String-Funktionen (Text-Funktionen), kann compiler- und
+ 	   plattformabhängig bis zu 76% erreichen
+— Problemgröße des Benchmarks nicht gut skalierbar
+— Praktisch ein Programm zur Messung der Leistung der Festkomma-Einheit des Prozessors, Programm fast immer im Cache
+— Keine Maßnahmen unternommen, um Optimierung durch den Compiler zu unterbinden
+— Dies und die relativ hohe Verbreitung führte dazu, dass Compiler diesen Benchmark erkennen und meist
+   einen speziell optimierten Code verwenden
+
+Nachteile - insbesondere kleiner - Benchmarks
+— Whetstone, Dhrystone und andere kleine Benchmarks wurden zunächst für sequentielle Rechner entworfen
+	- Compiler lassen sich gut auf Benchmarks abstimmen (Laufzeitbeeinflussung) [teilweise direkt durch Compiler-Optionen!]
+	- Kleine Benchmarks (z. B. Whetstone, Dhrystone, Savage etc.) lassen sich komplett aus dem L1-Cache heraus abarbeiten
+	- Mit 250 - 1000 Byte werden Daten aus dem Cache-Speicher gelesen
+
+Solche Benchmarks lassen keine realistischen Rückschlüsse auf die Leistung zu.
+
+Allerdings ...
+— Whetstone und Dhrystone sind einfach auf Feldrechner und MIMD-Systeme übertragbar
+	- (N Prozessoren bearbeiten N Benchmarks parallel Þ N-fache Leistung; keine Kommunikation notwendig!)
+	- bei MIMD-Rechnern könnte man Whetstone und Dhrystone noch in die Bestandteile zerlegen und auf die Prozessoren verteilen
+— Einzelteile sind aber unabhängig voneinander
+— Kommunikation wieder nicht berücksichtigt
+— Lange unveränderte Anwendung solcher Benchmarks wie Whetstone, Dhrystone und Savage
+   hat es Compilerbauer ermöglicht, die Optimierungen und die Codeerzeugung auf die
+   Benchmarks abzustimmen
+— Kleine Benchmarks Ausführung aus dem Cache heraus; kein Test des Speichersystems
+
+Das LINPACK-Paket
+— LINPACK
+	- 1987 von J.J. Dongarra vorgestellt
+	- Betont Numerik
+	- Ursprünglich zum Überschlag des Zeitverbrauchs bei der Lösung linearer Gleichungssysteme
+		--> dichtbesetzte Matrizen
+	- Umfasst:
+		- Berechnung von Skalarprodukten
+		- Vektor-Matrix-Operationen
+		- Matrix-Matrix-Operationen
+	- Aus diesen Grundoperationen wurde ein synthetischer Benchmark zusammengestellt, der typisch ist für
+	  Anwendungen aus der linearen Algebra
+— LINPACK-Benchmark-Ergebnisse "Best Performance" ergeben die Reihenfolge der TOP 500
+
+Wieviel Mflops (Rmax) schafft Ihr Android Smartphone? (--> Folie 36 - 37) 
+— Installiere die App Mobile Linpack aus dem Play Store
+— Starte die App
+	- Advanced Mode
+	- 500-1500, step size 100, 3 repetitions
+— Submittiere Dein Resultat hier:
+	- https://invote.tu-dresden.de/51967
+
+Das LINPACK-Paket
+— Gründe für die Nutzung dieses Benchmarks für das Aufstellen der Weltrangliste sind:
+	- Weite Verbreitung des LINPACK-Benchmarks
+	- Performance-Angaben sind für alle relevanten Systeme verfügbar
+— Detaillierte Beschreibung und eine Liste der Leistungsergebnisse einer großen Anzahl von
+	Rechnern ist in ps-Form von der netlib abrufbar
+— Dazu wird eine Version von LINPACK genutzt, welche folgendes vorsieht:
+	- Lösung eines dichtbesetzten Systems linearer Gleichungen
+	- Skalierung der Problemgröße ist möglich
+	- Optimierung der Software ist zulässig
+— Ziele:
+	- Realisierung der besten Leistung für die gegebene Maschine
+	- Problem ist sehr regulär, damit ist eine recht hohe Leistung erreichbar
+	- Relevanz der angegebenen Peakperformance wird getestet und ggf. relativiert
+— Bewertung des LINPACK-Benchmarks zum Testen paralleler Rechner
+	- Zunächst für serielle Rechner entworfen
+	- Anpassung des LINPACK-Benchmarks an Feldrechner und MIMD-Systeme ist wesentlich schwieriger als
+	  Whetstone- und Dhrystone-Benchmark
+	- Ergebnis hängt von der geeigneten Adaption an die Rechnerstruktur ab
+	- LINPACK-Benchmark wurde an Pipeline-Rechner angepasst
+	- Qualität der Parallelisierung bestimmt im hohen Maße die erzielbaren Messergebnisse
+	- Gewachsene Bedeutung des LINPACK als Basis für die TOP 500-Liste
+— Größter Teil der Rechenzeit wird in der vektorisierten DGEMM-Routine
+	(Scalar*Matrix*Matrix*Scalar*Matrix) verbraucht
+— LINPACK enthält weder Division noch andere math. Funktionen
+
+Top500 Liste bestimmt durch Linpack
+— Linpack Fokus nur auf Fließkomma-Performance
+— Speicher spielt kaum eine Rolle
+— I/O spielt keine Rolle
+— Leistungsaufnahme spielt keine Rolle
+— Graph500:
+	- Benchmark zur Graphenanalyse,
+	- Fokus auf Speicherperformance
+	- Verarbeitete Daten zwischen 17 GB und 1,1 PB
+— Erweiterung um Messung der Leistungsaufnahme : Green500 bzw. Green Graph500
+
+Messung der Leistungsaufnahme bei Linpack (--> Folie 41)
+— 3 Iterationen von Linpack:
+	- Höhere Leistungsaufnahme während Berechnung (compute)
+	- Noch höher am Anfang der Berechnung (wegen Turbo)
+	- Hohe Variation der gemessenen Leistungsaufnahme
+	--> Regeln für Green500 Submissionen
+
+SPEC
+
+Zwei Auswege
+— Echte Anwenderprogramme werden in voller Länge auf verschiedenen Rechnersystemen
+   getestet und führen auf einen direkten Leistungsvergleich
+— Unter SPEC (System Performance Evaluation Cooperative ) sind einheitliche Benchmarks für
+   realistische Leistungsbewertung durch Zusammenschluss von DEC, HP, IBM, Intel, Motorola,
+   Siemens-Nixdorf, Sun und anderen gegeben, die keine firmenspezifischen Programme darstellen
+
+SPEC-Benchmarks (Folie 44 - 51)
+— SPEC: System Performance Evaluation Cooperative
+	- 1988 von SUN, MIPS, HP und Apollo gegründet
+	- Heute mehr als sechzig Organisationen angeschlossen
+	- Ziel: objektive Vergleichsbasis für die Leistungsmessung von Prozessoren und Systemen
+— Zusammenstellung geeigneter, realistischer Benchmark-Programme aus verschiedenen
+   Anwendungsbereichen (numerische und nicht-numerische)
+— Umfasst u.a. Applikationen aus:
+	- Physik, Simulation, Robotik, Numerik, Quantenchemie,
+	  Astronomie, Biologie, Wettervorhersage, Tabellenkalkulation, Compiler, UNIX
+
+Struktur von SPEC
+— Open Systems Group (OSG)
+— Benchmarks für Desktop-Systeme, Workstations und Server in offenen Systemen
+	- CPU - SPECmarks und andere Prozessor-Benchmarks
+	- JAVA - Java Client und Server Benchmarks
+	- MAIL - SPECmail2001
+	- SDM - Multiuser UN*X Kommando Benchmarks
+	- SFS - File Server Benchmarks
+	- WEB - Webserver Benchmarks
+— High Performance Group (HPG)
+	- Benchmarks für Hochleistungsrechner	
+— Graphics Performance Characterisation Group (GPC)
+	- Standardisierte Tests für Graphikleistung
+	- SPECapc - Benchmarks für graphik-intensive Anwendungen
+	- SPECmedia - Multimedia Gruppe
+	- SPECopc - OpenGL
+
+SPEC-Benchmarks (CPU)
+— 1989: erste Version SPEC89 mit SPECint89 und SPECfp89
+	Enthielt 10 Programme mit insgesamt 150.000 Zeilen C- und Fortran-Quellcode
+— 1992: zweite Version SPEC92 (später „CPU92“ genannt),
+	- enthielt 11 weitere Programme, von denen ein Programm zurückgezogen wurde, weil es zu stark durch
+	  optimierende Compiler beeinflusst werden kann
+	- Um normierte Ergebnisse zu erhalten, wird für jedes Benchmark-Programm folgendes Verhältnis berechnet:
+		- Das geometrische Mittel aller SPEC-Ratios ergibt den sog. SPECmark
+		- Seit SPEC92 generell unterschieden nach SPECint92 und SPECfp92
+— Referenzmaschinen:
+	- bei SPEC89 und SPEC92: VAX 11/780
+	- VAX 11/780 ist der erste kommerzielle 32 Bit-Rechner mit näherungsweise 1 MIPS Verarbeitungsleistung
+	  (sehr ausgebaute CISC-ISA), deshalb kann man SPECmark hier auch als "VAX-MIPS" deuten
+
+— 1995: CPU95 mit SPECint95, SPECfp95
+— 2000: CPU2000 mit CINT2000 und CFP2000
+	- Referenzmaschine: Sun Ultra 5_10 mit einem 300 MHz Prozessor
+	- Konzipiert als vergleichbares Maß für die rechenintensive Leistung
+	- Portabilität als wichtiges Kriterium
+	- Benchmark befasst sich mit der Messung der Leistung von
+		- Prozessor, Speicherarchitektur, Compiler
+	- Enthält insgesamt 26 einzelne Programme, Unterteilung in zwei Gruppen:
+	- CINT2000 - Integer- (Festkomma-) Benchmark
+		12 Anwendungen, die hauptsächlich mit Festkomma-Operationen arbeiten (11 in C und 1 in C++)
+	- CFP2000 - Floating-Point- (Fließkomma-) Benchmark
+		14 Anwendungen, die zum größten Teil Fließkomma-Operationen ausführen (6 in Fortran-77, 4 in Fortran-90 und 4 in C)
+
+— 2006 CPU2006
+— Aktueller SPEC-Benchmark: CPU2017 mit Integer und Floating Point
+— Starker Anstieg der Code-Zeilen
+(--> Folie 51)
+
+CPU2017 Integer --> Folie 52 - 53
+
+CPU2017 Metrik SPECspeed
+— Es wird immer exakt eine Kopie jedes Benchmarks der Suite ausgeführt
+— Der oder die Testende wählt die Anzahl an parallelen OpenMP Threads, die genutzt werden
+— Für jeden Benchmark wird eine Rate bezüglich des Referenzsystems wie folgt errechnet
+	Zeit auf Referenzsystem / Zeit auf getestetem System
+— Höhere Werte bedeuten, dass weniger Zeit genutzt wurde
+— Beispiel:
+	- Auf dem Referenzsystem benötigt der Benchmark 600.perlbench_s 1.775 Sekunden
+	- Ein getestetes System braucht ca. ein Fünftel der Zeit, also ist der Wert ungefähr 5
+	- Oder genauer: 1775/354.329738 = 5.009458
+— Anmerkung: Referenzsystem für SPEC CPU2017 = Sun Fire V490 mit 2100 MHz UltraSPARC-IV*
+
+Motivation für die Durchsatz-Metrik (Seit SPEC CPU2006)
+Motivation für die Durchsatz-Metrik
+— Herd-Analogie:
+	- Eine große Flamme kocht einen großen 250-Liter-Topf mit Flüssigkeit in einer Stunde
+	- Sechs kleine Flammen kochen sechs 40-Liter-Töpfe in 15 Minuten
+		- Jede kleine Flamme kocht 4x40 Liter pro Stunde (160 Liter)
+	- Was ist besser?
+Durchsatz im Vergleich zur Geschwindigkeit
+— Wenn man nur einen ungeöffneten Container Suppe hat, kann man schneller servieren, wenn
+	man die große Flamme verwendet
+— Wenn man den Container öffnen kann, nutzt man besser die kleinen Flammen
+— Ähnliches Beispiel aus dem IT-Umfeld wäre die Verarbeitung eines Bildes mit Photoshop im
+	Vergleich zur Rendering eines Films mit vielen Bildern
+
+CPU2017 Metrik SPECrate
+— Der oder die Testende tester wählt aus, wieviele parallele Kopien eines Benchmarks ausgeführt werden
+— Für die einzelnen Kopien wird OpenMP nicht genutzt
+— Für jeden Benchmark wird die Performance Rate wie folgt berechnet:
+	Anzahl an Kopien * (Zeit auf Referenzsystem / Zeit auf getestetem System)
+— Höherer Wert heißt, das mehr Berechnungen in einem Zeitabschnitt fertiggestellt wurden
+— Beispiel:
+	- Das Referenzsystem stellt 1 Kopie von 500.perlbench_r in 1592 fertig
+	- Das getestete System bearbeitet 8 Kopien und wird in ca 1/3 der Zeit fertig. Der Wert ist also ungefähr 24
+	- Oder genauer: 8*(1592/541.52471) = 23.518776
+
+Wiederholungen
+— Benchmarks sind anfällig für etwaiige Störungen (z.B. durch andere Programme, die auf dem System ausgeführt werden)
+— Daher werden Messungen wiederholt
+— Der/die Testende kann dabei aussuchen
+	- Die komplette Suite wird 3 mal wiederholt. Die Median Ergebnisse werden genutzt
+	- Die komplette Suite wird 2 mal wiederholt. Die schlechteren Ergebnisse werden genutzt (neu seit CPU2017)
+
+Jede Metrik erlaubt Base und Peak Messungen
+— Die SPEC CPU Benchmark Suite wird als Source Code vertrieben
+— Benchmarks müssen also kompiliert werden
+— Die Frage ist: Wie?
+	- Verschiedene Optionen
+	--debug –-no-optimize
+		wird ein anderen Code erzeugen als
+	-O3 -faggressive-loop-optimizations -funsafe-math-optimizations ...
+— CPU2017 erlaubt 2 Punkte: base und peak
+	- Base: Alle Benchmarks einer Sprache müssen die selben Flags nutzen
+	- Peak: Jeder Benchmark darf eigene Compilerflags nutzen, Feedback-Optimierung erlaubt (mit Trainingslauf)
+
+Zusammenfassen der einzelnen Metriken
+— Für (fast) jeden Benchmark gibt es 4 Metriken
+	{rate, speed} * {base, peak}
+— Bei 10 Integer und 14 Floating Point Benchmarks gibt es insgesamt 86 Metriken
+— Werden zusammengefasst als {integer, floating point} * {rate, speed} * {base, peak}
+--> 8 Metriken
+
+Gesamtergebnis und Geometrisches Mittel
+— Bisher für jeden der Benchmarks Ergebnisse
+— Ein Ergebnis wäre besser für den schnellen Vergleich
+— Arithmetisches Mittel geeignet?
+	- Arithmetisches Mittel: \sum_n {x_i}
+	- Beispiel SPECspeed Integer: Das getestete System hat bei der Hälfte der Benchmarks die halbe Laufzeit (Wert = 2),
+	  in der anderen Hälfte der Fälle die doppelte Laufzeit (Wert = 0.5) wie das Referenzsystem.
+	--> Wert = (2 ∗ 2 ∗ 2 ∗ 2 ∗ 2 ∗ 0.5 ∗ 0.5 ∗ 0.5 ∗ 0.5 ∗ 0.5)/10 = 1.25
+	- Ungeeignet!
+— Geometrisches Mittel: (∏ x_i)^(1/n)
+	- (2 ∗ 2 ∗ 2 ∗ 2 ∗ 2 ∗ 0.5 ∗ 0.5 ∗ 0.5 ∗ 0.5 ∗ 0.5)^(1/10) = 1
+
+SPEC HPG = SPEC High-Performance Group (--> Folie 62 - 63)
+— Gegründet: 1994
+— Aufgabe:
+	- Schaffung und Pflege einer Suite von Benchmarks, die repräsentativ ist bzgl. des Hochleistungsrechnen
+— SPEC/HPG umfasst Mitglieder aus der Industrie und dem akademischen Bereich.
+— Benchmark-Produkte:
+	- SPEC HPC (HPC96, HPC2002), eingestellt 2007
+	- SPEC OMP (OMPM2001, OMPL2001, OMP2012)
+	- SPEC MPI2007
+	- SPEC ACCEL (OpenACC, OpenMP 4.0, OpenCL), 2014
+
+Auswertung und Publikation
+— Reduzierung der komplexen Zusammenhänge auf wenige Werte; Ermöglicht leichteren Vergleich von Systemen
+— Aufforderung zur Publikation von neuen Ergebnissen für größere Vergleichsbasis
+— SPEC: Aufstellung von Regeln für Benchmarking, Überprüfung vor Anerkennung als offizielles Ergebnis
+— Befolgung der generellen SPEC 'run rule' Philosophie, einschließlich:
+	- Verfügbarkeit aller Komponenten bis zu 3 Monate nach der Publikation
+	- Bereitstellung einer passenden Umgebung für C/C**/Fortran-Programme
+	- Benutzung der SPEC Werkzeuge insbesondere bei: Übersetzung der Benchmarks
+	- Verwendung des Mittelwertes von mindestens drei Programmläufen jedes Benchmarks
+	- Erzeugung der zu publizierenden Ergebnisse mit einem Aufruf der SPEC Werkzeuge
+	- Verifikation des Benchmark-Outputs
+
+Weitere Entwicklungen
+— Entwicklung der letzten 15 Jahre zwei Haupttrends:
+	- Spezialisierung
+	- Standardisierung
+— Spezialisierung als Notwendigkeit
+	Je breiter der Benchmark anwendbar, umso geringer der Nutzwert
+— Standardisierung für Vergleichbarkeit der Ergebnisse, Verständlichkeit und Nutzerakzeptanz des Benchmarks
+— Standardisierung ermöglicht oft kontinuierliche Weiterentwicklung des Benchmarks
+
+Vergleich von verschiedenen Benchmark-Klassen --> Folie 66
+			Anwendungsbereich	Bedeutung	Identifizierung von 	Zeitliche
+								Problemen		Entwicklung
+Microbenchmarks		0 			0 		** 			*
+(z.B. Stream)
+
+Algorithmischer		-			0		*			**
+Benchmark (z.B.
+Linpack) 
+
+Kernels (z.B. NAS	0			0		*			*
+Benchmarks) 
+SPEC 			* 			* 		* 			*
+Nutzerspezifische	- 			** 		0 			0
+Benchmarks 
+
+
+Zentrale Begriffe zur Leistungsbewertung
+
+Speedup und Scaleup
+— Speedup (Geschwindigkeitsgewinn) gibt eine Aussage, um wie viel mal schneller ein Problem
+   mit p Prozessoren gegenüber der Lösung mit einem Prozessor ausgeführt werden kann.
+— Scaleup („Problemgrößengewinn“) gibt an, um wie viel mal größere Probleme mit p
+   Prozessoren in der gleichen Zeit wie das ursprüngliche Problem mit einem Prozessor gelöst
+    werden können.
+— Es ist wünschenswert, dass ein Problem, noch bevor es sequentiell und parallel implementiert
+   wird, auf die zu erwartende Effizienz der Parallelverarbeitung analysiert wird.
+— Die Methoden für diese Problemanalyse bilden einen Kompromiss zwischen Aufwand und
+   Realität der Vorhersagen.
+
+Kennwert: Komplexität
+— Um Algorithmen miteinander zu vergleichen und für sich allein kennzeichnen zu können,
+   versucht man, die Merkmale in Abhängigkeit von geeigneten Messgrößen zu quantifizieren
+— Man nennt die quantifizierten Merkmale „Komplexitäten“
+— Eines der wichtigsten Merkmale eines Algorithmus ist seine Laufzeit in Abhängigkeit von den
+   Eingabedaten, die sogenannte Zeitkomplexität
+— Zeitkomplexität
+	- Ermittlung durch Berechnung oder Messung
+	- Für die Genauigkeit der Berechnung ist das verwendete Maschinenmodell wichtig (HPP, PRAM, MP-RAM oder andere)
+	- Meist reichen gröbere Angaben, die sogenannte asymptotische Laufzeitkomplexität
+
+Zeitkomplexität
+— Betrachtung der Leistung durch Beurteilung der Zeitkomplexität
+— Vereinfachende Annahmen sind:
+	- Problemdarstellung ist sequentiell und parallel möglich
+	- Mit jeweils zwei Operanden wird eine der Operationen (+, -, *, /) durchgeführt
+	- Jeder der p Prozessoren führt zu einem Zeitpunkt nur eine Operation aus
+	- Unterschiedliche Prozessoren können unterschiedliche Operationen ausführen
+	- Jede Operation dauert genau einen Zeitschritt
+	- Datentransfer, Steuerprozesse und Zugriffskonflikte benötigen keine Zeit
+
+Asymptotische Laufzeitkomplexität
+— Betrachtung der Laufzeit eines Algorithmus für großen Umfang der Eingabedaten n; 
+eigentlich für n -> oo	
+— O(n): von der Ordnung n, bedeutet lineare Laufzeitabhängigkeit von n
+— Beispiel:
+	T(n) = 0,8 * n² * 100 * n * 16
+	--> O(n²) "von der Ordnung n²"
+
+Beschleunigungsgewinn (Speedup)
+S_P = T_1 / T_P1		(1 <= S_P <= p)
+
+S_p 	Speedup mit p Prozessoren
+p 	Anzahl der Prozessoren
+T_1 	Zeit(-schritte) mit p = 1 Prozessoren
+T_p 	Zeit(-schritte) mit p > 1 Prozessoren
+
+Definitionen
+— Effizienz
+	E_p = S_p / p 	(0 < E <= 1)
+	- Die Effizienz ist der Geschwindigkeitsgewinn je Prozessor (auch als Wirkungsgrad bezeichnet)
+— Operationsredundanz
+	R_p = Z_p / Z_1			(R_p >= 1)
+	- Z_1 Anzahl der Operationen mit p=1 (Z_1 = T_1)
+	- Z_p Anzahl der Operationen mit p>1 (Z_1 > T_1)
+— Auslastung
+U_p = Z_p / (p × T_p)
+
+— Effektivität
+F_p = (S_p ⋅ E_p) / T_1
+
+
+Laufzeitverkürzung durch Parallelarbeit
+
+Laufzeitverkürzung durch Parallelarbeit
+— Mit der Methode des rekursiven Doppelns sind die Lösungen von
+	y = \sum_(i=1)^16 {a_i}
+  a) mit 8 und b) mit 7 Prozessoren
+  in einem Verarbeitungsbaum zu skizzieren und jeweils die Kennwerte Geschwindigkeitsgewinn
+  und Auslastung zu ermitteln.
+
+Rekursives Doppeln (8 PEs) --> Folie 79
+
+Rekursives Doppeln (7 PEs) --> Folie 80
+
+
+
+
+
