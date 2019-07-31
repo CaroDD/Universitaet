@@ -1,0 +1,324 @@
+Vorlesung 8, Kapitel 7
+Ein- und Ausgabe
+
+Prinzipieller Aufbau von Computersystemen
+
+Welche Komponenten fehlen hier um einen
+funktionsfähigen Rechner zu bekommen?
+— Prozessor ✓
+— RAM ✓
+— Festplatten ✓
+— GPUs ✓
+— I/O-Geräte
+	- Diese und nächste Vorlesung 
+— Netzwerke und Schnittstellen
+	- Spätere Vorlesungen
+
+Ein- und Ausgabe an der CPU
+— CPU braucht Verbindungen zur Außenwelt
+	- Speicher
+	- Grafik
+	- Geräte
+	- Tastatur
+	- Maus
+	- Drucker
+	- ...
+— Gängige Interfaces (Bus):
+	- PCIe
+	- USB
+
+Herausforderungen für einen Bus: Hochfrequenzeffekte
+
+Signalausbreitung
+— Signalausbreitung mit Lichtgeschwindigkeit:
+	v = c ≈ 3*10⁸ m/s
+— Größe eines Typischen Mainboards:
+	s ≈ 0,3 m (ATX: 305 × 244 mm)
+— Laufzeit eines Signals:
+v = s / t
+t = s / v = 3*10^(-1)m / 3*10⁸m/s = 1*10^(-9)s = 1ns
+--> Wellenlänge von 1GHz ist ca. 0,3m
+— Für Vakuum und Sinus Signal!
+
+Signalausbreitung
+— Für Kupfer und Rechteck Signal --> ca. Faktor 20 niedrigere Frequenz als Grenzfrequenz für Hochfrequenzeffekte
+1GHz / 20  = 50MHz
+— Was bedeuten Hochfrequenzeffekte?
+	- Welleneigenschaften von Signalen tritt in den Vordergrund
+	- Ausbreitungsgeschwindigkeit wird relevant
+	- Signale können an einem Knick oder Leitungsende reflektiert werden
+	- Übersprechen der Signale zwischen den Leitungen
+
+Beispiel: Parallele ATA Schnittstelle (Festplatten) (--> Folie 8) 
+— Zunächst nur 16,67 MHz, da Welleneigenschaften der Leitung nicht bestimmt werden konnten
+— 16 Bit pro Datenwort
+	--> Bandbreite : 33 Mbyte/s
+Lösung:
+— Verdoppeln der Leitungen, jede 2. Leitung Masse
+	--> Leitungseigenschaften bestimmbar
+— Erhöhen der Frequenz und der Bandbreite
+	--> bis zu 133 Mbyte/s
+
+Serielle und Parallele Datenübertragung	
+
+Parallele Datenübertragung
+— Traditionell für schnelle Verbindung genutzt
+— Zentraler Takt
+— Parallele Leitungen
+— Signale werden gleichzeitig auf allen Leitungen gelesen bzw. geschrieben
+
+Parallele Datenübertragung - Herausforderungen
+— Laufzeit eines Signals auf einer Leitung
+— Nicht alle Leitungen gleich lang
+— Temperatur beeinflusst Ausbreitungsgeschwindigkeit
+— Es dauert bis ein Datenwort stabil beim Empfänger anliegt
+— Problem vor allem für parallele Datenübertragung
+
+Serielle Datenübertragung
+— Seit USB (1996) zunehmend relevant
+— Takt wird z.T. aus dem Signal wiedergewonnen
+— Einzelne Leitungen
+— Signale werden nacheinander auf die Leitung geschrieben und gelesen
+
+Signal Codierung
+
+Signal Codierung
+Verschiedene Arten Signale zu Codieren:
+— Non-Return to Zero (NRZ) – Codierung
+— Manchester-Codierung
+— Non-Return to Zero/Inverted (NRZI) – Codierung
+	- Bit Stuffing, 4B/5B- und weitere Codierung
+
+
+Non-Return to Zero (NRZ) – Codierung
+— Eine Spannung von U_B signalisiert eine 1
+— Eine Spannung von 0V signalisiert eine 0
+— Problem: Gleichanteil von U_B/2
+	- Kann zu Problemen in der Zielelektronik führen
+— Lösung: +U_B ≙ 1 und −U_B ≙ 0
+— Aber: was passiert, wenn ca. 100 x „1“ Übertragen wird?
+	- Kondensatoren können Signal verfälschen
+	- Taktrückgewinnung funktioniert nicht mehr
+
+Manchester-Codierung
+— Erste Hälfte der Bitperiode enthält Datenbit
+— Zweite Hälfte enthält invertiertes Datenbit
+— Problem:
+	- Doppelte „Frequenz“ zur Datenübertragung benötigt bei gleichem Durchsatz
+	- Akzeptabel für geringe Datenübertragungsraten
+— Verwendet bei:
+	- Ethernet 10 Mbit/s
+
+Non-Return to Zero/Inverted (NRZI) – Codierung
+— 1 ≙ Pegelwechsel
+— 0 ≙ kein Pegelwechsel
+— Problem:
+	- Viele „0“ nacheinander
+	- Takt kann nicht aus Signal wiederhergestellt werden
+
+Bit Stuffing, 4B/5B- und weitere Codierung
+Bit Stuffing
+Nach n Bits wird ein Bit in entgegengesetzter Richtung eingefügt
+— Empfänger entfernt das Bit wieder
+— Genutzt bei:
+	- USB 1.1 und 2.0 (zusammen mit NRZI-Codierung)
+
+4B/5B- und weitere Codierung
+— 4 Bits werden per Tabelle in 5 Bits übersetzt
+— Erhöht das Datenvolumen um 25%
+— Vorher: 4 Bit à 16 kodierbaren Symbole (Daten)
+— Nachher: 5 Bit à 16 kodierbaren Symbole (Daten) + 16 weitere Symbole
+	- Einige Steuersignale
+	- Einige „Violation Symbols“
+	- Erlauben die Einschätzung der Qualität der Übertragungsstrecke
+	- Damit Ermittlung der Maximalen Übertragungsrate möglich
+— Auch als:
+	- 8B/10B
+	- 128B/130B (erhöht Datenvolumen um ca 1,5%)
+
+Daten- und Symbolrate
+Bsp.: 4B/5B-Codierung
+— Symbolrate: 100 MBit/s
+	- Menge der Symbole die auf einer Leitung pro Sekunde übertragen werden können
+	- Hängt von Übertragungsfrequenz ab
+— Datenrate bei 4B/5B- Codierung: 80 MBit/s bei einer Symbolrate von 100 MBit/s
+	- Jedes 4Bit Datum wird in ein 5Bit Symbol umgewandelt
+	- Menge der Daten die auf einer Leitung pro Sekunde übertragen werden können
+	- Hängt von Symbolrate und Codierung ab
+
+Kommunikationsrichtungen
+
+Kommunikationsrichtungen
+— Simplex
+	- Kommunikation in nur eine Richtung, keine Antwort
+	- Bsp.: Rundfunk
+— Halbduplex
+	- Kommunikation abwechselnd vom Sender zum Empfänger
+	- Bsp.: USB 2.0
+— Vollduplex:
+	- Gleichzeitige Kommunikation vom Sender zum Empfänger
+	- Bsp.: USB 3.0, PCIe Lane
+	
+Beispiel: Industry Standard Architecture (ISA)
+
+ISA – Grundlagen
+— Entwickelt 1981 von IBM
+— Halbduplex
+— Parallele Datenübertragung
+	- Datenwort: D = 8 Bit
+	- Frequenz: f = 4,77MHz --> t = 1 / 4,77MHz ≈ 0,21µs
+	- Datenübertragungsrate: C = D/t = 8 Bits/0,21µs = 38,2 MBit/s = 4,77 MByte/s
+— 1984 Erweiterung
+	- Datenwort: D = 16 Bit
+	- Frequenz: f = 8,33 MHz --> C = 16 MByte/s
+
+ISA --> Folie 25
+
+Beispiel: Peripheral Component Interconnect (PCI)
+
+PCI – Grundlagen
+— Halbduplex
+— Parallele Datenübertragung
+— Version 1.0 1
+	- Entwickelt ca. 1990
+	- Datenwort: D = 32 Bit
+	- Frequenz: f = 33,33MHz --> t = 1/33,33MHz ≈ 0,03µs
+	- Datenübertragungsrate: C = D/t = 32 Bit/0,03 µs = 1066 MBit/s = 133 MByte/s
+— Version 2.1 (PCI Local Bus Specification Revision 3.0)
+	- Veröffentlicht 1995
+	- Datenwort: D = 64 Bit
+	- Frequenz: f = 66 MHz --> C ≈ 533 MByte/s
+
+PCI – Herausforderungen
+— Signallaufzeiten
+	- Steigerung der Frequenz schwierig (max. 66MHz)
+	- Vergrößerung der Datenworts schwierig (max. 64 Bit)
+— Geteilter Bus zwischen allen Karten
+	
+PCI – Typische Anordnung
+--> Folie 29 - 30
+
+Beispiel: PCI express (PCIe)
+PCIe – Grundlagen
+— Serielle Datenübertragung
+— Vollduplex
+— Punkt-zu-Punkt Kommunikation
+— Einsatz von Switches, ähnlich wie bei Ethernet
+— Version 1.0
+	- Eingeführt: ca. 2003
+	- 8b/10b Codierung
+	- Datenübertragungsrate einer Leitung: C = 2,5 GT/s ≙ 250 MByte/s 	([T/s] = Transfer pro Sekunde)
+	- Zusammenschalten mehrerer unabhängig agierender Leitungen
+PCIe x1 = 250 MByte/s	PCIe x2 = 500 MByte/s	PCIe x4 = 1 GByte/s	PCIe x16 = 4 GByte/s	
+
+PCIe – Entwicklung
+— Version 2.0
+	- Eingeführt: ca. 2007
+	- Datenübertragungsrate einer Leitung: C = 5.0 GT/s ≙ 500 MByte/s	([T/s] = Transfer pro Sekunde)
+	- PCIe x16 = 4 GByte/s
+— Version 3.0
+	- Eingeführt: ca. 2010
+	- 128b/130b Codierung
+	- Datenübertragungsrate einer Leitung: C = 8.0 GT/s ≙ 984,6 MByte/s	([T/s] = Transfer pro Sekunde)
+	- PCIe x16 = 15,8 GByte/s
+
+— Version 4.0
+	- Eingeführt: ca. 2017
+	- Datenübertragungsrate einer Leitung: C = 16 GT/s ≙ 1969 MByte/s	([T/s] = Transfer pro Sekunde)
+	- PCIe x16 = 31,5 GByte/s
+— Version 5.0
+	- Eingeführt: upcomming
+	- Datenübertragungsrate einer Leitung: C = 32 GT/s ≙ 3938 MByte/s	([T/s] = Transfer pro Sekunde)
+	- PCIe x16 = 63,0 GByte/s
+
+PCIe – Typische Anordnung 
+--> Folie 35 - 36
+
+Beispiel: Universal Serial Bus (USB)
+
+Grundlagen
+— 5V(+) und Masse(-) als Versorgungsspannung
+— D+ und D- für die Datenübertragung
+	- Differentielle Datenübertragung, e.g. D- invertiert zu D+
+	- Höhere Signalamplitude
+	- Störungen die beide Adern betreffen, heben sich auf
+— Halbduplex – Bus
+	- Ab USB 2.0 Bandbreite von 480 MBit/s
+	- Geteilt von allen USB Geräten	
+— Root Hub als Wurzel
+	- davon ausgehend physikalisch Baumstruktur		
+
+Kommunikation
+— Jedes USB-Gerät inkl. HUB bekommt eine Nummer zwischen 1 und 127
+— Host fragt mit Polling reihum ob ein Gerät aktiv werden möchte
+— Geräte-Treiber kommunizieren mit den zugehörigem USB-Gerät über logische Punkt-zu-Punkt Übertragungskanäle (Pipes)
+	- Lese- und Schreib-Pipes
+	- Jedes Gerät kann mehrere Pipes gleichzeitig betrieben
+— Unterschiedliche Betriebsmodi:
+	- Isochronous Mode (Audio- und Videodatenströmen, Mindestbandbreite, Verwerfen fehlerhafter Daten)
+	- Bulk Mode (USB-Massenspeicher, Fehlerbehandlung, Bandbreite und Latenz kann schwanken)	
+	- Interrupt Transfers (kurze Latenzzeiten, kleine Datenmengen, z.B. Maus)
+	- Control Transfers (Identifikation und Konfiguration neuer Geräte)
+
+USB 3.0
+— 5V(+) und Masse(-) als Versorgungsspannung
+— USB 2.0
+	- D+ und D-
+— USB 3.0
+	- D+ und D- ungenutzt
+	- SSTX+/SSTX- Super Speed Transmit
+	- SSRX+/SSRX- Super Speed Receive
+— Vollduplex – Bus
+	- Symbolrate 5 GBit/s, 8B/10B-Codierung
+	--> Datenrate von 4 Gbit/s
+
+Weitere Busse
+
+Serial Advanced Technology Attachment / Serial ATA / SATA
+— Genutzt für Festplatten und andere Speichergeräte
+— Aktuelle Version: 3.3 (Serial ATA-600)
+— Seriell
+— Symbolrate: 6 GBit/s
+— Codierung: 8b/10b encoding
+— Datenrate: 4.8 Gbit/s (600 MB/s)
+— Halbduplex
+	- Trotz unterschiedlicher Leitungen zum Senden und Empfangen von Daten
+
+NVLink
+— Verbindung mehrerer Nvidia Grafikkarten
+— Auch implementiert in aktuellen IBM POWER Prozessoren
+— Seriell
+— Codierung: 128b/130b?
+— Aktuelle Version: 2.0
+	- Symbolrate: 25 GBit/s
+	- Datenrate: 24,62 GBit/s (3,08 GB/s)?
+	- 8 Lanes per Brick und Richtung
+— Vollduplex
+	- Mit bis zu 6 Bricks: 96 Lanes (in + out)
+— Gemessen für 32 Lanes: 96 GB/s
+	- Theoretisch 98 GB/s --> Rest Protokolloverhead?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
