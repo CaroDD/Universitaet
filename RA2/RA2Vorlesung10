@@ -1,0 +1,272 @@
+RA2 Vorlesung 10 Kapitel 9
+Architekturkonzepte der Parallelverarbeitung
+
+Gliederung
+— Aspekte innovativer Architekturprinzipien
+— Grundlegendes zu SIMD-Architekturen
+— Vektorrechner
+— Feldrechner
+— Zellulare Systeme
+— Datenflussarchitektur
+
+Aspekte innovativer Architekturprinzipien
+
+Architektonische Modelle der Parallelverarbeitung:
+Aufbauend auf den unterschiedlichen Klassifizierungsverfahren sollen hier die Merkmale
+zusammengestellt werden, die häufig für eine grobe Unterteilung der innovativen
+Rechnerarchitekturen genutzt werden:
+
+Steuerungsmodus:
+— Innovative Prinzipien gehören nach Flynn zu den Klassen SIMD und MIMD
+— Probleme beim MIMD-Modus:
+	- Synchronisation der Abarbeitung und
+	- Bereitstellung der Operanden vor Durchführung der Operation (Aktualisierungsmechanismen)
+
+Speichergestaltung
+— Man unterscheidet:
+	- Zentralspeicher (Gemeinsamer Speicher, Globalspeicher)
+	- Verteilter Speicher (Lokalspeicher)
+— Strikt davon zu unterscheiden ist die Adressraum-Organisation:
+	- Systemweit einheitlicher Adressraum = globaler Adressraum
+	- Lokale Adressräume
+
+Granularität
+— Die Granularität entspricht der Anzahl der Teilaufgaben ohne Datenabhängigkeit ... mit
+	entsprechender Anzahl von Verarbeitungseinheiten.
+— Man unterscheidet grobe und feine Granularität
+	- Feine Granularität mit einer hohen Anzahl von Verarbeitungseinheiten führt auf massiv-parallele Systeme
+	- Dafür sind nur verteilte Speicher sinnvoll
+
+Grundlegendes zu SIMD-Architekturen
+
+Ausführung mit Pipelining (Wiederholung) (--> Folie 7)
+Instruction Fetch	-->	Instruction Decode	--> 	Execute		-->	Writeback
+• Lese Speicher an		• Interpretiere			• Benutze		• Schreibe Resultat in
+  der Adresse des		  gelesenen Befehl		  Ausführungseinheit	  Register
+  program counters/						  (z.B. ALU oder FPU)
+  instruction pointers						  um Befehl auszuführen
+		
+Beispiel: Schleife, die ein Vektor auf einen Anderen addiert
+for ( i = N ; i != 0 ; i-- )			
+a[ i ] = a[ i ] + b [ i ];				
+							  
+my_loop:						
+// load 1 element of a[]				 
+movss (%r10,%ecx,$4), %xmm0;			— movss (%r10,%ecx,$4), %xmm0;			
+							- Move Scalar Single: Transferiere einen single precision (32 bit) Wert
+							- Von der Adresse, berechnet aus dem Inhalt von 2 Registern und Skalierungsfaktor: (%r10)+((%ecx)*4)
+								Skalierungsfaktor ergibt sich aus Breite des Datums (32 Bit = 4 Byte)
+							- Nach SSE Register xmm0
+// add 1 element of b[]				— addss (%r11,%ecx,$4), %xmm0;	
+addss (%r11,%ecx,$4), %xmm0;				- Add Scalar Single: Addiere einen single precision Wert
+							- Von Adresse (%r11)+((%ecx)*4)
+							- Auf einzelnen (gerade geladenen) Wert in xmm0
+
+// store 1 element of a[]			— movss %xmm0, (%r10,%ecx,$4);	
+movss %xmm0, (%r10,%ecx,$4);				- Speicher Ergebnis nach (%r10)+((%ecx)*4)
+
+// decrement loop counter				
+sub $1, %ecx;	
+				
+// jump if last result is not zero			
+jnz my_loop;
+
+Beispiel Schleife mit Pipelining (--> Folie 9)
+Schleife: Benötigte Instruktionen
+my_loop:
+movss (%r10,%ecx,$4), %xmm0; 	// load 1 element of a[]
+addss (%r11,%ecx,$4), %xmm0; 	// add 1 element of b[]
+movss %xmm0, (%r10,%ecx,$4); 	// store 1 element of a[]
+sub $1, %ecx; 			// decrement loop counter
+jnz my_loop; 			// jump if last result is not zero
+			
+Für jede Schleifeniteration:
+— 5 Instruktionen holen
+— 5 Instruktionen dekodieren
+— 5 Instruktionen ausführen
+--> 5*N Instruktionen für N Schleifendurchläufe
+
+SIMD (SSE)
+moveups = Move Unaligned Packed Single: Transferiere (ohne besondere Anforderungen an die
+	  genutzte Speicheradresse) 128 Bit als 4 single precision Werte
+
+movups (%r10,%ecx,$4), %xmm0; // load 4 elements of a[] (unaligned)
+addups (%r11,%ecx,$4), %xmm0; // add 4 elements of b[] (unaligned)
+movups %xmm0, (%r10, %ecx, $4); // store 4 elements of a[] (unaligned)
+sub $4, %ecx; // decrease loop counter ecx by 4
+jnz my_loop; // jump if not zero
+— Berechnen von 4 Schleifendurchläufen
+	- Vorher: 4*5=20 Instruktionen
+	- Nachher: 5 Instruktionen
+— Nur Entlastung bei Instruction Fetch, Instruction Decode, es müssen immer noch die gleichen
+Berechnungen und Datentransfers ausgeführt werden!
+
+Maskenregister
+
+Problem:
+for ( i = N ; i >= 0 ; i-- )
+if ( a[ i ] > 0 )
+a[ i ] = a[ i ] + b [ i ];
+--> Nicht die gleiche Operation auf allen Elementen anwendbar!
+— Maskenregister maskieren Elemente, auf denen Operation nicht ausgeführt werden soll
+
+Compilerunterstützung
+Compiler stellen verschiedene Möglichkeiten für Programmierer zur Verfügung
+— Assembler
+— Intrinsics:
+	- Nah an Assembler, Compiler übernimmt Registerallokation
+— Präprozessor-Direktiven
+	- Markieren von Schleifen für SIMD
+— Auto-Vektorisierung
+	- Compiler erkennt vektorisierbare Schleifen automatisch
+
+Zusammenfassung
+— Weniger Befehle --> weniger Instruction Fetch und Decode
+— Mehr Fokus auf Execution
+— Instruktion sagt, dass Berechnung der Elemente parallel stattfinden kann
+— Implementierung ist hardwareabhängig
+
+Vektorrechner und Feldrechner
+Die parallele Berechnung der Elemente des Ergebnisvektors
+	D = [a_0 * b_0 + c_0 	a_1 * b_1 + c_1 	...	a_(n-1) * b_(n-1) + c_(n-1) ]
+kann auf zwei Arten erfolgen:
+(1) Indem man die Terme a_i * b_i + c_i nach dem Pipeline-Prinzip berechnet, wozu man einen
+	Multiplizierer und einen Addierer benötigt
+	--> sog. Vektorrechner
+oder
+(2) Indem man n Rechenelemente hat, die in einem ersten Schritt alle Multiplikationen und in
+	einem zweiten Schritt alle Additionen durchführen
+	--> sog. Feldrechner
+
+SIMD-Prinzipien (--> Folie 16)
+— SIMD-Architekturen besitzen statische Verbindungsnetzwerke
+— Der Datenaustausch in diesen Rechnern ist
+	einfacher, weil auch das Verbindungsnetzwerk vom zentralen
+	Steuerwerk gesteuert wird und mehr oder weniger synchron arbeitet
+
+Vektorrechner
+— Vektorrechner arbeiten nach dem Pipeline-Prinzip
+	- Interne Verarbeitung wird durch sog. arithmetisches Pipelining realisiert
+	- Vektorrechner wurden deshalb häufig als Pipeline-Rechner bezeichnet
+— Da in aktuellen Rechnerarchitekturen das Pipelining auf unterschiedlichen Abstraktionsebenen
+	eingesetzt wird, ist die Bezeichnung Pipeline-Rechner eher missdeutend!
+— Das Pipeline-Prinzip gleicht einer Fließbandfertigung, in der Rechnerarchitektur taucht es unter
+	verschiedenen Aspekten auf
+
+Kenngrößen der Pipeline-Verarbeitung
+- n: Anzahl der Prozesse, die durch die Pipeline laufen
+- m: Anzahl der Segmente der Pipeline
+- t_s : Segmentverarbeitungszeit
+- k: (gleichlange) Teilprozesse
+--> üblicherweise wird die Verarbeitung eines Prozesses durch die
+	Segmente der Pipeline in m (gleichlange) Teilprozesse unterteilt (m = k)
+
+Zum Geschwindigkeitsgewinn bei Pipelining (--> Folie 20)
+
+Beschleunigungsfaktor (Speedup)
+— Die Pipeline besitzt eine Einlaufphase, eine Phase mit höchster Parallelität und eine Auslaufphase.
+— Eine effiziente Pipelineverarbeitung setzt voraus, dass eine möglichst hohe Anzahl von Prozessen
+	benutzt werden. Bei nur einem Prozess entartet die Pipeline zu einer reinen sequentiellen Verarbeitung.
+— Für einen Prozess gilt: T = k * t_s
+— Für n Prozesse folgt: T_(seq) = n * k * t_s
+— Für die Pipelineverarbeitung: T_(pip) = (k - 1) * t_s + n * t_s = (k - 1 + n) * t_s
+	S_p = T_(seq) / T_(pip) = (n × k) / (k - 1 + n)
+n = 1 => S_p = 1		— Pipeline-Rechner wirkt wie sequentieller Rechner
+
+n >> k => S_p » k		— Je größer die Segmentierung (für Teilprozesse und Verarbeitung)
+				  desto höher der Geschwindigkeitsgewinn
+
+Berechnungsbeispiel
+Berechnungsbeispiel zum Geschwindigkeitsgewinn durch Pipeline-Verarbeitung
+— Wie viele Prozesse n müssen verarbeitet werden, damit bei einer Pipelineverarbeitung mit k = 3
+  Teilprozessen in m = 3 Segmenten ein Geschwindigkeitsgewinn von 2 erreicht werden kann?
+
+— k= 3	S_p = 2	n= ?
+
+S_p = (n × k × t_s) / (k - 1 + n) t_s
+
+n = (S_p * (k - 1)) / (k - S_p) = 4
+
+— Sequentielle Verarbeitung:
+	4 Prozesse --> 3 Zeitschritte = 12 Zeitschritte
+— Pipeline-Verarbeitung
+	4 Prozesse --> 1 Zeitschritt + (k-1) Schritte Einlaufzeit = 6 Zeitschritte
+
+Basis zu den Vektorrechnern
+— Pionierarbeit bei den Vektorrechnern hat die Firma Control Data Corporation (CDC) geleistet
+	- Erste Vektormaschine war die STAR-100 Anfang der 70er Jahre von CDC
+	- Ende der 70er Jahre wurde die STAR-100 von der CYBER 203 von CDC abgelöst
+— Mit der CRAY-1 (1976) begann die Ära der Firma CRAY RESEARCH (1972 gegründet)
+	- Spezialität: Spitzenleistung auf dem Gebiet der Halbleitertechnologie (Taktfrequenzen, Speicherzugriffszeiten)
+
+Fujitsu VP-200 als Beispiel eines Vektorrechners
+— Gründe, weshalb dieses System hier vorgestellt wird:
+	- Vektorrechnerprinzip ist hier noch gut als separates Prinzip erkennbar
+	- SNI VP200EX arbeitete von 1991 bis August 1995 als sog. Landesvektorrechner im Universitätsrechenzentrum der TU Dresden
+	- Von Fujitsu gab es bereits 1992 einen Vektorprozessor als Ein-Chip-Mikroprozessor
+— Ende 1983 gab es erste Modelle des Fujitsu Vektorprozessors FACOM VP-100 und VP-200
+— Fujitsu-Rechner wurden in Europa über FSC vermarktet und betreut
+— Hinweis:
+	- Ein Vektorbefehlssatz ist beispielsweise in [Hen07] für die DLXV-Architektur dargestellt
+
+Aufbau des VP-200 Vektorprozessors
+--> Folie 27-31
+
+— VP-200: 1 Vektor- und 1 Skalarprozessor, also MIMD/SIMD-Hybrid-Architektur
+— Die Hauptspeicherkapazität betrug ursprünglich 256 MByte, zum Produktionsende max. 1 GByte
+— Vektorprozessor besteht aus einer skalaren und einer vektoriellen Einheit
+	- Skalareinheit holt und dekodiert alle Instruktionen:
+	- Skalare Befehle --> Skalareinheit	|
+						|	Parallelarbeit möglich!
+	- Vektorielle Befehle --> Vektoreinheit	|
+
+— In der Skalareinheit befinden sich:
+	- 16 allgemeine Register (= General Purpose Register)
+	- 8 Gleitkomma-Register
+	- 64 KByte Cache
+— Die Vektoreinheit des VP-200 enthält:
+	- 64 KByte dynamisch rekonfigurierbare Vektorregister, die in Anzahl und Länge dem auszuführenden Programm angepasst werden
+	- Kombinationen:
+		- 256 Register für je 32 Elemente zu je 8 Byte (=64 Bit)
+		- 8 Register für je 1024 Elemente zu je 8 Byte (=64 Bit)
+		- 256 32bit-Maskenregister, d.h. jedes der 256*32=8192 = 8K Elemente ist einzeln maskierbar = 1 KByte
+	Maskenregister-Gesamtgröße
+	--> Besondere Bedeutung, wenn IF-Anweisungen in Schleifen einhalten sind: Ausblenden einzelner
+		Iterationen über Maskierung
+
+Von den 3 segmentierten arithmetischen Funktionseinheiten (Segmentierung = Pipelines)
+- Addition	 267 MFLOPS
+- Multiplikation 267 MFLOPS
+- Division	 38 MFLOPS
+können zwei (VP-100; VP-200: pro CPU) bzw. drei (VP-200e) parallel arbeiten.
+
+Zusätzliche Parallelität wird in der Vektoreinheit ermöglicht durch
+- die MASK-Einheit und
+- die beiden LOAD-/STORE-Kanäle bidirektional
+
+— Speicherbandbreite
+Datenbandbreite = 32 Byte (Speicherbus-Breite) / 15ns (Speicherbus-Taktzeit) = 2,13 Gbyte/s
+— VP-200 hatte als erster Supercomputer aufgrund der MASK-Unit und der Maskenregister die
+Möglichkeit, arithmetische Operationen unter Steuerung einer logischen Maske auszuführen
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
