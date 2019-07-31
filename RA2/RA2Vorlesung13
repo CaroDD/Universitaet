@@ -1,0 +1,456 @@
+RA2 
+Gesamtüberblick
+
+Rückblick: Aufbau PC
+Welche Komponenten fehlen hier, um einen funktionsfähigen Rechner zu bekommen?
+— Prozessor ✓ (Vorlesung 3a,3b)
+— RAM ✓ (Vorlesung 5)
+— Festplatten ✓ (Vorlesung 5)
+— GPUs ✓ (Vorlesung 6)
+— I/O-Geräte ✓
+— Netzwerke und Schnittstellen ✓ (Vorlesung 7, 8)
+
+Rückblick: SIMD/MIMD Architekturen/HPC (Vorlesungen 9, 10, 11)
+
+Genereller Aufbau Prozessor (Intel Desktop, Mobile)
+--> Folie 4
+
+Wiederholung Kern:
+Erhöhung der Berechnungsperformance durch
+— Pipelining
+— Superskalarität
+— SIMD
+
+Erhöhung der Speicherperformance durch Caches
+— Getrennte L1 Caches --> Harvard Architektur
+— Mehrere Cacheebenen
+
+Erhöhung der Auslastung durch
+— Out-of-Order Execution
+— Hardware Multithreading
+
+HPC zeigt mögliche Zukunft: Kerne
+— Nur noch geringes Wachstum bei
+	- Out-of-Order
+	- Superskalarität
+	- Pipelining
+— SIMD Wachstum
+	- Bei Intel bis Skylake (64à512 bit)
+	- Nicht bei anderen Architekturen (nicht x86)
+— Wachstum bei
+	- Anzahl Kerne
+— Hardware Multithreading wichtig, um Kernresourcen auszulasten
+
+Fokus Uncore
+Komponenten, die keinem Kern zugeordnet sind
+— Integrated Memory Controller (iMC) im System
+	Agent bindet DDR3 Speicher an
+— Integrated GPU (iGPU) stellt GPGPU Fähigkeiten zur Verfügung
+— PCIe (im System Agent) bindet externe Komponenten ein
+— L3-Cache ist verteilt über einzelne Kerne
+— Alle Komponenten verbunden über Ring-Netzwerk
+	- Vorteile: Leicht erweiterbar, wenig Kanten pro Knoten
+	- Nachteil: Mittlerer Knotenabstand und Durchmesser wächst stark mit Anzahl an Prozessorkernen
+
+HPC zeigt mögliche Zukunft: Uncore Netzwerk (Vgl. Vorlesung 8)
+--> Folie 8 - 9
+
+GPGPU Performance bestimmt Gesamtperformance 
+--> Folie 10
+
+GPGPU auf Desktop, Mobile (--> Folie 11)
+— Integrierte GPU
+	- Schnell angebunden an internen Ring, aber
+	- Latenzoptimierter Speicher (DDR) ungeeignet
+	  --> Speicherbandbreite zu gering
+— Dedizierte GPU
+	- Hohe Speicherbandbreite (GDDR5), aber
+	- Angebunden via PCIe 3.0
+	  --> PCIe Bus zu langsam
+	
+Alternative Ansätze für Desktop/Laptop (--> Folie 12)
+— Intel Haswell – Coffee Lake mit Iris Pro GPU
+	- Integration von bis zu 128 MiB embedded DRAM
+	  (eDRAM) als Cache für Intel GPU als 2ter Die
+		- (Warum DRAM? Zelle kleiner als bei SRAM)
+		- 256-Bit breiter Zugriff (Kaby Lake)
+	- Anfangs (Haswell/Broadwell) von CPU und GPU gemeinsam genutzt
+— Intel Kaby Lake G System
+	- Multichip-Module: 1 Prozessor mit 7 Dies:
+		- Quad core with Intel GPU
+		- AMD VEGA GPU
+		- HBM2 Dies (1024-Bit breiter Zugriff, Cache)
+	- Aber: GPU nur über 8x PCIe 3.0 verbunden, nur
+	  noch 8 PCIe für restliche Komponenten
+
+Top500 (Jun 2019) (--> Vgl. Vorlesung 10)
+
+Entwicklung der letzten 16 Jahre (inkl. Trendlinien) --> Folie 15
+
+Lange Zeit waren Zuwächse größer als von Moore’s Law zu erwarten --> Folie 16
+
+Performante Systeme nutzen eher Beschleuniger --> Folie 17
+
+Top 10: Nutzung von Beschleunigern --> Folie 18
+
+Performante Systeme nutzen eher spezielle Netzwerke
+(Vgl. Vorlesung 8) --> Folie 19
+
+Top 10: Netzwerk ist Infiniband, Custom und Omnipath --> Folie 20
+
+MPPs sind performanter als Cluster --> Folie 21
+
+Top 10: 33% MPPs (9,4% in Top500) --> Folie 22
+
+Wie sieht eine erfolgreiche Architektur aus? --> Folie 24
+— Ersten zwei Plätze belegen zwei ähnliche Systeme
+	- POWER9 (RISC) Prozessor Architektur (Vgl. Vorlesung 3b)
+	- NVIDIA GV100 Beschleuniger (Vgl. Vorlesung 6)
+— Platz 3 und 8 in der Green500 Liste --> Energieeffizient
+— Platz 1 und 2 im HPCG (Verschiedene Benchmarks) --> Balanciertes System
+
+Power Systems AC922
+
+Summit, Sierra und das ZIH: Power Systems AC922	 --> Folie 26
+— 2 POWER9 Host-Prozessoren
+	- Bis zu 24 Kerne
+	- Jeder Kern 4x SMT (Verdecken von Latenzen)
+	- Großer L3 Cache (120 MB embedded DRAM)
+	- 8 FLOPC/core (double precision 64 Bit)
+	- bei 3 GHz, 22 Kernen/Proz.
+		--> Jeweils 528 GFLOPS double prec.
+	- 1056 GFLOPS single prec.
+— 6 NVIDIA V100 GPUs
+	- 2688 FP64 Cores bei ~ 1.4 GHz
+		--> Jeweils ca. 7.8 TFLOPS double prec.
+		- 15.7 TFLOPS single prec.
+		- Aber: 125 TFLOPS Mixed precision (Tensor)
+
+GPGPU im System --> Folie 27
+— 3 NVIDIA V100 GPGPUs pro Host-Prozessor	— Cache kohärent (siehe Vorlesung 9)
+— Verbunden mit Hostprozessor über NVLINK 	— Insgesamt 8 NUMA Knoten (siehe Vorlesung 9) (2 Prozessoren, 6 GPGPUs)
+— Untereinander verbunden über NVLINK		— Expliziter Datentransfer in Software nicht nötig
+
+— NVLINK Protokoll (Siehe Vorlesung 8):
+	- 128 Bit Steuerinformation
+		- 25 Bit CRC für Fehlererkennung
+		- 83 Bit Header: request type, address, flow control bits, and tag identifier
+		- 20 Bit Data Link Header: packet length, application
+		  number tag, and acknowledge identifier	
+	- 128 Bit Adresserweiterung (optional)
+	- 128 Bit Byte enable (optional, abhängig von command in header)
+	- 0-16 x Data payload --> 16/17 = 94.12% Effizienz
+
+Beispiel: Kommunikation über NVLINK --> Folie 29
+
+GPGPU im System --> Folie 30
+— 3 NVIDIA V100 GPGPUs pro Host-Prozessor
+— Jeweils verbunden mit Hostprozessor über 2*NVLINK 2.0
+— NVLINK:
+	- 128 Bit Steuerinformation, 0-16 x Data payload
+	--> 16/17 = 94.1% Effizienz inklusive Steuerungsinfo.
+	  (PCIe: 128/130 encoding --> 98.5% Effizienz ohne Steuerungsinformation)
+— NVLINK 2.0:
+	- 50 GB/s Bandbreite (bi-direktional) pro Link
+	  (PCIe 4.0 hätte nur 31.5 GB/s)
+	- Jede GPGPU hat 6 Links
+	--> Pro Karte 300 GB/s Bandbreite gesamt
+
+Einschub: Nutzung der 6 NVLINKS im NVIDIA DGX-2 System (--> Folie 31)
+— 16 V100 GPUs
+— 2 Intel Xeon Platinum 8168 Host Prozessoren
+— 2 PFLOPS (Mixed Precision, 16 Bit)
+— 10 kW
+— 8 GPUs mit jeweils 6 Links verbinden zu 6 NV Switches mit 18 Links (jeweils 2 Links nicht genutzt)
+— Jeweils 2 NV Switches von jeder Hälfte verbunden via 8 Links
+— 300 GB/s zwischen allen GPU-Paaren
+— Aber: Verbunden mit Prozessor und Netzwerk via PCIe 3
+
+Nutzung der 6 NVLINKS im Power Systems AC922 (--> Folie 32)
+— 3 NVIDIA V100 GPGPUs pro Host-Prozessor
+— Verbunden mit Hostprozessor über NVLINK 2.0
+	- Jeweils 2 Links --> 100 GB/s
+— Weiterhin alle GPUS an einem Prozessor untereinander verbunden mit jeweils 2 Links
+	--> 100 GB/s
+
+Speicher im Power Systems AC922 (Vgl. Vorlesungen 5 & 6) (--> Folie 33)
+— GPU:
+	- Jeweils 16/32 GB HBM2 Speicher
+	- 900 GB/s
+	- Bei 7.5 TFLOPS (double precision) darf ca. 1 Byte pro 8 FLOP geladen werden, sonst gibt es stalls
+— Prozessor:
+	- Jeweils 256 GB DDR4 Speicher
+	- 140 GB/s [IBM1] Realistic
+	  (oder 170 GB/s [IBM2] with DDR4-2666 Theoretic)
+	- Bei 0.53 TFLOPS (double precision) darf ca. 1 Byte pro 4 FLOP geladen werden
+	--> 96/192+512 GB kohärenter Speicher
+
+Netzwerk für ORNL Summit: Fat-Tree (--> Folie 34)
+— Basierend auf Baum Netzwerk
+	- (Siehe Vorlesung 8)
+— Vorteile Baum:
+	- Geringe Distanz zwischen Knoten
+	  (Durchmesser = 2*(ld(N+1))-1 bei vollst. besetzten binären Baum)
+	- Hier maximal 5 Switches in Kommunikation zwischen 2 Knoten für 4608 Knoten
+— Nachteil:
+	- Obere Verbindungen stärker belastet als untere
+— Lösung bei Fat-Tree:
+	- Obere Verbindungen mit höherer Bandbreite (Mehrfachverbindungen)
+— Technologie:
+	- 2*Infiniband --> 2 * 100Gb
+
+Datenspeicher Non-volatile Memory (NVME) auf Summit
+— Genutzt als Burst Buffer
+	- Dateien werden in lokale NVME gelegt, bevor Programm startet
+	- Dateien werden aus lokalem Buffer in Netzwerk-Datei-System geschrieben, nachdem Job vorbei ist
+— Wird typischerweise für I/O genutzt
+— Kann auch als nicht kohärenter Speicher genutzt werden
+— Verbunden via PCIe 4.0
+— Ist kein Netzwerk Dateisystem!
+
+Parallele Dateisysteme (Parallel File Systems, PFSes) (--> Folie 36 - 37)
+HPC I/O stellen file system view der gespeicherten Daten zur Verfügung
+— Datei (i.e., POSIX) Modell
+— Einheitlicher view der Daten im Gesamten
+— Gleicher Zugriff für externe Aktoren (z.B. Login Knoten, Datenknoten)
+
+- File system view beinhaltet Verzeichnisse und Dateien
+- Dateien können in einzelne Regionen aufgeteilt werden, die extents oder blocks genannt werden
+
+— Paralleles Dateisystem organisiert und verwalten I/O Zugriffe
+— Verteilte Systeme, welche Datei-Datenmodell (also Dateien und Verzeichnisse) an Nutzer gibt
+— Mehrere PFS Server verwalten Zugriff zu Speichermedium
+— Anwendungen der PFS Klienten können auf Speicher zugreifen
+— PFS Klienten können parallel zugreifen!
+
+Zusätzliche Schicht: I/O Forwarding Nodes --> Folie 38
+
+HPC-Data Analytics (Phase I, 2018)
+Core Bandwidth and Data Analytics Island --> Folie 39
+
+POWER9 Performance
+
+SPEC (See lecture 10)
+— Only int rate results submitted
+— No floating point
+— No int speed
+— No SPEC OMP2012
+— No SPEC MPI2007
+— No SPECpower_ssj2008
+— Not comparable
+— --> Microbenchmarks
+
+Memory and Caches (See RAI, and RAII lectures 3a, 3b, and 5) --> Folie 42
+— L1 Cache:
+	- Harvard Architecture
+	- 32 KiB, 8-way set associative L1I + 32 KiB, 8-way set associative L1D
+	- Per core
+— L2 Cache:
+	- 512 KiB 8-way set associative
+	- Per core pair (2 cores)
+— L3 Cache:
+	- 110 MiB eDRAM 20-way set associative
+	- 10 MB per core pair
+— Core pairs connected via switch
+	- 250 GB/s to core pairs, 7 TB/s total
+
+Memory Latency --> Folie 43
+ptr: linked list of pointers within a given memory segment (on x axis)
+
+while (ptr != NULL)
+ptr=(*ptr);
+— Depending on size: access to specific memory level
+— Other effects
+	- Influence of page faults
+	- Possible multiple accesses per cache line
+
+Memory Bandwidth (working on GPU memory) --> Folie 44
+double * a,b,c;
+Copy: c[i]=a[i];
+Scale: b[i]=c[i]*scalar;
+Add: c[i]=a[i]+b[i];
+Triad: a[i]=b[i]*scalar+c[i];
+— Depending on size: access to specific memory level
+— OpenMP parallel
+
+Using GPGPU memory for CPU computation  --> Folie 45
+— numactl selects node for memory
+— Copy: optimized routine
+— Others:
+	- Local GPU ~17 GB/s
+	- Remote GPU ~ 11 GB/s
+— Short sequential task could be executed on CPU instead of GPU
+— Leave memory on GPU (no copy)
+
+Copying Data between CPU and GPU and on GPU --> Folie 46
+— K80 (PCIe) vs V100 (NVLINK)
+— In comparison transfer via NVLINK
+	- Has higher maximal performance
+	- Reaches more of its maximal performance (absolute and relative)
+— Copy on GPU does not reach full bandwidth:
+	- Network is not bottleneck anymore
+	- Writing is more expensive than reading
+
+Floating Point Performance under normal condition --> Folie 47
+for (i=0;i<N;i++)
+for (j=0;j<N;j++)
+for (k=0;k<N;k++)
+C[i*N+j]+=A[i*N+k]*B[k*N+j]
+— Order of for loops can be shuffled
+— Compiler: XLC (IBM)
+— Compilerflag: -O3
+— Performance depends on memory access pattern
+
+... Compared to Optimized Routine --> Folie 48
+— Factor 8
+	--> Previously significant optimization potential not used
+— Optimized routine (IBM ESSL library) uses all possible optimization
+— Use such a library in your software
+	- E.g., on Intel x86, Intel MKL available for free, including special Python version with numpy/scipy support
+
+... with Parallelization on 22 cores (1 Processor) --> Folie 49
+— For smaller problem sizes
+	- Synchronization overhead
+	- Sequential computing parts
+— For larger problem sizes:
+	- Speedup of > 20
+
+Floating Point Performance, Influence of SMT --> Folie 50
+— Hardware Multithreading was part of lecture 3b
+— Does not increase maximal performance but utilization
+— Impact on performance:
+	- For smaller problem sizes:
+		worse (thread synchronization overhead)
+	- For larger problem sizes:
+		better (better utilization of FP units)
+
+V100 Performance
+
+cuBLAS on V100 (First shot on PCIe version)
+	V100 GPU performance at 6.4 TFlops sustained (fixed frequency) --> Folie 52
+	Copying data and its impact on performance --> Folie 53
+
+cuBLAS on V100 (Best results on PCIe version)
+		Sustained performance @ 7.0 TF and ~5.7 TF (incl. copy) --> Folie 54
+	Close-up reveals performance pattern (every 64 operands) --> Folie 55
+
+cuBLAS on V100 with varying precision
+Tensor cores: matrix dimension should be multiple of 8 --> Folie 56
+
+PCIe version vs NVLINK version (no TensorCores) --> Folie 57
+
+hgemm on NVLINK version with TensorCores and CUDA 9.2
+Peak: ~90 TFlops, with memory Transfer: ~60 TFlops --> Folie 58
+
+hgemm on NVLINK version with TensorCores and CUDA 10.0
+CUDA 10 required to exceed 100 TFlops. Jump @28000? --> Folie 59
+
+Hgemm performance
+— Theoretical: 125 TFLOPS
+— Seen: < 110 TFLOPS
+— Possible reasons:
+	- Different internal algorithm is used:
+	- A different interface allows programmers to pass a *gemm implementation [Jou18]
+	- Data converged
+	- Data convergence could result in lower processor power consumption, which would leave thermal budget
+	  for higher frequencies. [Jou18] shows this for matrixes filled with zeros.
+
+[Jou18] “Early application experiences on Summit” Wayne Joubert, Oak Ridge Leadership Computing Facility,
+3rd OpenPOWER Academia Discussion Group Workshop, 2018
+
+
+Rechnerarchitektur – Kommende und existierende Herausforderungen
+
+Strukturgröße
+Blick auf die Geschichte --> Folie 63
+
+Intel und AMD Lithographie Prozess --> Folie 64
+
+Blick in die Zukunft --> Folie 65
+International Technology Roadmap for Semiconductors – 2015 Edition – More Moore
+— “Beyond 2020 a transition to gate-all-around (GAA) and potentially to vertical nanowires devices will be needed
+   when there will be no room left for the gate length scale down due to the limits of fin width and contact width.
+   GAA is the ultimate structure in terms of electrostatic control to scale to the shortest possible effective channel length.”
+— “Finally, beyond the roadmap range of this edition (beyond 2030), MOSFET scaling will likely become ineffective and/or very costly.
+
+Beispiel Intel --> Folie 66
+“Overall, Intel [...] originally promised that it would deliver the 10nm process back in 2015. After
+several delays, the company assured that it would deliver 10nm processors to market in 2017. [...]
+On the earnings call today, Intel announced that it had delayed high-volume 10nm production to an
+unspecified time in 2019.“ (Intel's 10nm Is Broken, Delayed Until 2019, Paul Alcorn)
+
+Neues Intel Model PAO: Process – Architecture – Optimization (--> Folie 67)
+— Zusätzlicher Optimierungsschritt für jede Architektur
+— Prozesse werden länger genutzt
+— Architekturen werden länger genutzt
+--> Optimieren für eine Architektur lohnt jetzt
+
+Leistungsaufnahme von Prozessoren
+
+Leistungsaufnahme und Thermal Design Power
+— Thermal Design Power (TDP)
+	- Wieviel Leistung muss die Kühlung abtransportieren können?
+	- Wieviel Leistung muss das System dauerhaft zur Verfügung stellen können?
+— Leistungsaufnahme einer integrierten Schaltung hängt ab von:
+	- Frequenz
+	- Spannung
+	- Fertigungsprozess
+	- Verarbeiteten Daten
+	- Temperatur
+	- ...
+
+Einfluss von Frequenz und Spannung --> Folie 70
+— Frequenz und Spannung miteinander gekoppelt
+	- Hohe Frequenz braucht hohe Spannung
+— Performance einer Komponente steigt linear mit angelegter Frequenz
+— Mehrere Komponenten an Berechnungen beteiligt
+	- Cores
+	- Uncore
+	- DRAM
+	- ...
+	--> Spannung/Frequenz senken, um Energie zu sparen
+
+Trace: 576 Prozesse, die ein MPI paralleles Programm ausführen.
+Dabei wird die Instrumentierung des Programms genutzt um den
+Verlauf aufzuzeichnen und die Frequenz anzupassen.
+
+Einfluss der Fertigung --> Folie 71
+— Verschiedene Prozessoren mit gleichem Label haben unterschiedliche Charakteristik in der Leistungsaufnahme
+— Lösung: Nimm schlechtesten Prozessor und beschränke Frequenz für andere, so dass alle die gleiche Performance haben
+— Messung:
+	- 412 Sockets Intel Sandy Bridge Xeon
+	- Linpack Performance
+	- Linpack Leistungsaufnahme
+	- Histogramm
+	--> Ähnliche Performance (links), variable Leistungsaufnahme (rechts)
+
+Einfluss der Fertigung --> Folie 72
+— Verschiedene Prozessoren mit gleichem Label haben unterschiedliche Charakteristik in der Leistungsaufnahme
+— Lösung: Erlaube unterschiedliche Performancelevel für verschiedene Prozessoren und beschränke die garantierte Performance
+— Messung:
+	- 1144 Sockets Intel Haswell Xeon
+	- Linpack Performance
+	- Linpack Leistungsaufnahme
+	- Histogramm
+	--> Ähnliche Performance (links), variable Leistungsaufnahme (rechts)
+
+Performance vs. Leistungsaufnahme bei verschiedenen Frequenzen
+(Frequenzen werden durch OS gesetzt, können aber ggf. nicht umgesetzt werden) --> Folie 73
+
+
+Auswirkung auf parallele Programme --> Folie 74
+Alternative 1: Nutzen einer hohen Frequenz auf allen Prozessorkernen
+	— Selbst perfekt balancierte Programme können Imbalancen bekommen
+	— Prozessor/Kern mit schlechtester „Qualität“ bestimmt Gesamtperformance
+Alternative 2: Alle Prozessoren auf niedriger Geschwindigkeit nutzen?
+	— Führt zu langer Laufzeit
+	— Gegebenenfalls auch ineffektiv
+Alternative 3: Scheduler entscheidet
+	— Parallele Programme auf ähnlichen Prozessoren
+	— Sequentielle Programme auf den anderen Prozessoren
+
+Einfluss der Daten --> Folie 75
+— Verarbeitete Daten haben Auswirkung auf Leistungsaufnahme und damit auf Performance
+— Beispiel: vxorps zmm0, zmm8, zmm8; // 512-bit register zmm8=zmm8 xor zmm0;
+
+
