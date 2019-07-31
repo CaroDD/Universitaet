@@ -1,0 +1,224 @@
+RA2 Übung 2
+
+2.1. Adressierungsarten
+
+CISC hat mehr Adressarten
+Complex Instruct System computing = CISC
+	unterschiedlich lange Befehle
+	x86
+	Befehl: Präfix, Befehlscode, Registerspezifikation, Immediate
+
+Immediate: 
+	Operand, der im Befehl encodiert ist
+	Operand steht direkt im Befehl (add 5 and 3) 
+
+Operand = Informationsverarbeitung (Befehl auf Operanden ausführen) 
+	x86 hat 2 Address-Format (2 Eingangsregister, Ausgang wird 1 Register überschreiben)
+	2 Address: a = a + b
+	3 Address: a = b + c
+	
+Register in der CPU direkt, Speicher extern (langsamerer Zugriff)
+Register: wenig (Im Vergleich zum Hauptspeicher)
+			schnell (Im Vergleich zum Hauptspeicher)
+			nicht mit anderen Kernen/Threads geteilt
+			Teil der CPU
+
+Effektive Adresse:
+	Wo im Speicher liegt das Datum? 
+	ggf durch Berechnung mit Basisadresse + Offset + Displacement
+
+Displacement: 
+	siehe effektive Adresse
+
+a) Immediate Operand
+Operand steht als Konstante im Befehl
+--> Schleife inkrementieren
+Assembler (AT&T, x86)
+	add $16, %r10 ( $ Operand, addiere 16 auf Register 10)
+
+b) Immediate Adresse
+	Instruktion enthält absolute Adresse des Operands
+	Assembler: add($3241), %r10
+mit Klammern: Adresse	ohne: Operand
+Virtueller Speicher = Umrechnung durch das Betriebssystem
+Programme/Software darf Speicher des anderen Programms nicht sehen
+Speicherumsetzung
+versus	Physikalischer Speicher
+
+c) Register Zugriff
+Registeradresse steht als Kurzadresse im Befehl
+Operand steht im Register
+	add %r11, %r10
+(addiere Register 10 und 11 und speicher in Register 10)
+
+d) Register indirekt
+Adresse für Operand in Register gespeichert
+Operand im Speicher
+Assembler: add (%r11), %r10
+--> CISC Architektur (Kein Load-Store Architektur)
+
+e) Register Indirekt mit Displacement
+Basisadresse im Register
+Register und Displacement im Befehl
+Assembler: add $16(%rsp), %r10
+%rsp Stackpointer-Adresse
+Stack: lokale Variablen aus Funktionen, wird nach Ende der Funktion geleert
+Heap: malloc --> muss selbst freigegeben werden
+Stack und Heap wachsen aufeinder zu
+
+2.2.
+Höhe des Speedups eines Programms von 30 Befehlen mit 5 stufiger Befehls-Pipeline?
+4,4
+Ohne Pipelining: 30*5
+Mit Pipelining: (30*5)/34 = 4.4
+
+S_P = (T1)/(T_P)	T1 = Zeitschritte sequentiell, T_P = Zeitschritte parallel
+S_P = (n * k)/ (n+k-1)		n = Anzahl der Befehle; k = Länge der Pipeline
+
+S_P = (30 *5)/(30+5-1) = 150/34 = 4.41
+
+für n -> oo (unendlich): S_P = k
+
+2.3. Maßeinheiten und Peak-Performance
+a) IPS = Instruction per Second 
+	--> gibt an, wie viel Maschinenbefehle pro Sekunde ausgeführt werden können (alle Befehle, Integer, FP, Load/Store, ...)
+	--> begrenzt durch die Hardware: Anzahl der Decoder, Anzahl der Ports
+	--> Vorteil: Einfach zu bestimmen, keine Unterscheidung in Int/FP/...
+	--> Nachteil: abhängig vom Befehlssatz & Compiler, schlecht vergleichbar, abhängig von Befehlszusammensetzung
+
+IOPS = Integer Operations per Second
+	--> Anzahl der Ganzzahloperationen pro Sekunde
+	--> abhängig von Ports für Integer 
+
+FLOPS = Floating Point Operations per Second
+	--> Anzahl an Gleitkomma-Operationen pro Sekunde
+	--> in Natur- & ingenieurwissenschaftlichen Anwendungen
+	--> !!! Keine Unterscheidung der Komplexität !!!
+
+IOOPS = Input / Output Operations per Second
+	--> wieviele Ein-/Ausgabebefehle pro Sekunde können pro Sekunde ausgeführt werden
+	--> typischerweise für I/O Speicher (SSD, HDD)
+	--> hier auch für Hauptspeicher
+	--> Total IOOPS: egal welche
+		versus
+	    Random IOOPS: Zugriffsadressen werden zufällig gewählt (Worst case)
+		versus
+	    Sequential IOOPS: Zugriff auf aufeinander folgende Speicherplätze (Best case)
+	--> Datengröße pro IOOP muss bekannt sein (IOOP, nicht IOPS!)
+Verkettete Listen: Liste zeigt auf andere Liste
+
+Allzwecksysteme:
+	--> Betrachtung ALLER Parameter notwendig
+	--> FLOPS, IOPS Rechenleistung
+	    IPS Verarbeitungsleistung
+	    IOOPS Leistung des Speichers
+	--> für Vergleich: möglichst identische Testroutinen für verschiedene Systeme
+	
+b) Peak-Performance
+	--> an eine Metrik gebunden (FLOPS, IPS, ...)
+	--> theoretisch maximal erreichbarer Wert dieser Metrik für ein konkretes System
+
+2.4. 
+a) IPS = 4 IPT * 330 * 10^6 Cycle/Second = 1.32 * 10^9 IPS = 1.32 GIPS
+FLOPS = 330 * 10^6 Cycle/Second * 2 Flop/Second = 660 MFLOPS
+IOPS = f * IOPC = 2 IOP/Cycle * 330 * 10^6 Cycle/Second = 660 MIOPS
+
+IOOPS = IF: 4 Befehle laden
+	OF (Operation Fetch): 8 Operanden laden (2+2 units) * 2 Operanden/Unit
+	WB: 4 Ergebnisse schreiben
+	---> 16 IOOPC --> 16 * 330 * 10^6 = 5.28 GIOOPS
+
+ISA (zw. Hard- & Software) Klassen: CISC/RISC & x86
+	CISC: 3 Address Format
+
+Fused Multiply Add (FMA): typischerweise bei FPUs	a = a + (b * c)
+	IPC bleibt gleich, Komplexität steigt, aber immer noch 1 Befehl
+	IOPC bleibt gleich, nur FPU!
+	FLOPC verdoppelt sich -> 1,32 GFLOPS
+	IOOPC: IF bleibt gleich (4) , WB bleibt gleich (4) , OF für FPU 3 Operanden (2 * (2 + 3) = 10 Operanden) ---> Insgesamt 18 IOOPC
+
+b) i) geg: f = 3.4 GHz; 
+	min(IF + ID + submit) = 5 IPC
+	#FPUs = 2; 	
+	Breite des Vektorregisters = 256 bit --> entspricht 4 double precision Fließkommazahlen
+	SIMD = addiere alle Zahlen miteinander
+	#Kerne = 4
+
+Floating Point Peak Performance:
+	FPPP = f * FLOPC * #Kerne = 3.4GHz * 8 Op/cycle * 4 = 3.4 * 10^9 Cycle/second * 8 op/cycle * 4 = 108.8 GFLOPS 
+	FLOPC = #FPU * Op/FPU = 2 * 4 = 8 Op/cycle
+
+ii) geg: FPPP = 108.8 GFLOPS
+	3 Operanden / FLOP
+	8 Bytes / Operand
+--> 108.8 GFLOP * 3 Operanden/FLOP * 8 Byte/Operand = 2.6 TB/s
+
+2.5. 
+i) Superskalarität: Pro Takt wird von einem Kern mehr als ein Befehl fertiggestellt
+ii) mehrere Funktionseinheiten, jede Funktionseinheit arbeitet im Pipelineprinzip und stellt im eingelaufenen Zustand 1 Befehl / Takt fertig
+iii) Befehle werden nicht in Programmreihenfolge ausgeführt
+	Zuordnung der Befehle zu EUs nicht in Programmreihenfolge
+iv) Befehle werden in Programmreihenfolge abgeschlossen
+v) 3-Adress Format: 2 Quelloperanden, 1 Quell-/Zieloperand
+vi) Instruction issue = Zuordnung der Befehle zu EUs
+
+a)
+i) Puffer, der Ergebnisse der out-of-order Ausführung speichert
+stellt in-order completion sicher
+Wenn Befehl vorzeitig fertig ist, wird das Ergebnis im ROB (Recorder Buffer) gespeichert und erst abgeschlossen (commit), wenn vorherige Befehle fertig sind
+ii) Es können nur so viele Befehle out-of-order ausgeführt werden, wie ROB Einträge hat 
+
+geg.: f = 2.8 GHz = 2.8 * 10^9 cyc/s
+	l = 70 * 10-9 s
+	3 fach superskalar --> 3 instr./cycle
+entries(ROB) = f * l * #instr/cycle = 70 * 2.8 * 3 = 588 instructions
+
+b) 588 / 12 = 49 Sprünge
+(0.96)^49 = 13.5% --> (Wskt)^#Sprünge = Wskt, dass "letzter" Befehl im ROB ausgeführt wird --> so viel out-of-order execution ist Unsinn
+
+c) Lösungen
+Caches --> niedrige Latenz
+Hardware Multithreading
+
+d) #Takte Latenz verdecken:
+geg: 128 instructions entries(ROB)
+	4 instructions/cycle
+128/4 = 32 cycles Takte werden verdeckt
+
+ii) reicht für Verdecken von L1 & L2 Zugriffen, ab L3 gibt es Wartezeiten, weil ROB voll ist
+
+2.6. Features bewerten
+			transparent für Software		Beschleunigung 		weitere große  			HW-Aufwand
+								einzelner Thread	Leistungssteigerung möglich
+---------------------------------------------------------------------------------------------------------------------------------------------
+Pipelining		Ja, rein hardwaretechnisch		Ja			Nein				gering		
+Superskalarität		Ja* (Compiler kann das beeinflussen)	Ja			Nein				vertretbar
+OoO-Exec		Ja¹ (Hardware checkt Parallelität)	Ja			Nein				hoch
+Frequenz		Ja					Ja			Nein				niedrig (außer iVR, Turbo, ...)				
+SIMD			Nein					Ja			Ja*?				vertretbar
+Multicore (MIMD)	Nein					Nein			Ja				hoch
+
+¹: erhöht nur Auslastung, nicht Peak Performance
+Superskalarität: Mehrere Befehle pro Takt möglich
+EXU weniger als 4% der Chipfläche
+Wichtig für Pipelining/Superskalarität: Parallelität/unabhängige Befehle
+
+SIMD: Mehrere Daten werden parallel verarbeitet
+xorps xmm1, xmm2; xmm2 = xmm2/\xmm1;	(128 Bit)
+vxorps ymm1, ymm2;			(256 Bit)
+vxorps zmm1, zmm2;			(512 Bit)
+entweder Compiler oder Programmierer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
