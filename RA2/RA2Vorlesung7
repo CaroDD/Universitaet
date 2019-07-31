@@ -433,60 +433,153 @@ Access?		Read+Write, thread-private
 Problems?	Affects occupancy and if a thread wants too many registers,
 		they become spilled out to local memory (slow)
 
+Memory Hierarchy – Shared Memory
+Shared Memory <------->	Thread 1 Thread 2 Thread 3 Thread 4	Thread Block
+			Thread 5 Thread 6 Thread 7 Thread 8
+					
+Maximum Shared Memory per Thread Block: 48 KB
+Maximum Shared Memory per Multiprocessor: {48,64,96,112} KB
 
+What? 		Programmable L1 cache, on-chip memory, shared by threads
+How?		__shared__ float commondata[threadsPerBlock];
+		__shared__ float commondata*;
+Who?		All threads within a thread block
+Scope?		Lifetime of the thread block
+Access?		Read+Write
+Problems?	Affects occupancy, bank-conflict impacts performance,
+		some GPUs have bank width configurations (4byte, 8byte)
+		- Shared memory is divided into banks to achieve high bandwidth
+		- It services as many simultaneous accesses as it has banks
+		- Shared memory helps to reduce multiple loads of device data
+		- ... conversion of data layout
+		- ... communication within thread block
 
+Memory Hierarchy – Global Memory
+	<---------->	Thread 1 Thread 2
+Global			Thread 5 Thread 6
+Memory			Thread 9 Thread 10
+	<---------->	Thread 13 Thread 14
+Size typically ranges from 4 up to 32 GB
 
+What?		memory to communicate data between multiprocessors and devices
+How?		__global__ float commondata[maxMem];
+Who?		All threads on the device, host, other GPUs (UVA)
+Scope?		Lifetime of application
+Access?		R+W
+Problems?	Bad alignment of data can slow down even further
 
+Memory Hierarchy – Global Memory Alignment --> Folie 68
 
+Memory Hierarchy – Pro‘s and Con‘s of Alignment
+Pro						Contra
+- allows optimal use of memory bandwidths	- might be cumbersome to arrange
+						  memory layout and requests
+- allows optimal use of L1/L2 cache lines	- potential more slow cudaMemcopy* operations
+- minimal collisions on memory access
 
+Global Memory Performance – Alignment --> Folie 70
+— Aligned Data access with s=0
+— Unaligned access, with offset (s=1 and s=2)
 
+--> Folie 71
+Best Performance:
+only with aligned Memory (e.g. Offset with 0 and 32 Byte)
 
+Global Memory Performance – [Non-]Coalesced Access
+— Each thread accesses a data in memory
+— s ... distance between accessed memory addresses from different threads
+— S=1 (Stride Size) --> Threads access data next to each other
+— S=4 (Stride Size) --> Threads access data four elements further
+--> Folie 72/73
 
+Local Memory: Hidden Global Memory
+Local Memory <---------> Thread
+– Register-spills
+– non-uniform, dynamic arrays
+Size of Local Memory per thread: 512kB
 
+What?		Thread-private Global Memory, usually cached by L1 and L2
+How?		__local__ int counter; int counter[n];
+Who?		Thread-private
+Scope?		Lifetime of thread
+Access?		R+W
+Problems?	Arrays/Structures are probably stored inefficiently (like AoS)
+		nvprof shows if local memory is used, or use nvcc flags for kernel stats
+		nvcc --resource-usage or nvcc -warn-lmem-usage
 
+Constant Memory: Read-Only Device Memory
+	  ----------->	Thread 1 Thread 2
+Constant		Thread 5 Thread 6
+Memory			Thread 9 Thread 10
+	  ----------->	Thread 13 Thread 14
 
+Constant Memory will not change during CUDA Kernel execution
+Size of Constant Memory: 64kB
 
+What?		Off-chip memory, own on-chip cache (8-10kB), broadcast (saves loads)
+How?		__constant__ float constants_d [N];
+		cudaMemcpyToSymbol(constants_d, constants_h, size);
+Who?		Device, host
+Scope?		Lifetime of application
+Access?		R (Host can write)
+Problems?	transactions become serialized if warp requests different words
 
+Texture Memory: For The Nostalgic?
+	 	<------------>	Thread 1 Thread 2
+Texture / 			Thread 5 Thread 6
+Surface 			Thread 9 Thread 10
+Memory 		<------------>	Thread 13 Thread 14
 
+Cached, 2D-optimized, with hardware interpolation
+Size ranges from 4 up to 16 GB
 
+What?		Uses global memory and L2, own on-chip cache(12-48KB),
+		optimized for accesses with 2D spatial locality,
+		automatic data & index interpolation, boundary handling
+Who?		Device, host
+Scope?		Lifetime of application
+Access?		R (Host can write) (device can write, if surfaces are used)
 
+Summary
+— GPUs are fast for massively (data) parallel workloads
+— GPUs have a throughput-oriented many-core architecture with thousands of cores bundled into
+	douzens of SIMD multiprocessors
+— Latencies are higher on GPUs than on the CPUs. They must be covered by thread-level and
+	instruction-level parallelism
+— Most often, GPUs have their own RAM, which can be accessed by the host
 
+Accelerators at ZIH
+— TU Dresden first German institution to be CUDA Center of Excellence
+— Contemporary NVIDIA GPGPU hardware for evaluation
+— Collaborations with Helmholtz-Zentrum Dresden-Rossendorf (HZDR)
+— Development of tools for performance analysis
+— https://tu-dresden.de/zih/forschung/projekte/gcoe
+— Lectures, classes
+	Hochparallele Programmierung von GPUs, each WS
+— Theses
+— ...
 
+GPU Hardware at ZIH (--> Folie 80 - 81)
+Taurus CPUs: 43 000 CPU Cores with 1.5 PFLOPs
+Taurus GPU Islands:
+Island 1: 44 nodes, each with
+	- 2x NVIDIA Tesla K20x (Kepler)
+	- 2x Intel E5-2450 CPUs (Sandy Bridge, 8 cores)
+Island 2: 64 nodes, each with
+	- 2x NVIDIA Tesla K80 dual-GPU (Kepler)
+	- 2x Intel E5-2680v3 CPUs (Haswell, 12 cores)
+	- Rank 9 in Green500 (June 2015)
 
+Total of 344 GPUs, utilization >80%
+Single-Precision Performance: 1.464 PFLOPs
+Double-Precision Performance: 0.487 PFLOPs
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+IBM POWER9 + NVIDIA Volta (AC922): 22 nodes
+	2 x POWER9 CPUs per node,
+	6 x NVIDIA Tesla V100 (32GG HBM2) per node,
+	NVLINK interconnect (CPU-GPU and GPU-GPU)
+GCoE test system:
+	NVIDIA Tesla V100 (16GB HBM2)
+	NVIDIA Tesla P100 (16GB HBM2)
+	NVIDIA Tesla K40c (12GB GDDR5)
+	2x Intel E5-2650v4 CPU (Broadwell-EP, 12 cores)
