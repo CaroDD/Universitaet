@@ -1,0 +1,435 @@
+RA2 
+Architekturkonzepte der Parallelverarbeitung - Multiprozessorsysteme
+
+Gliederung
+— Überblick
+— Speichergekoppelte Multiprozessoren
+— Nachrichtengekoppelte Multiprozessoren
+
+Überblick
+
+Definition Multiprozessorsystem (MPS)
+— Ein MPS ist ein Rechnersystem, das als wesentliches Merkmal über mehr als einen Prozessor
+   verfügt. Diese Prozessoren – von durchaus unterschiedlicher Komplexität –
+	- können unabhängig voneinander unterschiedliche Programme bearbeiten,
+	- miteinander kommunizieren und
+	- teilweise kooperieren
+um verschiedene Aufgaben gemeinsam zu bearbeiten.
+
+— Schließt asynchrone Parallelverarbeitung ein
+— Komponenten des Gesamtsystems (Prozessoren, Speicher, E/A-Einheiten) sind über
+  unterschiedlich ausgeprägte Verbindungsnetzwerke miteinander gekoppelt.
+
+Unterscheidungen MPS
+— Homogene- oder heterogene Systeme (gleiche oder ungleiche Prozessoren)
+— Symmetrische- oder asymmetrische Systeme (Aufgaben- oder Funktionsteilung)
+— Hierarchische oder gleichberechtigte Systeme
+— Anwendungsorientierte oder Allzwecksysteme (Einzweckrechner mit Problemstruktur)
+— Eng oder lose gekoppelte Systeme (Datenaustausch über physisch und/oder logisch
+  gemeinsame Hauptspeicherbereiche oder Nachrichtenaustausch zwischen autonomen Rechnern)
+
+Zentrale/Nicht-Zentrale Systemaufsicht
+— Unterscheidung zwischen eng und lose gekoppelten Multiprozessorsystemen läuft aus der Sicht
+  der Betriebssysteme auf folgende Unterscheidung hinaus:
+	- Zentrale und nicht-zentralisierte Systemaufsicht
+	- Können innerhalb eines Mehrrechnersystems zu jedem Zeitpunkt der globale Systemzustand erkannt
+     	   und auf der Basis dieser Kenntnis den einzelnen Verarbeitungseinheiten Anweisungen erteilt werden,
+	   dann spricht man von einem Multiprozessorsystem mit zentraler Systemaufsicht
+	- Ist dies nicht gewährleistet, handelt es sich um ein Multiprozessorsystem mit nicht-zentralisierter Systemaufsicht
+	- Damit stellt sich die Frage nach der Abgrenzung zu Rechnernetzen
+— Je nach räumlicher Entfernung unterscheidet man:
+	- Verteilte Polyprozessorsysteme (MPS mit verteilter Systemaufsicht)
+	- Lokale Netze (heterogene, verteilte Systeme, die auf Gebiet begrenzt sind)
+	- Rechner-Verbundsysteme (weiträumig verteilte Netze)
+	- Begriffe: Grid, Cloud
+
+Wiederholung: Flynn‘sche Klassifikation
+--> Folie 7 - 9
+- SISD (siehe RA1)
+- SIMD
+	- Vektorrechner
+	- Feldrechner 
+- MISD (leere Klasse)
+- MIMD
+	- Speichergekoppelte Multiprozessoren
+		- UMA
+			- Bus
+			- Switch
+		- COMA
+		- NUMA
+			- CC-NUMA
+			- NC-NUMA
+	- Nachrichtengekoppelte Multiprozessoren
+		- MPP
+		- Cluster
+
+Speichergekoppelte Multiprozessoren
+
+Überblick
+— Bei speichergekoppelten Multiprozessoren arbeiten alle Prozessoren in einem einheitlichen Adressraum
+— Je nach physikalischer Speicherorganisation unterscheidet man:
+	- Symmetrische Multiprozessoren (SMP, symmetric multiprocessor), bei denen gleichartige Prozessoren
+	   über einen Bus, Kreuzschienenschalter oder ein mehrstufiges Verbindungsnetzwerk verbunden sind
+	- Distributed-shared-memory-Systeme (DSM), bei denen zwar ein einheitlicher Adressraum existiert, aber
+	   die Speicher physikalisch auf einzelne Verarbeitungsknoten verteilt sind
+— Kommunikation und Synchronisation erfolgen über gemeinsame Variablen
+
+Kommunikation und Synchronisation über gemeinsame Variablen
+— Beispiel: Leser-/Schreiber-Kommunikation [Ung97]
+	- Sendender Prozessor schreibt in gemeinsamen Speicher
+	- Empfangender Prozessor liest Daten
+	--> Synchronisation notwendig: empfangender Prozessor muss warten, bis sendender Prozessor die Daten
+	    im gemeinsamen Speicher bereitgestellt hat
+	- Auf gemeinsame Daten darf nicht gleichzeitig von verschiedenen Prozessoren lesend und schreibend
+	  zugegriffen werden (kritischer Bereich)
+	- Programmtechnisch erfolgt die Synchronisation durch Schloss- (mutex), Semaphor- oder
+	  Bedingungsvariablen (condition) und darauf definierte atomare Operationen.
+	--> Hardware-Mechanismen, wie Test-and-Set- oder Swap-Befehle zur Implementierung der Synchronisationsoperationen
+
+Programmieraspekt
+— Speichergekoppelte Multiprozessoren gelten als einfacher programmierbar gegenüber
+   nachrichtengekoppelten Multiprozessoren
+— Nutzbare Parallelität reicht von der Programmebene bis zur Blockebene
+— Autoparallelisierende Compiler nutzen insbesondere die Parallelisierung auf Schleifenebene
+   (einzelne Iterationen nebenläufig abarbeitbar)
+
+Speichersemantik
+Speicherkonsistenzmodell 	Kurzcharakteristik
+Strikte Konsistenz 		Jede Leseaktion an einer Stelle x gibt immer den Wert
+				zurück, der zuletzt in x geschrieben wurde. Nur mit
+				einem Speichermodul implementierbar.
+
+Sequentielle Konsistenz 	Entspricht einer überlappenden Ausführung
+				sequentieller Operationsfolgen anstelle einer
+				vollständig parallelen Ausführung. Alle Speicherzugriffe
+				müssen atomar sein. Eine einzige, globale, für alle CPUs
+				sichtbare Reihenfolge aller Schreiboperationen wird
+				garantiert.
+
+Prozessorkonsistenz 		Gegenüber der sequentiellen Konsistenz muss es nicht
+				mehr für alle Prozessoren eine einheitliche Reihenfolge
+				der Speicheroperationen geben. Schreiboperationen
+				von einer CPU werden von allen anderen CPUs in der
+				Reihenfolge gesehen, in der sie ausgegeben werden.
+				Schreiboperationen auf jedes Speicherwort sind für alle
+				CPUs in der Reihenfolge sichtbar, in der sie
+				beschrieben werden.
+
+Schwache Konsistenz 		Für schwache Konsistenz müssen drei Bedingungen erfüllt sein:
+				1. Bevor ein Schreib- oder Lesezugriff bezüglich irgendeines anderen
+				   Prozessors ausgeführt werden darf, müssen alle vorhergehenden
+				   Synchronisationspunkte erreicht worden sein.
+				2. Bevor eine Synchronisation bezüglich irgendeines anderen
+				   Prozessors ausgeführt werden darf, müssen alle vorhergehenden
+				   Schreib- und Lesezugriffe ausgeführt worden sein.
+				3. Die Synchronisationspunkte müssen sequentiell konsistent sein.
+
+Freigabekonsistenz		Verbesserung gegenüber der schwachen Konsistenz, indem die
+				Durchführung aller Schreiboperationen eines Prozesses, der einen
+				kritischen Bereich verlässt, nicht sofort erfolgen muss. Sichergestellt
+				werden muss, dass diese Schreiboperationen beendet sind, bevor ein
+				Prozess erneut in diesen kritischen Bereich eintritt.
+
+Sequentielle Konsistenz --> Folie 16
+— (a) Zwei CPUs schreiben und zwei CPUs lesen ein gemeinsames Speicherwort
+— (b) bis (d) drei Möglichkeiten, die beiden Schreib- und die vier Leseoperationen zeitlich verschränken zu lassen
+
+Schwache Konsistenz --> Folie 17
+Ein auf der schwachen Konsistenz basierter Speicher benutzt Synchronisationsoperationen, um die
+Zeit in sequentielle Epochen aufzuteilen
+
+MESI-Protokoll zur Erhaltung der Cache-Kohärenz
+— Das MESI-Protokoll ordnet jeder Cache-Zeile einen der folgenden vier Zustände zu:
+	- Exclusive Modified (M):
+		Die Zeile befindet sich exklusiv in diesem Cache und wurde modifiziert
+	- Exclusive Unmodified (E):
+		Die Zeile befindet sich exklusiv in diesem Cache und wurde nicht modifiziert
+	- Shared Unmodified (S):
+		Die Zeile befindet sich noch in einem anderen Cache und wurde nicht modifiziert
+	- Invalid (I):
+		Die Zeile ist ungültig
+
+Beispiel MESI --> Folie 19 - 23
+
+MESI-Protokoll --> Folie 24
+
+UMA-Multiprozessoren
+— Alle Prozessoren greifen gleichermaßen auf einen gemeinsamen Speicher zu
+— Die Zugriffszeit aller Prozessoren auf den gemeinsamen Speicher ist gleich: Uniform Memory Access
+— Jeder Prozessor kann zusätzlich einen lokalen Cache besitzen (trotz unterschiedlicher
+	Zugriffszeiten zwischen den lokalen Caches und dem gemeinsamen Speicher wird die
+	Bezeichnung UMA verwendet!)
+— Zur Gewährleistung einer einheitlichen Zugriffszeit können unterschiedliche
+	Verbindungsnetzwerke eingesetzt werden (Bus, Kreuzschienenschalter, mehrstufige Verbindungsnetzwerke)
+— UMA-Systeme sind Cache-kohärent organisiert und nutzen das Snooping-Bus-Verfahren
+
+UMA-busbasierte SMP-Architekturen --> Folie 27
+
+Busbasierte Mehrprozessorsysteme --> Folie 28
+
+UMA-Multiprozessorsysteme mit Kreuzschienenschaltern --> Folie 29
+
+Multiprozessorsystem mit Kreuzschienen-Schaltmatrix --> Folie 30
+
+Symmetrisches Multiprozessorsystem Sun E10000 --> Folie 31
+
+Sun Enterprise 10000
+— Bis zu 64 UltraSPARC CPUs mit 333 MHz Taktfrequenz ... in einem Schrank
+— Gigaplane-XB ist eine Schaltkarte mit je 8 Slots pro Seite --> 16 Platinen steckbar
+— Cache-Zeile: 64 Byte breit; Crossbar ist 16 Byte breit --> zum Bewegen einer Cache-Line werden 4 Zyklen benötigt
+— Zugriff auf Speicher außerhalb der Platine nicht länger als auf der Platine
+— Crossbar arbeitet Punkt-zu-Punkt --> kann nicht genutzt werden, um Cache-Konsistenz zu wahren
+
+Cache Kohärenz bei Sun Enterprise 10000
+— 4 Snoopingbusse; jeder Bus für 1⁄4 des physikalischen Adressraumes
+— Betreffender Snoopingbus wird über zwei Adressbits angewählt
+— Bei Lese-Fehlschlag wird über den entsprechenden Snoopingbus erkundet, ob sich die
+  benötigte Cache-Line in einem entfernten Cache befindet
+— Alle 16 Karten überwachen alle 4 Busse gleichzeitig
+— Buszyklus: 12 ns (83,3 MHz)
+— Jeder Adressbus kann in jedem zweiten Zyklus „snoopen“ --> 167 Millionen Snooping-Aktionen/s
+— Jede Snooping-Operation erfordert ev. die Übertragung einer 64 Byte Cache-Line 
+	--> Transfer auf dem Crossbar von max.: 9,93 GByte/s
+— Eine Cache-Line kann in 48 ns (4 Buszyklen) transportiert werden --> Bandbreite: 1,24 GByte/s
+— Das mal 16: 19,87 GByte/s, reicht aus, um mit der Snooping-Rate schrittzuhalten (durch
+   Konkurrenz auf Crossbar ca. 60% der Peakperformance)
+
+Mehrstufige Verbindungsnetzwerken
+— Alternativ: mehrstufige Verbindungsnetzwerke (insb. mit guten Aufwand-Leistungs-Verhältnis)
+	- Möglichst wenige Schaltzellen
+	- Möglichst gutes Blockierungsverhalten
+	- Geringe Latenz
+	- Hohe Übertragungsrate
+— (z.B. Omega-Netzwerke)
+
+Single Socket Systeme sind (meist) UMA (--> Folie 35):
+— Ein Speichercontroller
+— Mehrere Kerne
+— Kommunikation über gemeinsamen L3-Cache
+— Snoop-Protocol
+— Jeder Kern nimmt teil
+— Je mehr Kerne/Prozessoren, desto mehr Nachrichten
+	- Skaliert nicht
+	- Optimierungspotential
+	- Nachrichten filtern!
+
+NUMA-Multiprozessorsysteme
+— Zugriffszeiten auf Speicherzellen des gemeinsamen Speichers variieren je nach Ort, an dem sich
+   die Speicherzelle befindet
+— Speichermodule des gemeinsamen Speichers physikalisch auf Verarbeitungsknoten aufgeteilt
+— Zugriff auf “lokales” Speichermodul kürzere Zugriffszeit als auf “entferntes” Speichermodul
+— Häufig Hierarchie von Zugriffszeiten durch Struktur des Verbindungsnetzwerks
+— Neben Art der Verbindungsstruktur kann auch Cache-Speicher-Organisation zur Einteilung der
+   NUMA-Architekturen dienen:
+	- Alle UMA- und NUMA-Systeme besitzen heute prozessorlokale Cache-Speicher
+	- UMA-Systeme sind cache-kohärent organisiert und nutzen das Snooping-Bus-Verfahren
+	  --> Snooping skaliert nicht mit hoher Anzahl von Prozessoren!
+
+Beispiel --> Folie 38
+
+Verzeichnisbasierte Cache-Kohärenz-Protokolle
+— Cache-coherent non-uniform-memory-access (CC-NUMA)
+	- Cache-Speicher über gesamtes NUMA-System cache-kohärent organisiert
+	- Bei Zugriff auf entferntes Speicherwort, der einen Cache-Fehlzugriff auslöst, wird ein gesamter Cache-
+	  Block aus entfernten Speicher in lokalen Cache-Speicher übertragen
+	- Mittels verzeichnisbasierten Cache-Kohärenzprotokolls (directory-based coherence protocol) wird Cache- Kohärenz gesichert
+— Es wird eine Datenbank darüber geführt,
+	- wo sich die einzelnen Cache-Zeilen befinden und
+	- in welchem Zustand sie sind
+— Bei jedem Load-/Store-Befehl (Instruktionen, die den Speicher referenzieren), wird die Datenbank angefragt
+
+Beispiel AMD HT Assist: (--> Folie 40)
+— Cache-Verzeichnis in speziellem Speicherbereich bei jedem Speichercontroller
+— Speichercontroller weiß, welcher Prozessor Cachezeilen hat
+— Prozessoren wissen welcher Speichercontroller welche Adressen verwaltet
+— Beispiel Anfrage (siehe Animation):
+	1. Anfrage bei Speichercontroller P4
+	2. Bei P2 im Cache --> Weiterleiten der Anfrage
+	3. Antwort von P2 an P1
+	--> Bedeutend weniger Kommunikation als Snooping
+
+Non-cache-coherent non-uniform-memory-access-Modell
+— Non-cache-coherent non-uniform-memory-access-Modell (NC-NUMA), auch als NCC-NUMA abgekürzt
+	- Für den Fall, das eine Cache-Kohärenz über das gesamte System hinweg nicht gewährleistet ist
+	- In einem NCC-NUMA-System wird unterschieden zwischen:
+		- Lokalen Speicherzugriffen, welche über die Caches gehen
+		- Entfernten Speicherzugriffen, die an den Caches vorbeigeleitet werden
+	- Die Granularität des entfernten Speicherzugriffes kann sein:
+		- Einzelnes Speicherwort
+		- Größe eines Cache-Blockes (16 oder 32 Byte)
+		- Größe von ganzen Speicherblöcken
+	- Für die Kohärenz der parallelen Programme muss die Software durch Schlossvariablen- oder Barrieren-Synchronisation sorgen
+
+NC-NUMA: CRAY T3E (--> Folie 42)
+
+CRAY T3E
+— Zugriff auf entfernte Speicher erfolgt nicht über normale Load-/Store-Operationen
+— T3E teilweise auch als nachrichtengekoppeltes Multiprozessorsystem eingeordnet
+	- Je nach Typ 600, 900 oder 1200 MFLOPS pro CPU
+	- Bis zu 2048 CPUs ausbaubar
+	- Superskalarer RISC-Prozessor DEC Alpha 21164 mit 300/450/600 MHz
+	- Physischer Adressraum, 1 TByte (physische Adressen: 40 Bit; virtuelle Adressen: 43 Bit)
+	- Caches halten nur Befehle und Daten aus den lokalen Speichern
+	- Speicherkohärenz ist gewährleistet, weil die von entfernten Speichern geholten Daten nicht im Cache abgelegt werden
+	- Weit entwickeltes MPP-System, weil das Betriebssystem davon Kenntnis hat, dass es nicht einfach einen
+	   entfernten Speicher wie einen lokalen lesen und schreiben kann!
+
+Cache-only-memory-architecture (COMA)
+— Spezialfall des CC-NUMA-Modells
+— Physikalisch verteilte Speichermodule sind ausschließlich Cache-Speicher
+— Der Speicher des gesamten Rechners besteht ausschließlich aus Cache-Speichern, die einen gemeinsamen Adressraum besitzen
+— Der Zugriff auf den Cache-Block eines entfernten Cache-Speichers wird durch verteilte Cache-Verzeichnisse unterstützt
+— Während beim NUMA-Modell die Start-Aufteilung der Daten auf die physikalisch verteilten Speichermodule
+	von großer Bedeutung für die Laufzeit eines parallelen Programms ist, da die Daten fest lokalisiert bleiben,
+	wandern sie beim COMA-Modell in den Cache-Speicher des Prozessors, der sie benötigt
+— Dieses Prinzip, das der Speicher die benötigten Speicherblöcke anzieht, nennt man Attraction Memory
+— Elegante Informatiker-Lösung
+— Beispiele: KSR 1, KSR 2
+
+Finden von Cache-Zeilen in COMA-Multiprozessoren
+— Zusätzliche Hardware installieren, um den Bezeichner (Tag) jeder einzelnen Cache-Zeile zu verwalten.
+   MMU könnte dann den Bezeichner (Tag) der benötigten Zeile mit denen vergleichen, die sich für alle
+   Cache-Zeilen im Speicher befinden und auf einen Treffer hoffen
+— Ganze Seiten abbilden, wobei aber nicht alle Cache-Zeilen vorhanden sein müssen
+— Bitmap pro Seite für die Hardware anlegen; ein Bit pro Cache-Zeile, um die Anwesenheit der Cache-Zeile anzuzeigen
+— Zeile muss auf richtiger Position der Seite sein (Design: Simple COMA). Ist die Zeile nicht vorhanden,
+   führt jeder Versuch, sie zu nutzen, zu einem Trap, damit die Software die Zeile suchen und
+   herbeiholen kann
+— Jede Seite erhält eine Heimatmaschine in Bezug auf Ihren Verzeichniseintrag, nicht aber in Bezug auf
+   den Ort, wo sich ihre Daten gerade befinden
+— Alternative: Speicher als Baum organisieren; Suche der Zeile im Baum
+
+COMA-Multiprozessoren
+— Was passiert, wenn eine Cache-Zeile aus dem Speicher gelöscht wird und dies die letzte Kopie ist?
+— Problem:
+	- Wie bei CC-NUMA kann sich eine Cache-Zeile in mehreren Knoten gleichzeitig befinden
+	- Im Fall eines Cache-Fehlschlags muss eine Zeile geholt werden, was normalerweise bedeutet, 
+		dass eine Cache-Zeile entfernt werden muss
+— Lösung:
+	- Zum Verzeichnis zurückgehen und prüfen, ob es noch weitere Kopien der Zeile gibt. Ist es die letzte Kopie,
+	  	muss sie an einen anderen Ort gebracht werden.
+	- Andere Lösung: Eine Kopie der Cache-Zeile wird als Master-Kopie gekennzeichnet. Nur das muss getestet
+		werden, nicht das Verzeichnis.
+— Bisher wurden folgende COMA-Maschinen realisiert:
+	- Data Diffusion Machine (Hagersten u. a. 1992): experimentelles System
+	- Kendall Square Research KSR-1 bzw. KSR-2 (1992): kommerzielles System; Vertrieb und Betreuung in Europa über SNI
+
+Systemarchitektur der KSR-1 (Kendall Square Research) --> Folie 47
+
+Ring 0 der KSR-2 mit 32 Prozessoren --> Folie 48
+
+
+Nachrichtengekoppelte Multiprozessorsysteme
+
+MIMD-Rechner mit verteiltem Speicher --> Folie 51
+
+Top500 Architecture Share over Time (Systems) --> Folie 52
+
+Top500 Architecture Share over Time (Performance Share) --> Folie 53
+
+Massiv-parallele Systeme (MPP-Systeme)
+— Systeme mit einer großen Anzahl voneinander unabhängiger Funktionseinheiten
+— Knoten können nicht losgelöst vom Gesamtsystem genutzt werden
+— Bedeutung des Terms „massiv“ ist abhängig vom technischen Fortschritt und kann nicht exakt definiert werden
+— Einordnung erfolgt daher i.d.R. anhand der verwendeten Komponenten
+	--> In MPP-Systemen kommt proprietäre Hard- und Software zum Einsatz
+
+Beispiel – Sunway Taihu Light, #3 der Top500-Liste Nov2018 (--> Folie 55)
+Based on Report on the Sunway TaihuLight System,
+J. Dongarra, 2016University of Tennessee, Tech
+Report UT-EECS-16-742
+— Erstes Chinesisches System als #1 in Top500
+— Many Core Prozessoren
+	- RISC Kerne
+	- 256 bit SIMD Befehle
+— Spezielles Netzwerk:
+	- PCIe 3.0
+	- MPI:
+		- 12 GB/s Bandbreite
+		- 1μs Latenz
+
+Prozessoren (--> Folie 56)
+— Basierend auf SW26010 von Shanghai High Performance IC Design Center
+— 4 Core Groups (CGs)
+	- Verbunden via Network on Chip (NoC)
+	- 1 Management Processing Element (MPE)
+	- 64 Computing Processing Elements (CPEs) als 8x8 Grid
+	- Speicher Controller à NUMA
+— Mit anderen via System Interface (SI) verbunden
+
+Core Group (--> Folie 57)
+— 1 Management Processing Element MPE
+	- Unterstützt User- und Systemmode
+		--> Betriebssystem + Kommunikation (+ Anwendungen)
+	- 64-Bit RISC
+	- 256 bit SIMD Befehle
+	- 32 KiB + 32 KiB L1 Cache
+	- 256 KiB L2-Cache
+— 8x8 Compute Processing Elements CPEs
+	- Unterstützt nur Usermode --> Anwendungen
+	- 64 Bit RISC
+	- 256 bit SIMD Befehle
+	- 32 KiB L1-Instruction Cache
+	- 64 KiB Scratchpad Memory (nicht kohärent!)
+
+Performance von einem Prozessor (--> Folie 58)
+— Per CPE:
+	- 8 FLOPC (double precision, 64 bit)
+	- 1.45 GHz
+	- 11.6 GFLOPS/CPE
+— MPE
+	- 16 FLOPC
+	- 1.45 GHz
+	- 23.2 GFLOPS/MPE
+— Total: 3,06 GFLOPS pro Prozessor (4 CPs)
+— Aber:
+	- DDR3 Speicher --> nur 136.5 GB/s Bandbreite
+	- Keine Caches
+
+Mehrere Knoten (--> Folie 59)
+— Verbunden über System Interface (SI)
+	- PCIe
+	- 16 GB/s bi-directional
+	- 1 μs Latenz
+— Hierarchischer Aufbau
+— Jeder Node hat einen Prozessor
+	1. Zwei Nodes auf einer Card
+	2. Vier Cards sind ein Board
+	3. 32 Boards sind ein Supernode
+	4. 4 Supernodes sind ein Cabinet
+
+Netzwerk
+— Proprietäres Sunway Network
+— Baum
+	- Niedrige Entfernung zwischen einzelnen Knoten
+— Drei Ebenen:
+	- Verbindet alle Cabinets
+	- Zentrales Netzwerk: Verbindet alle Super Nodes in einem Cabinet
+	- super node network: Verbindet alle Nodes in einem Supernode
+— Zusätzliches Netzwerk für andere Ressourcen wie I/O
+
+Cluster
+— Bestehen aus einer Ansammlung von Knoten, wobei jeder Knoten in sich wiederum ein
+   eigenständiges System darstellt
+— Dabei können die Knoten unabhängig voneinander arbeiten und es kann Software verwendet
+   werden, die für Standalone-Systeme entwickelt wurde
+
+Aufbau von Cluster-Systemen --> Folie 62
+
+MPP vs. Cluster
+MPP:
+— Proprietäre Hardware nach wie vor leistungsfähiger als Standardkomponenten
+— Hard- und Software sind auf Dauereinsatz und massive Parallelität ausgelegt
+— Vereinfachte Verwaltung durch Single-System-Images
+
+Cluster:
+— Standard-Komponenten für den Desktop-Bereich werden immer leistungsfähiger und günstiger
+— Standardisierungen ermöglichen modulare Bauweise
+— Leistungsfähige Netzwerktechnologien verfügbar (IB, Omnipath, Ethernet ...)
+— Open-Source Projekte für Cluster-Systeme
+
+
+
+
+
+
